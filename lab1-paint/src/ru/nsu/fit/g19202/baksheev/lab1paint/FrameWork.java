@@ -17,12 +17,19 @@ public class FrameWork extends JFrame {
         setLocation(400, 300);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-        ImagePanel p = new ImagePanel();
-        add(p);
+        var toolManager = new ToolManager();
+
+        var toolsPanel = new ToolsPanel(toolManager);
+        var canvas = new ImagePanel(toolManager);
+
+
+
+        add(toolsPanel, BorderLayout.PAGE_START);
+        add(canvas, BorderLayout.CENTER);
 
         JButton btn = new JButton("Clean");
-        btn.addActionListener(ev -> p.clean());
-        add(btn, BorderLayout.SOUTH);
+        btn.addActionListener(ev -> canvas.clean());
+        add(btn, BorderLayout.PAGE_END);
 
         pack();
         setVisible(true);

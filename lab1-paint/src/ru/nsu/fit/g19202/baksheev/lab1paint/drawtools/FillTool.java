@@ -8,12 +8,17 @@ import java.awt.image.BufferedImage;
 import java.util.Stack;
 
 public class FillTool implements DrawTool {
-
     @Data
     private static class Span {
         public int y;
         public int leftBound;
         public int rightBound;
+    }
+
+
+    @Override
+    public String getName() {
+        return "Fill";
     }
 
     @Override

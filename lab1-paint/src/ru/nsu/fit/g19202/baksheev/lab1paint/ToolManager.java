@@ -26,4 +26,8 @@ public class ToolManager {
     public DrawTool getCurrentTool() {
         return toolList.get(currentToolIndex);
     }
+
+    public List<DrawTool> getAllTools() {
+        return toolList;
+    }
 }

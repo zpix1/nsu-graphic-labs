@@ -11,6 +11,11 @@ import static java.lang.Math.abs;
 public class LineTool implements DrawTool {
 
     @Override
+    public String getName() {
+        return "Line";
+    }
+
+    @Override
     public void onClick(BufferedImage img, int x, int y, DrawContext context) {
         img.setRGB(x, y, context.getColor().getRGB());
     }

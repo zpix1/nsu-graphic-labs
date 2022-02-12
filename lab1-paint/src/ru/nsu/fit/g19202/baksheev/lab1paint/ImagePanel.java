@@ -40,12 +40,13 @@ public class ImagePanel extends JPanel implements MouseListener {
         super.setSize(d);
     }
 
-    public ImagePanel() {
+    public ImagePanel(ToolManager toolManager) {
+        this.toolManager = toolManager;
+
         addMouseListener(this);
         addComponentListener(new ResizeListener());
         img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         context = new DrawContext(5, Color.BLACK);
-        toolManager = new ToolManager();
         clean();
 
 //        addMouseMotionListener(new MouseAdapter() {
