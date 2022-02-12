@@ -14,9 +14,9 @@ public class ImagePanel extends JPanel implements MouseListener {
     private int x, y, xd = -1, yd = -1;
     private BufferedImage img;
     private DrawTool currentTool = new LineTool();
-    private Color currentColor = Color.BLACK;
     private int height = 1000;
     private int width = 1000;
+    private DrawContext context;
 
     static class ResizeListener extends ComponentAdapter {
         @Override
@@ -26,16 +26,27 @@ public class ImagePanel extends JPanel implements MouseListener {
         }
     }
 
-//    @Override
-//    public void setSize(Dimension d) {
-//        img = Utils.resize(img, d.width, d.height);
-//        super.setSize(d);
-//    }
+    @Override
+    public void setSize(Dimension d) {
+        if (d.width > width && d.height > height) {
+            width = d.width;
+            height = d.height;
+        } else if (d.width > width) {
+            width = d.width;
+        } else if (d.height > height) {
+            height = d.height;
+        } else {
+            return;
+        }
+        img = Utils.resize(img, width, height);
+        super.setSize(d);
+    }
 
     public ImagePanel() {
         addMouseListener(this);
-//        addComponentListener(new ResizeListener());
+        addComponentListener(new ResizeListener());
         img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        context = new DrawContext(5, Color.BLACK);
         clean();
 
 //        addMouseMotionListener(new MouseAdapter() {
@@ -56,7 +67,6 @@ public class ImagePanel extends JPanel implements MouseListener {
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        System.out.println("paintComponent issued");
         g.drawImage(img, 0, 0, width, height, null);
 //        if (draw) {
 //            Graphics2D g2 = (Graphics2D) g;
@@ -90,7 +100,7 @@ public class ImagePanel extends JPanel implements MouseListener {
     @Override
     public void mouseClicked(MouseEvent ev) {
         System.out.println("Mouse clicked: (" + x + ", " + y + ")");
-        currentTool.onClick(img, x, y, currentColor);
+        currentTool.onClick(img, x, y, context);
 
         repaint();
     }
@@ -108,7 +118,7 @@ public class ImagePanel extends JPanel implements MouseListener {
         xd = x = ev.getX();
         yd = y = ev.getY();
         System.out.println("Mouse pressed: (" + x + ", " + y + ")");
-        currentTool.onPress(img, x, y, currentColor);
+        currentTool.onPress(img, x, y, context);
 
         repaint();
     }
@@ -118,7 +128,7 @@ public class ImagePanel extends JPanel implements MouseListener {
         x = ev.getX();
         y = ev.getY();
         System.out.println("Mouse released: (" + x + ", " + y + ") from (" + xd + ", " + yd + ")");
-        currentTool.onRelease(img, x, y, xd, yd, currentColor);
+        currentTool.onRelease(img, x, y, xd, yd, context);
         xd = -1;
         yd = -1;
 
