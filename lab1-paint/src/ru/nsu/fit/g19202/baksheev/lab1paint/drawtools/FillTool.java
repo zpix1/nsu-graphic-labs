@@ -1,21 +1,28 @@
 package ru.nsu.fit.g19202.baksheev.lab1paint.drawtools;
 
+import lombok.Data;
 import ru.nsu.fit.g19202.baksheev.lab1paint.DrawContext;
 import ru.nsu.fit.g19202.baksheev.lab1paint.DrawTool;
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.Stack;
 
 public class FillTool implements DrawTool {
 
+    @Data
+    private static class Span {
+        public int y;
+        public int leftBound;
+        public int rightBound;
+    }
+
     @Override
     public void onClick(BufferedImage img, int x, int y, DrawContext context) {
-
     }
 
     @Override
     public void onPress(BufferedImage img, int x, int y, DrawContext context) {
-
+        spanFilling(img, x, y, img.getRGB(x, y), context.getColor().getRGB());
     }
 
     @Override
@@ -23,7 +30,55 @@ public class FillTool implements DrawTool {
 
     }
 
-    private void spanFilling(BufferedImage img, int seed_x, int seed_y, Color color) {
+    private Span getSpanAtPoint(BufferedImage img, int x, int y, int rgbColor) {
+        var span = new Span();
+        span.y = y;
+        span.rightBound = span.leftBound = x;
+        while (span.rightBound < img.getWidth()
+                && img.getRGB(span.rightBound, y) == rgbColor) {
+            span.rightBound++;
+        }
+        while (span.leftBound > 0
+                && img.getRGB(span.leftBound, y) == rgbColor) {
+            span.leftBound--;
+        }
+        return span;
+    }
 
+    private void fillSpan(BufferedImage img, Span span, int rgbColor) {
+        for (int i = span.leftBound; i < span.rightBound; i++) {
+            img.setRGB(i, span.y, rgbColor);
+        }
+    }
+
+    private boolean isOk(BufferedImage img, int x, int y, int color) {
+        if (!((x >= 0 && x < img.getWidth()) && (y >= 0 && y < img.getHeight()))) {
+            return false;
+        }
+        return img.getRGB(x, y) == color;
+    }
+
+    private void spanFilling(BufferedImage img, int seed_x, int seed_y, int fillFrom, int fillTo) {
+        var stack = new Stack<Span>();
+        var startingSpan = getSpanAtPoint(img, seed_x, seed_y, fillFrom);
+        stack.add(startingSpan);
+        fillSpan(img, startingSpan, fillTo);
+        while (!stack.empty()) {
+            var span = stack.pop();
+            for (int i = span.leftBound; i < span.rightBound; i++) {
+                if (isOk(img, i, span.y + 1, fillFrom)) {
+                    var newSpan = getSpanAtPoint(img, i, span.y + 1, fillFrom);
+                    fillSpan(img, newSpan, fillTo);
+                    stack.add(newSpan);
+                }
+            }
+            for (int i = span.leftBound; i < span.rightBound; i++) {
+                if (isOk(img, i, span.y - 1, fillFrom)) {
+                    var newSpan = getSpanAtPoint(img, i, span.y - 1, fillFrom);
+                    fillSpan(img, newSpan, fillTo);
+                    stack.add(newSpan);
+                }
+            }
+        }
     }
 }
