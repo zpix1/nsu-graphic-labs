@@ -24,7 +24,7 @@ public class LineTool implements DrawTool {
     public void onRelease(BufferedImage img, int x, int y, int xd, int yd, DrawContext context) {
         if (x == xd && y == yd) {
             img.setRGB(x, y, context.getColor().getRGB());
-        } else if (context.getLineWidth() > 0) {
+        } else if (context.getLineWidth() == 1) {
             bresenhams(img, xd, yd, x, y, context.getColor());
         } else {
             var graphics = img.createGraphics();

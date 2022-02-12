@@ -1,7 +1,5 @@
 package ru.nsu.fit.g19202.baksheev.lab1paint;
 
-import ru.nsu.fit.g19202.baksheev.lab1paint.drawtools.LineTool;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
@@ -13,10 +11,10 @@ import java.awt.image.BufferedImage;
 public class ImagePanel extends JPanel implements MouseListener {
     private int x, y, xd = -1, yd = -1;
     private BufferedImage img;
-    private DrawTool currentTool = new LineTool();
     private int height = 1000;
     private int width = 1000;
-    private DrawContext context;
+    private final ToolManager toolManager;
+    private final DrawContext context;
 
     static class ResizeListener extends ComponentAdapter {
         @Override
@@ -47,6 +45,7 @@ public class ImagePanel extends JPanel implements MouseListener {
         addComponentListener(new ResizeListener());
         img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         context = new DrawContext(5, Color.BLACK);
+        toolManager = new ToolManager();
         clean();
 
 //        addMouseMotionListener(new MouseAdapter() {
@@ -99,8 +98,13 @@ public class ImagePanel extends JPanel implements MouseListener {
 
     @Override
     public void mouseClicked(MouseEvent ev) {
+        if (ev.getButton() == 3) {
+            toolManager.nextTool();
+            return;
+        }
+
         System.out.println("Mouse clicked: (" + x + ", " + y + ")");
-        currentTool.onClick(img, x, y, context);
+        toolManager.getCurrentTool().onClick(img, x, y, context);
 
         repaint();
     }
@@ -118,7 +122,7 @@ public class ImagePanel extends JPanel implements MouseListener {
         xd = x = ev.getX();
         yd = y = ev.getY();
         System.out.println("Mouse pressed: (" + x + ", " + y + ")");
-        currentTool.onPress(img, x, y, context);
+        toolManager.getCurrentTool().onPress(img, x, y, context);
 
         repaint();
     }
@@ -128,7 +132,7 @@ public class ImagePanel extends JPanel implements MouseListener {
         x = ev.getX();
         y = ev.getY();
         System.out.println("Mouse released: (" + x + ", " + y + ") from (" + xd + ", " + yd + ")");
-        currentTool.onRelease(img, x, y, xd, yd, context);
+        toolManager.getCurrentTool().onRelease(img, x, y, xd, yd, context);
         xd = -1;
         yd = -1;
 
