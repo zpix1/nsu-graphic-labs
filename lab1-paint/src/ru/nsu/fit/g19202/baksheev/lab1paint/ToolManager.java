@@ -18,6 +18,10 @@ public class ToolManager {
         toolList.add(new FillTool());
     }
 
+    public void setTool(int index) {
+        currentToolIndex = index;
+    }
+
     public void nextTool() {
         System.out.println("Next tool");
         currentToolIndex = (currentToolIndex + 1) % toolList.size();

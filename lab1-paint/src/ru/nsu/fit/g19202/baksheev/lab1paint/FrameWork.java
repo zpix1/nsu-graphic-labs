@@ -19,17 +19,12 @@ public class FrameWork extends JFrame {
 
         var toolManager = new ToolManager();
 
-        var toolsPanel = new ToolsPanel(toolManager);
-        var canvas = new ImagePanel(toolManager);
-
-
+        var context = new DrawContext(5, Color.BLACK);
+        var canvas = new ImagePanel(toolManager, context);
+        var toolsPanel = new ToolsPanel(toolManager, canvas, context);
 
         add(toolsPanel, BorderLayout.PAGE_START);
         add(canvas, BorderLayout.CENTER);
-
-        JButton btn = new JButton("Clean");
-        btn.addActionListener(ev -> canvas.clean());
-        add(btn, BorderLayout.PAGE_END);
 
         pack();
         setVisible(true);
