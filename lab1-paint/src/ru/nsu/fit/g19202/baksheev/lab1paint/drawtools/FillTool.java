@@ -64,11 +64,16 @@ public class FillTool implements DrawTool {
     }
 
     private void spanFilling(BufferedImage img, int seed_x, int seed_y, int fillFrom, int fillTo) {
+        if (fillTo == fillFrom) {
+            return;
+        }
         var stack = new Stack<Span>();
         var startingSpan = getSpanAtPoint(img, seed_x, seed_y, fillFrom);
         stack.add(startingSpan);
         fillSpan(img, startingSpan, fillTo);
         while (!stack.empty()) {
+            System.out.println("Stack size " + stack.size());
+            System.out.println("Top span y=" + stack.peek().y + " " + stack.peek().rightBound + " " + stack.peek().leftBound);
             var span = stack.pop();
             for (int i = span.leftBound; i < span.rightBound; i++) {
                 if (isOk(img, i, span.y + 1, fillFrom)) {
