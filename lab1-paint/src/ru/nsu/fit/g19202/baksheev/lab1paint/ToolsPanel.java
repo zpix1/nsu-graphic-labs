@@ -6,7 +6,7 @@ import lombok.Getter;
 import javax.swing.*;
 import java.awt.*;
 
-public class ToolsPanel extends JPanel {
+public class ToolsPanel extends JToolBar {
     final private ToolManager toolManager;
     final private ImagePanel canvas;
     final private DrawContext context;
