@@ -62,24 +62,14 @@ public class MainFrame extends JFrame {
      * @throws NoSuchMethodException - when actionMethod method not found
      * @throws SecurityException     - when actionMethod method is inaccessible
      */
-    public JMenuItem createMenuItem(String title, String tooltip, int mnemonic, String icon, String actionMethod) throws SecurityException, NoSuchMethodException {
+    public JMenuItem createMenuItem(String title, String tooltip, int mnemonic, String icon, ActionListener actionMethod) throws SecurityException {
         JMenuItem item = new JMenuItem(title);
         item.setMnemonic(mnemonic);
         item.setToolTipText(tooltip);
         if (icon != null)
             item.setIcon(new ImageIcon(getClass().getResource("resources/" + icon), title));
-        final Method method = getClass().getMethod(actionMethod);
-        item.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                try {
-                    method.invoke(MainFrame.this);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        });
+//        final Method method = getClass().getMethod(actionMethod);
+        item.addActionListener(actionMethod);
         return item;
     }
 
@@ -95,7 +85,7 @@ public class MainFrame extends JFrame {
      * @throws NoSuchMethodException - when actionMethod method not found
      * @throws SecurityException     - when actionMethod method is inaccessible
      */
-    public JMenuItem createMenuItem(String title, String tooltip, int mnemonic, String actionMethod) throws SecurityException, NoSuchMethodException {
+    public JMenuItem createMenuItem(String title, String tooltip, int mnemonic, ActionListener actionMethod) throws SecurityException, NoSuchMethodException {
         return createMenuItem(title, tooltip, mnemonic, null, actionMethod);
     }
 
@@ -146,7 +136,7 @@ public class MainFrame extends JFrame {
      * @throws SecurityException         - when actionMethod method is inaccessible
      * @throws InvalidParameterException - when specified menu location not found
      */
-    public void addMenuItem(String title, String tooltip, int mnemonic, String icon, String actionMethod) throws SecurityException, NoSuchMethodException {
+    public void addMenuItem(String title, String tooltip, int mnemonic, String icon, ActionListener actionMethod) throws SecurityException {
         MenuElement element = getParentMenuElement(title);
         if (element == null)
             throw new InvalidParameterException("Menu path not found: " + title);
@@ -170,7 +160,7 @@ public class MainFrame extends JFrame {
      * @throws SecurityException         - when actionMethod method is inaccessible
      * @throws InvalidParameterException - when specified menu location not found
      */
-    public void addMenuItem(String title, String tooltip, int mnemonic, String actionMethod) throws SecurityException, NoSuchMethodException {
+    public void addMenuItem(String title, String tooltip, int mnemonic, ActionListener actionMethod) throws SecurityException {
         addMenuItem(title, tooltip, mnemonic, null, actionMethod);
     }
 
