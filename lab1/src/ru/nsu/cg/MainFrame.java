@@ -2,10 +2,8 @@ package ru.nsu.cg;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.lang.reflect.Method;
 import java.security.InvalidParameterException;
 
 /**
@@ -263,8 +261,10 @@ public class MainFrame extends JFrame {
      *
      * @param menuPath - path to menu item to create toolbar button from
      */
-    public void addToolBarButton(String menuPath) {
-        toolBar.add(createToolBarButton(menuPath));
+    public JButton addToolBarButton(String menuPath) {
+        var btn = createToolBarButton(menuPath);
+        toolBar.add(btn);
+        return btn;
     }
 
     /**

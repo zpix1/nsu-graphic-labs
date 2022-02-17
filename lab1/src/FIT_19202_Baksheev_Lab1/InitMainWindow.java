@@ -24,7 +24,9 @@ public class InitMainWindow extends MainFrame {
      * Default constructor to create main window
      */
     public InitMainWindow() {
-        super(600, 400, "Lab 1 Paint");
+        super(640, 480, "Lab 1 Paint");
+
+        setMinimumSize(new Dimension(640, 480));
 
         toolManager = new ToolManager();
         drawContext = new DrawContext(3, Color.BLACK);
@@ -68,7 +70,7 @@ public class InitMainWindow extends MainFrame {
             new NamedColor("Magenta", new Color(255, 0, 255))
     };
 
-    private void addCanvasMenu() throws NoSuchMethodException {
+    private void addCanvasMenu() {
         addSubMenu("Canvas", KeyEvent.VK_V);
         addMenuItem("Canvas/Clean", "Clean canvas", 0, "tools/clean.gif", event -> imagePanel.clean());
         addToolBarButton("Canvas/Clean");
@@ -78,23 +80,38 @@ public class InitMainWindow extends MainFrame {
         addToolsMenu();
     }
 
-    private void addColorsMenu() throws NoSuchMethodException {
+    private void selectButtonFromSet(int index, JButton[] buttons) {
+        for (int i = 0; i < buttons.length; i++) {
+            buttons[i].setSelected(i == index);
+        }
+    }
+
+    private void addColorsMenu() {
         addSubMenu("Canvas/Colors", 0);
-        for (var color : colors) {
+        var buttonsSet = new JButton[colors.length];
+        for (var colorIdx = 0; colorIdx < colors.length; colorIdx++) {
+            var color = colors[colorIdx];
             var path = "Canvas/Colors/" + color.getName();
+            int finalToolIdx = colorIdx;
             addMenuItem(
                     path,
                     "Set " + color.getName().toLowerCase() + " as current color",
                     0,
                     "colors/" + color.getName().toLowerCase() + ".gif",
-                    event -> drawContext.setColor(color.getColor())
+                    event -> {
+                        drawContext.setColor(color.getColor());
+                        selectButtonFromSet(finalToolIdx, buttonsSet);
+                    }
             );
-            addToolBarButton(path);
+            buttonsSet[colorIdx] = addToolBarButton(path);
         }
+
+        selectButtonFromSet(0, buttonsSet);
     }
 
     private void addToolsMenu() {
         addSubMenu("Canvas/Tools", 0);
+        var buttonsSet = new JButton[toolManager.getAllTools().size()];
         for (var toolIdx = 0; toolIdx < toolManager.getAllTools().size(); toolIdx++) {
             var tool = toolManager.getAllTools().get(toolIdx);
             var path = "Canvas/Tools/" + tool.getName();
@@ -104,10 +121,14 @@ public class InitMainWindow extends MainFrame {
                     "Use " + tool.getName().toLowerCase() + " as current tool",
                     0,
                     "tools/" + tool.getName() + ".gif",
-                    event -> toolManager.setTool(finalToolIdx)
+                    event -> {
+                        toolManager.setTool(finalToolIdx);
+                        selectButtonFromSet(finalToolIdx, buttonsSet);
+                    }
             );
-            addToolBarButton(path);
+            buttonsSet[toolIdx] = addToolBarButton(path);
         }
+        selectButtonFromSet(toolManager.getCurrentToolIndex(), buttonsSet);
     }
 
     /**

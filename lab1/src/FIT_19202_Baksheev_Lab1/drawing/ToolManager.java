@@ -2,6 +2,7 @@ package FIT_19202_Baksheev_Lab1.drawing;
 
 import FIT_19202_Baksheev_Lab1.drawing.drawtools.FillTool;
 import FIT_19202_Baksheev_Lab1.drawing.drawtools.LineTool;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.List;
 public class ToolManager {
     private final List<DrawTool> toolList;
 
+    @Getter
     private int currentToolIndex = 0;
 
     public ToolManager() {
