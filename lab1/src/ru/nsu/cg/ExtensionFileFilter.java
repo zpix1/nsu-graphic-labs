@@ -2,6 +2,8 @@ package ru.nsu.cg;
 
 import javax.swing.filechooser.FileFilter;
 import java.io.File;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 /**
  * File filter which leaves only directories and files with specific extension
@@ -9,26 +11,32 @@ import java.io.File;
  * @author Tagir F. Valeev
  */
 public class ExtensionFileFilter extends FileFilter {
-    String extension, description;
+    String[] extensions;
+    String description;
 
     /**
      * Constructs filter
      *
-     * @param extension   - extension (without point), for example, "txt"
+     * @param extensions   - extensions (without point), for example, "txt"
      * @param description - file type description, for example, "Text files"
      */
-    public ExtensionFileFilter(String extension, String description) {
-        this.extension = extension;
+    public ExtensionFileFilter(String[] extensions, String description) {
+        this.extensions = extensions;
         this.description = description;
     }
 
     @Override
     public boolean accept(File f) {
-        return f.isDirectory() || f.getName().toLowerCase().endsWith("." + extension.toLowerCase());
+        if (f.isDirectory()) return true;
+        for (var extension : extensions) {
+            if (f.getName().toLowerCase().endsWith("." + extension.toLowerCase()))
+                return true;
+        }
+        return false;
     }
 
     @Override
     public String getDescription() {
-        return description + " (*." + extension + ")";
+        return description + " (*." + String.join(", ", extensions) + ")";
     }
 }

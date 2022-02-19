@@ -1,12 +1,10 @@
-package FIT_19202_Baksheev_Lab1.drawing.drawtools;
+package fit.g19202.baksheev.lab1.drawing.drawtools;
 
-import FIT_19202_Baksheev_Lab1.drawing.DrawContext;
-import FIT_19202_Baksheev_Lab1.drawing.DrawTool;
+import fit.g19202.baksheev.lab1.drawing.DrawContext;
+import fit.g19202.baksheev.lab1.drawing.DrawTool;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.Arrays;
-import java.util.Random;
 
 public class StarTool implements DrawTool {
     @Override

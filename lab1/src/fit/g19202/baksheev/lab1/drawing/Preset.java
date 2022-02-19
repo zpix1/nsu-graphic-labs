@@ -1,4 +1,4 @@
-package FIT_19202_Baksheev_Lab1.drawing;
+package fit.g19202.baksheev.lab1.drawing;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

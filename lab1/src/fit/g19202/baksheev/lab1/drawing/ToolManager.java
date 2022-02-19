@@ -1,9 +1,9 @@
-package FIT_19202_Baksheev_Lab1.drawing;
+package fit.g19202.baksheev.lab1.drawing;
 
-import FIT_19202_Baksheev_Lab1.drawing.drawtools.FillTool;
-import FIT_19202_Baksheev_Lab1.drawing.drawtools.LineTool;
-import FIT_19202_Baksheev_Lab1.drawing.drawtools.PolyTool;
-import FIT_19202_Baksheev_Lab1.drawing.drawtools.StarTool;
+import fit.g19202.baksheev.lab1.drawing.drawtools.FillTool;
+import fit.g19202.baksheev.lab1.drawing.drawtools.LineTool;
+import fit.g19202.baksheev.lab1.drawing.drawtools.PolyTool;
+import fit.g19202.baksheev.lab1.drawing.drawtools.StarTool;
 import lombok.Getter;
 
 import java.util.ArrayList;

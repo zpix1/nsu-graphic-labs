@@ -297,8 +297,8 @@ public class MainFrame extends JFrame {
      * @return File specified by user or null if user canceled operation
      * @see MainFrame.getOpenFileName
      */
-    public File getSaveFileName(String extension, String description) {
-        return FileUtils.getSaveFileName(this, extension, description);
+    public FileUtils.FileWithExtension getSaveFileName(String[] extensions, String description) {
+        return FileUtils.getSaveFileName(this, extensions, description);
     }
 
     /**
@@ -309,7 +309,7 @@ public class MainFrame extends JFrame {
      * @return File specified by user or null if user canceled operation
      * @see MainFrame.getSaveFileName
      */
-    public File getOpenFileName(String extension, String description) {
+    public FileUtils.FileWithExtension getOpenFileName(String[] extension, String description) {
         return FileUtils.getOpenFileName(this, extension, description);
     }
 }

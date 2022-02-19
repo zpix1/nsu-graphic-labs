@@ -1,14 +1,16 @@
-package FIT_19202_Baksheev_Lab1;
+package fit.g19202.baksheev.lab1;
 
-import FIT_19202_Baksheev_Lab1.drawing.DrawContext;
-import FIT_19202_Baksheev_Lab1.drawing.Preset;
-import FIT_19202_Baksheev_Lab1.drawing.SettingsDialog;
-import FIT_19202_Baksheev_Lab1.drawing.ToolManager;
+import fit.g19202.baksheev.lab1.drawing.DrawContext;
+import fit.g19202.baksheev.lab1.drawing.Preset;
+import fit.g19202.baksheev.lab1.drawing.SettingsDialog;
+import fit.g19202.baksheev.lab1.drawing.ToolManager;
 import ru.nsu.cg.MainFrame;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.stream.Collectors;
@@ -38,8 +40,7 @@ public class InitMainWindow extends MainFrame {
         dialog = new SettingsDialog(this, drawContext);
 
         try {
-            addSubMenu("File", KeyEvent.VK_F);
-            addMenuItem("File/Exit", "Exit application", KeyEvent.VK_X, "Exit.gif", event -> onExit());
+            addFileMenu();
 
             addCanvasMenu();
 
@@ -59,6 +60,30 @@ public class InitMainWindow extends MainFrame {
         }
     }
 
+
+    private void addFileMenu() {
+        addSubMenu("File", KeyEvent.VK_F);
+        addMenuItem("File/Exit", "Exit application", KeyEvent.VK_X, "Exit.gif", event -> onExit());
+        addMenuItem("File/Save Image", "Save image as a file", 0, "save.gif", event -> {
+            var file = getSaveFileName(new String[]{"png", "jpeg", "bmp", "gif"}, "Images");
+            try {
+                ImageIO.write(imagePanel.getImage(), file.getExtension(), file.getFile());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        addMenuItem("File/Open Image", "Open image from a file", 0, "open.gif", event -> {
+            var file = getOpenFileName(new String[]{"png", "jpeg", "bmp", "gif"}, "Images");
+            try {
+                var image = ImageIO.read(file.getFile());
+                imagePanel.setImage(image);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        addToolBarButton("File/Save Image");
+        addToolBarButton("File/Open Image");
+    }
 
     private void addCanvasMenu() {
         addSubMenu("Canvas", KeyEvent.VK_V);

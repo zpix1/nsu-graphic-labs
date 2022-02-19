@@ -1,8 +1,8 @@
-package FIT_19202_Baksheev_Lab1;
+package fit.g19202.baksheev.lab1;
 
-import FIT_19202_Baksheev_Lab1.drawing.DrawContext;
-import FIT_19202_Baksheev_Lab1.drawing.ToolManager;
-import FIT_19202_Baksheev_Lab1.drawing.Utils;
+import fit.g19202.baksheev.lab1.drawing.DrawContext;
+import fit.g19202.baksheev.lab1.drawing.ToolManager;
+import fit.g19202.baksheev.lab1.drawing.Utils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,6 +26,15 @@ public class ImagePanel extends JPanel implements MouseListener {
             e.getComponent().setSize(new Dimension(e.getComponent().getWidth(), e.getComponent().getHeight()));
             super.componentResized(e);
         }
+    }
+
+    public BufferedImage getImage() {
+        return img;
+    }
+
+    public void setImage(BufferedImage img) {
+        this.img = img;
+        repaint();
     }
 
     @Override

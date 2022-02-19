@@ -1,5 +1,8 @@
 package ru.nsu.cg;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import java.io.File;
@@ -9,6 +12,13 @@ import java.nio.charset.Charset;
 
 public class FileUtils {
     private static File dataDirectory = null;
+
+    @AllArgsConstructor
+    @Getter
+    public static class FileWithExtension {
+        private File file;
+        private String extension;
+    }
 
     /**
      * Returns File pointing to Data directory of current project. If Data directory is not found, returns project directory.
@@ -34,6 +44,14 @@ public class FileUtils {
         return dataDirectory;
     }
 
+    public static String getExtension(String filename) {
+        var parts = filename.split("\\.");
+        if (parts.length == 1) {
+            return null;
+        }
+        return parts[parts.length - 1];
+    }
+
     /**
      * Prompts user for file name to save and returns it
      *
@@ -43,16 +61,14 @@ public class FileUtils {
      * @return File specified by user or null if user canceled operation
      * @see MainFrame.getOpenFileName
      */
-    public static File getSaveFileName(JFrame parent, String extension, String description) {
+    public static FileWithExtension getSaveFileName(JFrame parent, String[] extensions, String description) {
         JFileChooser fileChooser = new JFileChooser();
-        FileFilter filter = new ExtensionFileFilter(extension, description);
+        FileFilter filter = new ExtensionFileFilter(extensions, description);
         fileChooser.addChoosableFileFilter(filter);
         fileChooser.setCurrentDirectory(getDataDirectory());
         if (fileChooser.showSaveDialog(parent) == JFileChooser.APPROVE_OPTION) {
             File f = fileChooser.getSelectedFile();
-            if (!f.getName().contains("."))
-                f = new File(f.getParent(), f.getName() + "." + extension);
-            return f;
+            return new FileWithExtension(f, getExtension(f.getName()));
         }
         return null;
     }
@@ -66,16 +82,14 @@ public class FileUtils {
      * @return File specified by user or null if user canceled operation
      * @see MainFrame.getSaveFileName
      */
-    public static File getOpenFileName(JFrame parent, String extension, String description) {
+    public static FileWithExtension getOpenFileName(JFrame parent, String[] extensions, String description) {
         JFileChooser fileChooser = new JFileChooser();
-        FileFilter filter = new ExtensionFileFilter(extension, description);
+        FileFilter filter = new ExtensionFileFilter(extensions, description);
         fileChooser.addChoosableFileFilter(filter);
         fileChooser.setCurrentDirectory(getDataDirectory());
         if (fileChooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION) {
             File f = fileChooser.getSelectedFile();
-            if (!f.getName().contains("."))
-                f = new File(f.getParent(), f.getName() + "." + extension);
-            return f;
+            return new FileWithExtension(f, getExtension(f.getName()));
         }
         return null;
     }
