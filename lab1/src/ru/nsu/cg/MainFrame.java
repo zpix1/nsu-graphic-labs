@@ -17,6 +17,11 @@ public class MainFrame extends JFrame {
     private JMenuBar menuBar;
     protected JToolBar toolBar;
 
+    public enum ButtonType {
+        BASIC,
+        RADIO
+    }
+
     /**
      * Default constructor which sets up L&F and creates tool-bar and menu-bar
      */
@@ -47,6 +52,10 @@ public class MainFrame extends JFrame {
         setTitle(title);
     }
 
+    public JMenuItem createMenuItem(String title, String tooltip, int mnemonic, String icon, ActionListener actionMethod) throws SecurityException {
+        return createMenuItem(title, tooltip, mnemonic, icon, actionMethod, ButtonType.BASIC);
+    }
+
     /**
      * Shortcut method to create menu item
      * Note that you have to insert it into proper place by yourself
@@ -60,13 +69,15 @@ public class MainFrame extends JFrame {
      * @throws NoSuchMethodException - when actionMethod method not found
      * @throws SecurityException     - when actionMethod method is inaccessible
      */
-    public JMenuItem createMenuItem(String title, String tooltip, int mnemonic, String icon, ActionListener actionMethod) throws SecurityException {
-        JMenuItem item = new JMenuItem(title);
+    public JMenuItem createMenuItem(String title, String tooltip, int mnemonic, String icon, ActionListener actionMethod, ButtonType type) throws SecurityException {
+        JMenuItem item = switch (type) {
+            case BASIC -> new JMenuItem(title);
+            case RADIO -> new JRadioButtonMenuItem(title);
+        };
         item.setMnemonic(mnemonic);
         item.setToolTipText(tooltip);
         if (icon != null)
             item.setIcon(new ImageIcon(getClass().getResource("resources/" + icon), title));
-//        final Method method = getClass().getMethod(actionMethod);
         item.addActionListener(actionMethod);
         return item;
     }
@@ -122,6 +133,9 @@ public class MainFrame extends JFrame {
             throw new InvalidParameterException("Invalid menu path: " + title);
     }
 
+    public JMenuItem addMenuItem(String title, String tooltip, int mnemonic, String icon, ActionListener actionMethod) throws SecurityException {
+        return addMenuItem(title, tooltip, mnemonic, icon, actionMethod, ButtonType.BASIC);
+    }
     /**
      * Creates menu item and adds it to the specified menu location
      *
@@ -134,17 +148,18 @@ public class MainFrame extends JFrame {
      * @throws SecurityException         - when actionMethod method is inaccessible
      * @throws InvalidParameterException - when specified menu location not found
      */
-    public void addMenuItem(String title, String tooltip, int mnemonic, String icon, ActionListener actionMethod) throws SecurityException {
+    public JMenuItem addMenuItem(String title, String tooltip, int mnemonic, String icon, ActionListener actionMethod, ButtonType type) throws SecurityException {
         MenuElement element = getParentMenuElement(title);
         if (element == null)
             throw new InvalidParameterException("Menu path not found: " + title);
-        JMenuItem item = createMenuItem(getMenuPathName(title), tooltip, mnemonic, icon, actionMethod);
+        JMenuItem item = createMenuItem(getMenuPathName(title), tooltip, mnemonic, icon, actionMethod, type);
         if (element instanceof JMenu)
             ((JMenu) element).add(item);
         else if (element instanceof JPopupMenu)
             ((JPopupMenu) element).add(item);
         else
             throw new InvalidParameterException("Invalid menu path: " + title);
+        return item;
     }
 
     /**

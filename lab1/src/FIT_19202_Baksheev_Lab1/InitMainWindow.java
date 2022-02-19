@@ -9,6 +9,9 @@ import ru.nsu.cg.MainFrame;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.stream.Collectors;
 
 /**
  * Main window class
@@ -33,7 +36,6 @@ public class InitMainWindow extends MainFrame {
         imagePanel = new ImagePanel(toolManager, drawContext);
 
         try {
-
             addSubMenu("File", KeyEvent.VK_F);
             addMenuItem("File/Exit", "Exit application", KeyEvent.VK_X, "Exit.gif", event -> onExit());
 
@@ -80,55 +82,88 @@ public class InitMainWindow extends MainFrame {
         addToolsMenu();
     }
 
-    private void selectButtonFromSet(int index, JButton[] buttons) {
-        for (int i = 0; i < buttons.length; i++) {
-            buttons[i].setSelected(i == index);
+    private void selectButtonFromSet(int index, ButtonGroup group) {
+//        does not work for some reason
+//        group.clearSelection();
+        Collections.list(group.getElements()).forEach(button -> button.setSelected(false));
+        if (index != -1) {
+            Collections.list(group.getElements()).get(index).setSelected(true);
         }
     }
 
     private void addColorsMenu() {
         addSubMenu("Canvas/Colors", 0);
-        var buttonsSet = new JButton[colors.length];
+        var radioButtonsGroup = new ButtonGroup();
+        var toolbarButtonsGroup = new ButtonGroup();
         for (var colorIdx = 0; colorIdx < colors.length; colorIdx++) {
             var color = colors[colorIdx];
             var path = "Canvas/Colors/" + color.getName();
             int finalToolIdx = colorIdx;
-            addMenuItem(
+            radioButtonsGroup.add(addMenuItem(
                     path,
                     "Set " + color.getName().toLowerCase() + " as current color",
                     0,
                     "colors/" + color.getName().toLowerCase() + ".gif",
                     event -> {
                         drawContext.setColor(color.getColor());
-                        selectButtonFromSet(finalToolIdx, buttonsSet);
-                    }
+                        selectButtonFromSet(finalToolIdx, radioButtonsGroup);
+                        selectButtonFromSet(finalToolIdx, toolbarButtonsGroup);
+                    },
+                    ButtonType.RADIO
+            ));
+            toolbarButtonsGroup.add(
+                    addToolBarButton(path)
             );
-            buttonsSet[colorIdx] = addToolBarButton(path);
         }
 
-        selectButtonFromSet(0, buttonsSet);
+        addMenuItem(
+                "Canvas/Colors/Color Chooser",
+                "Select color from the palette",
+                0,
+                "colors/palette.gif",
+                event -> {
+                    drawContext.setColor(JColorChooser.showDialog(null, "Select a color", drawContext.getColor()));
+
+                    var selectedColorIndex = Arrays.stream(colors).map(NamedColor::getColor)
+                            .collect(Collectors.toList())
+                            .indexOf(drawContext.getColor());
+
+                    selectButtonFromSet(selectedColorIndex, radioButtonsGroup);
+                    selectButtonFromSet(selectedColorIndex, toolbarButtonsGroup);
+                }
+        );
+
+        addToolBarButton("Canvas/Colors/Color Chooser");
+
+        selectButtonFromSet(0, radioButtonsGroup);
+        selectButtonFromSet(0, toolbarButtonsGroup);
     }
 
     private void addToolsMenu() {
         addSubMenu("Canvas/Tools", 0);
-        var buttonsSet = new JButton[toolManager.getAllTools().size()];
+        var radioButtonsGroup = new ButtonGroup();
+        var toolbarButtonsGroup = new ButtonGroup();
         for (var toolIdx = 0; toolIdx < toolManager.getAllTools().size(); toolIdx++) {
             var tool = toolManager.getAllTools().get(toolIdx);
             var path = "Canvas/Tools/" + tool.getName();
             int finalToolIdx = toolIdx;
-            addMenuItem(
+            radioButtonsGroup.add(addMenuItem(
                     path,
                     "Use " + tool.getName().toLowerCase() + " as current tool",
                     0,
                     "tools/" + tool.getName() + ".gif",
                     event -> {
                         toolManager.setTool(finalToolIdx);
-                        selectButtonFromSet(finalToolIdx, buttonsSet);
-                    }
-            );
-            buttonsSet[toolIdx] = addToolBarButton(path);
+                        selectButtonFromSet(finalToolIdx, radioButtonsGroup);
+                        selectButtonFromSet(finalToolIdx, toolbarButtonsGroup);
+                    },
+                    ButtonType.RADIO
+            ));
+            toolbarButtonsGroup.add(addToolBarButton(path));
         }
-        selectButtonFromSet(toolManager.getCurrentToolIndex(), buttonsSet);
+
+        selectButtonFromSet(toolManager.getCurrentToolIndex(), radioButtonsGroup);
+        selectButtonFromSet(toolManager.getCurrentToolIndex(), toolbarButtonsGroup);
     }
 
     /**
