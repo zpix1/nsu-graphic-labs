@@ -33,7 +33,7 @@ public class InitMainWindow extends MainFrame {
         setMinimumSize(new Dimension(640, 480));
 
         toolManager = new ToolManager();
-        drawContext = new DrawContext(3, Color.BLACK, 5, 100);
+        drawContext = new DrawContext(3, Color.BLACK, 5, 100, 0);
         imagePanel = new ImagePanel(toolManager, drawContext);
         dialog = new SettingsDialog(this, drawContext);
 
@@ -161,9 +161,7 @@ public class InitMainWindow extends MainFrame {
                 "Settings",
                 0,
                 null,
-                event -> {
-                    dialog.showSettingsDialog();
-                }
+                event -> dialog.showSettingsDialog()
         );
     }
 
