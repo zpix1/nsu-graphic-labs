@@ -29,7 +29,7 @@ public class SettingsDialog extends JDialog {
         addSliderSpinnerPair(context.getRadius(), 1, 100, 10, 5, getLabels(new int[]{1, 50, 100}), context::setRadius);
 
         add(new JLabel("Star and polygon rotation angle"));
-        addSliderSpinnerPair(context.getAngle(), 0, 360, 60, 30, getLabels(new int[]{0, 60, 120, 180, 240, 300, 360}), context::setRadius);
+        addSliderSpinnerPair(context.getAngle(), 0, 360, 60, 30, getLabels(new int[]{0, 60, 120, 180, 240, 300, 360}), context::setAngle);
     }
 
     private Dictionary<Integer, JLabel> getLabels(int[] ticks) {

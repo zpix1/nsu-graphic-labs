@@ -2,6 +2,8 @@ package FIT_19202_Baksheev_Lab1.drawing;
 
 import FIT_19202_Baksheev_Lab1.drawing.drawtools.FillTool;
 import FIT_19202_Baksheev_Lab1.drawing.drawtools.LineTool;
+import FIT_19202_Baksheev_Lab1.drawing.drawtools.PolyTool;
+import FIT_19202_Baksheev_Lab1.drawing.drawtools.StarTool;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -17,6 +19,8 @@ public class ToolManager {
         toolList = new ArrayList<>();
         toolList.add(new LineTool());
         toolList.add(new FillTool());
+        toolList.add(new StarTool());
+        toolList.add(new PolyTool());
     }
 
     public void setTool(int index) {
