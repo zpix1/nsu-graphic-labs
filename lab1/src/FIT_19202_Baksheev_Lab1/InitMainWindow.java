@@ -1,9 +1,9 @@
 package FIT_19202_Baksheev_Lab1;
 
 import FIT_19202_Baksheev_Lab1.drawing.DrawContext;
+import FIT_19202_Baksheev_Lab1.drawing.Preset;
+import FIT_19202_Baksheev_Lab1.drawing.SettingsDialog;
 import FIT_19202_Baksheev_Lab1.drawing.ToolManager;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import ru.nsu.cg.MainFrame;
 
 import javax.swing.*;
@@ -22,6 +22,7 @@ public class InitMainWindow extends MainFrame {
     private final ToolManager toolManager;
     private final DrawContext drawContext;
     private final ImagePanel imagePanel;
+    private final SettingsDialog dialog;
 
     /**
      * Default constructor to create main window
@@ -32,8 +33,9 @@ public class InitMainWindow extends MainFrame {
         setMinimumSize(new Dimension(640, 480));
 
         toolManager = new ToolManager();
-        drawContext = new DrawContext(3, Color.BLACK);
+        drawContext = new DrawContext(3, Color.BLACK, 5, 100);
         imagePanel = new ImagePanel(toolManager, drawContext);
+        dialog = new SettingsDialog(this, drawContext);
 
         try {
             addSubMenu("File", KeyEvent.VK_F);
@@ -42,6 +44,8 @@ public class InitMainWindow extends MainFrame {
             addCanvasMenu();
 
             addToolBarSeparator();
+
+            addSettingsMenu();
 
             addSubMenu("Help", KeyEvent.VK_H);
             addMenuItem("Help/About...", "Shows program version and copyright information", KeyEvent.VK_A, "About.gif", event -> onAbout());
@@ -55,22 +59,6 @@ public class InitMainWindow extends MainFrame {
         }
     }
 
-    @AllArgsConstructor
-    @Getter
-    static class NamedColor {
-        String name;
-        Color color;
-    }
-
-    private static final NamedColor[] colors = {
-            new NamedColor("Black", new Color(0, 0, 0)),
-            new NamedColor("White", new Color(255, 255, 255)),
-            new NamedColor("Red", new Color(255, 0, 0)),
-            new NamedColor("Yellow", new Color(255, 255, 0)),
-            new NamedColor("Green", new Color(0, 255, 0)),
-            new NamedColor("Cyan", new Color(0, 255, 255)),
-            new NamedColor("Magenta", new Color(255, 0, 255))
-    };
 
     private void addCanvasMenu() {
         addSubMenu("Canvas", KeyEvent.VK_V);
@@ -95,8 +83,8 @@ public class InitMainWindow extends MainFrame {
         addSubMenu("Canvas/Colors", 0);
         var radioButtonsGroup = new ButtonGroup();
         var toolbarButtonsGroup = new ButtonGroup();
-        for (var colorIdx = 0; colorIdx < colors.length; colorIdx++) {
-            var color = colors[colorIdx];
+        for (var colorIdx = 0; colorIdx < Preset.colors.length; colorIdx++) {
+            var color = Preset.colors[colorIdx];
             var path = "Canvas/Colors/" + color.getName();
             int finalToolIdx = colorIdx;
             radioButtonsGroup.add(addMenuItem(
@@ -124,7 +112,7 @@ public class InitMainWindow extends MainFrame {
                 event -> {
                     drawContext.setColor(JColorChooser.showDialog(null, "Select a color", drawContext.getColor()));
 
-                    var selectedColorIndex = Arrays.stream(colors).map(NamedColor::getColor)
+                    var selectedColorIndex = Arrays.stream(Preset.colors).map(Preset.NamedColor::getColor)
                             .collect(Collectors.toList())
                             .indexOf(drawContext.getColor());
 
@@ -164,6 +152,19 @@ public class InitMainWindow extends MainFrame {
 
         selectButtonFromSet(toolManager.getCurrentToolIndex(), radioButtonsGroup);
         selectButtonFromSet(toolManager.getCurrentToolIndex(), toolbarButtonsGroup);
+    }
+
+    private void addSettingsMenu() {
+        addSubMenu("Settings", 0);
+        addMenuItem(
+                "Settings/All",
+                "Settings",
+                0,
+                null,
+                event -> {
+                    dialog.showSettingsDialog();
+                }
+        );
     }
 
     /**

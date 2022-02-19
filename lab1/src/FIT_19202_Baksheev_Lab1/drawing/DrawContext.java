@@ -6,13 +6,12 @@ import lombok.Setter;
 
 import java.awt.*;
 
+@Getter
+@Setter
 @AllArgsConstructor
 public class DrawContext {
-    @Getter
-    @Setter
     private int lineWidth;
-
-    @Getter
-    @Setter
     private Color color;
+    private int angleCount;
+    private int radius;
 }
