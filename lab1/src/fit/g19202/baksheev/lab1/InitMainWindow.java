@@ -194,7 +194,17 @@ public class InitMainWindow extends MainFrame {
      * Help/About... - shows program version and copyright information
      */
     public void onAbout() {
-        JOptionPane.showMessageDialog(this, "Lab1: Paint\nMade by Ivan Baksheev, 19202.\nFebruary 2022. ", "About Paint", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this,
+                """
+                        Lab1: Paint
+                        Main features:
+                        * Draw lines, stars and polygons.
+                        * Fill with any color using palette and fill tool.
+                        * Open and save images in all popular formats.
+                        * Set line width, polygon parameters in settings.
+                        February 2022.
+                        Made by Ivan Baksheev, 19202.\s""",
+                "About Paint", JOptionPane.INFORMATION_MESSAGE);
     }
 
     /**
