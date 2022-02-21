@@ -54,6 +54,19 @@ public class InitMainWindow extends MainFrame {
             addToolBarButton("File/Exit");
             addToolBarButton("Help/About...");
 
+//            var sp = new JScrollPane(imagePanel);
+//            sp.setBorder(BorderFactory.createLineBorder(Color.black));
+//            sp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+//            sp.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+////            sp.setEnabled(true);
+////            sp.getHorizontalScrollBar().setEnabled(true);
+////            sp.getVerticalScrollBar().setEnabled(true);
+////            sp.getViewport().getView().setEnabled(true);
+//            sp.getViewport().setMinimumSize(new Dimension(160, 200));
+//            sp.getViewport().setPreferredSize(new Dimension(160, 200));
+//            sp.setMinimumSize(new Dimension(100, 100));
+//            sp.setPreferredSize(new Dimension(100, 100));
+//            sp.setVisible(true);
             add(imagePanel);
         } catch (Exception e) {
             throw new RuntimeException(e);
