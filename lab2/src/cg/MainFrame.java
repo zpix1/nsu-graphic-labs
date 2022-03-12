@@ -26,10 +26,6 @@ public class MainFrame extends JFrame {
      * Default constructor which sets up L&F and creates tool-bar and menu-bar
      */
     public MainFrame() {
-//        try {
-//            UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-//        } catch (Exception e) {
-//        }
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         menuBar = new JMenuBar();
         setJMenuBar(menuBar);

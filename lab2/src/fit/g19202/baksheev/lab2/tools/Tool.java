@@ -3,13 +3,18 @@ package fit.g19202.baksheev.lab2.tools;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
-public interface Tool {
-    String getName();
-    File getIconPath();
-    String getMenuPath();
+public abstract class Tool {
+    public abstract String getName();
+    public abstract File getIconPath();
+    public abstract String getMenuPath();
 
-    void showSettingsDialog(Context context);
-    BufferedImage apply(Context context);
+    public void showSettingsDialog(Context context) {
 
-    String getTooltip();
+    }
+
+    public abstract BufferedImage apply(Context context);
+
+    public String getTooltip() {
+        return "Use " + getName().toLowerCase();
+    }
 }

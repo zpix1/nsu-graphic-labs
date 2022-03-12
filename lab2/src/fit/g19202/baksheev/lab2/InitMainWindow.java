@@ -5,7 +5,11 @@ import fit.g19202.baksheev.lab2.tools.Context;
 import fit.g19202.baksheev.lab2.tools.Tool;
 import fit.g19202.baksheev.lab2.tools.ToolManager;
 
+import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.util.Arrays;
 
 /**
@@ -14,13 +18,15 @@ import java.util.Arrays;
  * @author Ivan Baksheev
  */
 public class InitMainWindow extends MainFrame {
+    private final static String TITLE = "Filter";
     private final ImagePanel imagePanel;
+    private BufferedImage originalImage;
 
     /**
      * Default constructor to create main window
      */
     public InitMainWindow() {
-        super(640, 480, "Lab 2 Filter");
+        super(640, 480, TITLE);
 
         setMinimumSize(new Dimension(640, 480));
 
@@ -35,7 +41,42 @@ public class InitMainWindow extends MainFrame {
                 });
                 addToolMenu(tool);
             }
-            add(imagePanel);
+            var sp = new JScrollPane(imagePanel);
+            var ma = new MouseAdapter() {
+                private Point origin;
+
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    origin = new Point(e.getPoint());
+                }
+
+                @Override
+                public void mouseReleased(MouseEvent e) {
+                }
+
+                @Override
+                public void mouseDragged(MouseEvent e) {
+                    if (origin != null) {
+                        JViewport viewPort = (JViewport) SwingUtilities.getAncestorOfClass(JViewport.class, imagePanel);
+                        if (viewPort != null) {
+                            int deltaX = origin.x - e.getX();
+                            int deltaY = origin.y - e.getY();
+
+                            Rectangle view = viewPort.getViewRect();
+                            view.x += deltaX;
+                            view.y += deltaY;
+
+                            imagePanel.scrollRectToVisible(view);
+                        }
+                    }
+                }
+
+            };
+
+            imagePanel.addMouseListener(ma);
+            imagePanel.addMouseMotionListener(ma);
+
+            add(sp);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -47,7 +88,20 @@ public class InitMainWindow extends MainFrame {
     }
 
     private void applyTool(Tool tool) {
-        imagePanel.setImage(tool.apply(new Context(imagePanel.getImage(), this)));
+        var newImage = tool.apply(new Context(originalImage, imagePanel.getImage(), this));
+        if (newImage == null) {
+            return;
+        }
+        imagePanel.setImage(newImage);
+        imagePanel.setAutoscrolls(true);
+        if (tool.getName().equals("Open")) {
+            originalImage = imagePanel.getImage();
+        }
+        sync();
+    }
+
+    private void sync() {
+        setTitle(TITLE + ": " + imagePanel.getImage().getWidth() + "x" + imagePanel.getImage().getHeight());
     }
 
 //    private void selectButtonFromSet(int index, ButtonGroup group) {

@@ -6,7 +6,7 @@ import fit.g19202.baksheev.lab2.tools.Tool;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
-public class ExitTool implements Tool {
+public class ExitTool extends Tool {
     @Override
     public String getName() {
         return "Exit";

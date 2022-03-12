@@ -1,6 +1,9 @@
 package fit.g19202.baksheev.lab2.tools;
 
-import fit.g19202.baksheev.lab2.tools.utilities.ImageLoaderTool;
+import fit.g19202.baksheev.lab2.tools.utilities.ExitTool;
+import fit.g19202.baksheev.lab2.tools.utilities.OpenTool;
+import fit.g19202.baksheev.lab2.tools.utilities.OrderedDitheringTool;
+import fit.g19202.baksheev.lab2.tools.utilities.SaveTool;
 import lombok.Getter;
 
 import java.util.List;
@@ -18,8 +21,11 @@ public class ToolManager {
     }
 
     public ToolManager() {
-        toolList = List.of(new ImageLoaderTool[]{
-                new ImageLoaderTool()
+        toolList = List.of(new Tool[]{
+                new OpenTool(),
+                new SaveTool(),
+                new ExitTool(),
+                new OrderedDitheringTool()
         });
     }
 }

@@ -10,7 +10,7 @@ import java.io.IOException;
 
 import static cg.FileUtils.getSaveFileName;
 
-public class SaveTool implements Tool {
+public class SaveTool extends Tool {
 
     @Override
     public String getName() {
@@ -28,11 +28,6 @@ public class SaveTool implements Tool {
     }
 
     @Override
-    public void showSettingsDialog(Context context) {
-
-    }
-
-    @Override
     public BufferedImage apply(Context context) {
         var file = getSaveFileName(context.getMainFrame(), new String[]{"png", "jpeg", "bmp", "gif"}, "Images");
         if (file == null) {
@@ -40,19 +35,14 @@ public class SaveTool implements Tool {
         } else {
             try {
                 if (file.getExtension() != null) {
-                    ImageIO.write(context.getOriginalImage(), file.getExtension(), file.getFile());
+                    ImageIO.write(context.getCurrentImage(), file.getExtension(), file.getFile());
                 } else {
-                    ImageIO.write(context.getOriginalImage(), "png", new File(file.getFile().getAbsolutePath() + ".png"));
+                    ImageIO.write(context.getCurrentImage(), "png", new File(file.getFile().getAbsolutePath() + ".png"));
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
-        return context.getOriginalImage();
-    }
-
-    @Override
-    public String getTooltip() {
         return null;
     }
 }

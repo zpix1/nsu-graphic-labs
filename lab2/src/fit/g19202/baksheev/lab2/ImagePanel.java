@@ -1,6 +1,8 @@
 package fit.g19202.baksheev.lab2;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -10,6 +12,7 @@ import java.awt.image.BufferedImage;
 
 public class ImagePanel extends JPanel implements MouseListener {
     private BufferedImage img;
+    private static final int borderWidth = 5;
 
     static class ResizeListener extends ComponentAdapter {
         @Override
@@ -26,20 +29,26 @@ public class ImagePanel extends JPanel implements MouseListener {
     public void setImage(BufferedImage img) {
         this.img = img;
         repaint();
+        revalidate();
     }
 
     public ImagePanel() {
         addMouseListener(this);
         addComponentListener(new ResizeListener());
+        setBorder(
+                BorderFactory.createCompoundBorder(
+                        new LineBorder(new Color(getBackground().getRGB()), borderWidth),
+                        BorderFactory.createDashedBorder(Color.BLACK, 1, 1)
+                )
+        );
     }
 
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         if (img != null) {
-            g.drawImage(img, 0, 0, img.getWidth(), img.getHeight(), null);
-        } else {
-            g.drawRect(0, 0, 100, 100);
+            g.drawImage(img, borderWidth + 1, borderWidth + 1, img.getWidth() + borderWidth + 1, img.getHeight() + borderWidth + 1, null);
+            setPreferredSize(new Dimension(img.getWidth(), img.getHeight()));
         }
     }
 

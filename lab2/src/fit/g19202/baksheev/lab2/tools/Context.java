@@ -12,5 +12,7 @@ public class Context {
     @Getter
     BufferedImage originalImage;
     @Getter
+    BufferedImage currentImage;
+    @Getter
     JFrame mainFrame;
 }

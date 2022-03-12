@@ -10,10 +10,10 @@ import java.io.IOException;
 
 import static cg.FileUtils.getOpenFileName;
 
-public class ImageLoaderTool implements Tool {
+public class OpenTool extends Tool {
     @Override
     public String getName() {
-        return "Image loader";
+        return "Open";
     }
 
     @Override
