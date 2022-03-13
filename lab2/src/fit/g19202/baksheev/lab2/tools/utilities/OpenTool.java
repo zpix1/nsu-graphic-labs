@@ -27,11 +27,6 @@ public class OpenTool extends Tool {
     }
 
     @Override
-    public void showSettingsDialog(Context context) {
-
-    }
-
-    @Override
     public BufferedImage apply(Context context) {
         var file = getOpenFileName(context.getMainFrame(), new String[]{"png", "jpeg", "bmp", "gif"}, "Images");
         if (file == null) {

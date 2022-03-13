@@ -8,8 +8,8 @@ public abstract class Tool {
     public abstract File getIconPath();
     public abstract String getMenuPath();
 
-    public void showSettingsDialog(Context context) {
-
+    public boolean showSettingsDialog(Context context) {
+        return true;
     }
 
     public abstract BufferedImage apply(Context context);

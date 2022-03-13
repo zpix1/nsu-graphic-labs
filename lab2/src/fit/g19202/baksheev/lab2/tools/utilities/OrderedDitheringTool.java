@@ -1,12 +1,15 @@
 package fit.g19202.baksheev.lab2.tools.utilities;
 
-import fit.g19202.baksheev.lab2.Utils;
 import fit.g19202.baksheev.lab2.tools.Context;
+import fit.g19202.baksheev.lab2.tools.ImageUtils;
 import fit.g19202.baksheev.lab2.tools.Tool;
+import fit.g19202.baksheev.lab2.tools.UIUtils;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class OrderedDitheringTool extends Tool {
     private static final int matrixDim = 8;
@@ -20,6 +23,7 @@ public class OrderedDitheringTool extends Tool {
             {15, 47, 7, 39, 13, 45, 5, 37},
             {63, 31, 55, 23, 61, 29, 53, 21}
     };
+    private int colorSpaceSpread = 2;
 
     @Override
     public String getName() {
@@ -37,21 +41,44 @@ public class OrderedDitheringTool extends Tool {
     }
 
     @Override
+    public boolean showSettingsDialog(Context context) {
+        var panel = new JPanel();
+        AtomicReference<Integer> tempColorSpaceSpread = new AtomicReference<>(colorSpaceSpread);
+        panel.add(new JLabel("Spread factor"));
+        panel.add(
+                UIUtils.getSliderSpinnerPair(
+                        tempColorSpaceSpread.get(),
+                        2,
+                        128,
+                        16,
+                        16,
+                        UIUtils.getLabels(new int[]{2, 64, 128}),
+                        tempColorSpaceSpread::set
+                )
+        );
+        int result = JOptionPane.showOptionDialog(context.getMainFrame(), panel, "Configure " + getName(),
+                JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE,
+                null, new Object[]{"Apply", "Cancel"}, null);
+
+        if (result == JOptionPane.YES_OPTION) {
+            colorSpaceSpread = tempColorSpaceSpread.get();
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
     public BufferedImage apply(Context context) {
-        var result = Utils.templateBufferedImage(context.getOriginalImage());
+        var result = ImageUtils.templateBufferedImage(context.getOriginalImage());
+        var r = 255 / colorSpaceSpread;
         for (int x = 0; x < context.getOriginalImage().getWidth(); x++) {
             for (int y = 0; y < context.getOriginalImage().getHeight(); y++) {
-                var threshold = matrix[x % matrixDim][y % matrixDim];
-                var red = 0;
-                var green = 0;
-                var blue = 0;
                 var pixel = new Color(context.getOriginalImage().getRGB(x, y));
-                if ((float) pixel.getRed() / 256. * matrixDim * matrixDim > threshold)
-                    red = 255;
-                if ((float) pixel.getGreen() / 256. * matrixDim * matrixDim > threshold)
-                    green = 255;
-                if ((float) pixel.getBlue() / 256. * matrixDim * matrixDim > threshold)
-                    blue = 255;
+                var threshold = (int) (r * ((double) matrix[x % matrixDim][y % matrixDim] / 64 - 0.5));
+                var red = ImageUtils.colorStep(pixel.getRed() + threshold, r);
+                var green = ImageUtils.colorStep(pixel.getGreen() + threshold, r);
+                var blue = ImageUtils.colorStep(pixel.getBlue() + threshold, r);
                 result.setRGB(x, y, new Color(red, green, blue).getRGB());
             }
         }

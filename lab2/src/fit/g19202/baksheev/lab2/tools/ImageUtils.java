@@ -1,9 +1,8 @@
-package fit.g19202.baksheev.lab2;
+package fit.g19202.baksheev.lab2.tools;
 
 import java.awt.image.BufferedImage;
-import java.awt.image.WritableRaster;
 
-public class Utils {
+public class ImageUtils {
     public static BufferedImage copyBufferedImage(BufferedImage original) {
         var cm = original.getColorModel();
         boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
@@ -13,5 +12,16 @@ public class Utils {
 
     public static BufferedImage templateBufferedImage(BufferedImage original) {
         return new BufferedImage(original.getWidth(), original.getHeight(), original.getType());
+    }
+
+    public static int colorTruncate(int value) {
+        if (value > 255) {
+            return 255;
+        }
+        return Math.max(value, 0);
+    }
+
+    public static int colorStep(int value, int stepSize) {
+        return colorTruncate(value - (value % stepSize));
     }
 }

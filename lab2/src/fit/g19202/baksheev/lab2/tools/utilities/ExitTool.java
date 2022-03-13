@@ -23,11 +23,6 @@ public class ExitTool extends Tool {
     }
 
     @Override
-    public void showSettingsDialog(Context context) {
-
-    }
-
-    @Override
     public BufferedImage apply(Context context) {
         System.exit(0);
         return null;

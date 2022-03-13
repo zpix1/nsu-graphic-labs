@@ -21,6 +21,7 @@ public class InitMainWindow extends MainFrame {
     private final static String TITLE = "Filter";
     private final ImagePanel imagePanel;
     private BufferedImage originalImage;
+    private BufferedImage currentImage;
 
     /**
      * Default constructor to create main window
@@ -36,6 +37,7 @@ public class InitMainWindow extends MainFrame {
         try {
             for (var tool : toolManager.getToolList()) {
                 Arrays.stream(tool.getMenuPath().split("/")).reduce((path, item) -> {
+                    if (getMenuElement(path) == null)
                     addSubMenu(path, 0);
                     return path + "/" + item;
                 });
@@ -48,10 +50,12 @@ public class InitMainWindow extends MainFrame {
                 @Override
                 public void mousePressed(MouseEvent e) {
                     origin = new Point(e.getPoint());
+                    imagePanel.setImage(originalImage);
                 }
 
                 @Override
                 public void mouseReleased(MouseEvent e) {
+                    imagePanel.setImage(currentImage);
                 }
 
                 @Override
@@ -88,20 +92,27 @@ public class InitMainWindow extends MainFrame {
     }
 
     private void applyTool(Tool tool) {
-        var newImage = tool.apply(new Context(originalImage, imagePanel.getImage(), this));
+        var context = new Context(originalImage, currentImage, this);
+
+        if (!tool.showSettingsDialog(context)) {
+            return;
+        }
+
+        var newImage = tool.apply(context);
         if (newImage == null) {
             return;
         }
-        imagePanel.setImage(newImage);
-        imagePanel.setAutoscrolls(true);
+        currentImage = newImage;
         if (tool.getName().equals("Open")) {
-            originalImage = imagePanel.getImage();
+            originalImage = newImage;
         }
         sync();
     }
 
     private void sync() {
-        setTitle(TITLE + ": " + imagePanel.getImage().getWidth() + "x" + imagePanel.getImage().getHeight());
+        setTitle(TITLE + ": " + currentImage.getWidth() + "x" + currentImage.getHeight());
+        imagePanel.setImage(currentImage);
+        imagePanel.setAutoscrolls(true);
     }
 
 //    private void selectButtonFromSet(int index, ButtonGroup group) {

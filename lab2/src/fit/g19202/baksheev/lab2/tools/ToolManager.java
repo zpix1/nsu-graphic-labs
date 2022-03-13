@@ -1,9 +1,6 @@
 package fit.g19202.baksheev.lab2.tools;
 
-import fit.g19202.baksheev.lab2.tools.utilities.ExitTool;
-import fit.g19202.baksheev.lab2.tools.utilities.OpenTool;
-import fit.g19202.baksheev.lab2.tools.utilities.OrderedDitheringTool;
-import fit.g19202.baksheev.lab2.tools.utilities.SaveTool;
+import fit.g19202.baksheev.lab2.tools.utilities.*;
 import lombok.Getter;
 
 import java.util.List;
@@ -25,7 +22,9 @@ public class ToolManager {
                 new OpenTool(),
                 new SaveTool(),
                 new ExitTool(),
-                new OrderedDitheringTool()
+                new NegativeFilter(),
+                new BlackWhiteTool(),
+                new OrderedDitheringTool(),
         });
     }
 }
