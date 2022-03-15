@@ -6,7 +6,6 @@ import fit.g19202.baksheev.lab2.tools.Tool;
 import fit.g19202.baksheev.lab2.tools.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.concurrent.atomic.AtomicReference;
@@ -71,15 +70,18 @@ public class OrderedDitheringTool extends Tool {
     @Override
     public BufferedImage apply(Context context) {
         var result = ImageUtils.templateBufferedImage(context.getOriginalImage());
-        var r = 255 / colorSpaceSpread;
+        var rv = 256 / (colorSpaceSpread - 1);
         for (int x = 0; x < context.getOriginalImage().getWidth(); x++) {
             for (int y = 0; y < context.getOriginalImage().getHeight(); y++) {
-                var pixel = new Color(context.getOriginalImage().getRGB(x, y));
-                var threshold = (int) (r * ((double) matrix[x % matrixDim][y % matrixDim] / 64 - 0.5));
-                var red = ImageUtils.colorStep(pixel.getRed() + threshold, r);
-                var green = ImageUtils.colorStep(pixel.getGreen() + threshold, r);
-                var blue = ImageUtils.colorStep(pixel.getBlue() + threshold, r);
-                result.setRGB(x, y, new Color(red, green, blue).getRGB());
+                var rgb = context.getOriginalImage().getRGB(x, y);
+                var r = ImageUtils.getRed(rgb);
+                var g = ImageUtils.getGreen(rgb);
+                var b = ImageUtils.getBlue(rgb);
+                var threshold = (int) (rv * ((double) matrix[x % matrixDim][y % matrixDim] / 64 - 0.5));
+                var red = ImageUtils.colorStep(r + threshold, rv);
+                var green = ImageUtils.colorStep(g + threshold, rv);
+                var blue = ImageUtils.colorStep(b + threshold, rv);
+                result.setRGB(x, y, ImageUtils.composeColor(red, green, blue));
             }
         }
         return result;

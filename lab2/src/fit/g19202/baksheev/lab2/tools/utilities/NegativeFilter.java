@@ -29,8 +29,11 @@ public class NegativeFilter extends Tool {
         var result = ImageUtils.templateBufferedImage(context.getOriginalImage());
         for (int x = 0; x < context.getOriginalImage().getWidth(); x++) {
             for (int y = 0; y < context.getOriginalImage().getHeight(); y++) {
-                var pixel = new Color(context.getOriginalImage().getRGB(x, y));
-                result.setRGB(x, y, new Color(255 - pixel.getRed(), 255 - pixel.getGreen(), 255 - pixel.getBlue()).getRGB());
+                var rgb = context.getOriginalImage().getRGB(x, y);
+                var r = ImageUtils.getRed(rgb);
+                var g = ImageUtils.getGreen(rgb);
+                var b = ImageUtils.getBlue(rgb);
+                result.setRGB(x, y, ImageUtils.composeColor(255 - r, 255 - g, 255 - b));
             }
         }
         return result;
