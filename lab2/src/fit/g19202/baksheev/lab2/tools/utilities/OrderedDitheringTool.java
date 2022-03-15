@@ -8,6 +8,7 @@ import fit.g19202.baksheev.lab2.tools.UIUtils;
 import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class OrderedDitheringTool extends Tool {
@@ -101,7 +102,22 @@ public class OrderedDitheringTool extends Tool {
     @Override
     public BufferedImage apply(Context context) {
         var result = ImageUtils.templateBufferedImage(context.getOriginalImage());
-        var matrix = matrices[0];
+        int[][] matrix = null;
+        for (int[][] m : matrices) {
+            if (m == null) {
+                continue;
+            }
+
+            if (m.length * m.length >= (256 / colorSpaceSpread)) {
+                matrix = m;
+                break;
+            }
+        }
+        if (matrix == null) {
+            throw new RuntimeException("Can't find a good matrix");
+        } else {
+            System.out.println("Found " + matrix.length + " matrix");
+        }
         var matrixDim = matrix.length;
         var rv = 256 / (colorSpaceSpread - 1);
         for (int x = 0; x < context.getOriginalImage().getWidth(); x++) {

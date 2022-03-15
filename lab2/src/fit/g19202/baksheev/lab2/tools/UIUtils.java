@@ -42,11 +42,43 @@ public class UIUtils {
         return line;
     }
 
+    public static JPanel getSliderSpinnerPair(double defaultValue, double min, double max, double minorTickSpacing, Consumer<Double> onChange) {
+        var spinner = new JSpinner(new SpinnerNumberModel(defaultValue, min, max, minorTickSpacing));
+        spinner.setEditor(new JSpinner.NumberEditor(spinner, "#.#"));
+        JFormattedTextField spinnerTextField = ((JSpinner.DefaultEditor) spinner.getEditor()).getTextField();
+        spinnerTextField.setColumns(3);
+
+        var line = new JPanel();
+
+        spinner.addChangeListener(event -> {
+            var value = (double) ((JSpinner) event.getSource()).getValue();
+            onChange.accept(value);
+        });
+
+        line.add(spinner);
+
+        return line;
+    }
+
     public static Dictionary<Integer, JLabel> getLabels(int[] ticks) {
         Dictionary<Integer, JLabel> labels = new Hashtable<>();
         for (var tick : ticks) {
             labels.put(tick, new JLabel(String.valueOf(tick)));
         }
         return labels;
+    }
+
+    public static Dictionary<Double, JLabel> getLabels(double[] ticks) {
+        Dictionary<Double, JLabel> labels = new Hashtable<>();
+        for (var tick : ticks) {
+            labels.put(tick, new JLabel(String.valueOf(tick)));
+        }
+        return labels;
+    }
+
+    public static boolean showDialog(JFrame parent, JPanel panel, String toolName) {
+        return JOptionPane.showOptionDialog(parent, panel, "Configure " + toolName,
+                JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE,
+                null, new Object[]{"Apply", "Cancel"}, null) == JOptionPane.YES_OPTION;
     }
 }

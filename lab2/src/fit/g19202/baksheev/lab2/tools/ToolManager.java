@@ -25,7 +25,10 @@ public class ToolManager {
                 new NegativeFilter(),
                 new BlackWhiteTool(),
                 new OrderedDitheringTool(),
-                new FitTool()
+                new FitTool(),
+                new GammaCorrectionTool(),
+                new SharpeningTool(),
+                new EmbossingTool()
         });
     }
 }
