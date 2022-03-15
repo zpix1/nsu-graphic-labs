@@ -1,5 +1,6 @@
 package fit.g19202.baksheev.lab2.tools;
 
+import fit.g19202.baksheev.lab2.ImagePanel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,4 +16,6 @@ public class Context {
     BufferedImage currentImage;
     @Getter
     JFrame mainFrame;
+    @Getter
+    ImagePanel imagePanel;
 }

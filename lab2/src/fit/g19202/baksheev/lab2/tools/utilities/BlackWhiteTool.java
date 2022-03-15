@@ -15,7 +15,7 @@ public class BlackWhiteTool extends Tool {
 
     @Override
     public File getIconPath() {
-        return new File("open.gif");
+        return new File("tools/bw.png");
     }
 
     @Override

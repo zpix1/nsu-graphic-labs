@@ -92,7 +92,7 @@ public class InitMainWindow extends MainFrame {
     }
 
     private void applyTool(Tool tool) {
-        var context = new Context(originalImage, currentImage, this);
+        var context = new Context(originalImage, currentImage, this, imagePanel);
 
         if (!tool.showSettingsDialog(context)) {
             return;

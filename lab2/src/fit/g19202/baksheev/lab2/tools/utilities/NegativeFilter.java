@@ -16,7 +16,7 @@ public class NegativeFilter extends Tool {
 
     @Override
     public File getIconPath() {
-        return new File("open.gif");
+        return new File("tools/negative.png");
     }
 
     @Override

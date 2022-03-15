@@ -25,6 +25,7 @@ public class ToolManager {
                 new NegativeFilter(),
                 new BlackWhiteTool(),
                 new OrderedDitheringTool(),
+                new FitTool()
         });
     }
 }
