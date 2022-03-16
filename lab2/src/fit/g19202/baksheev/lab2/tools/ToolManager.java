@@ -3,7 +3,10 @@ package fit.g19202.baksheev.lab2.tools;
 import fit.g19202.baksheev.lab2.tools.filters.*;
 import fit.g19202.baksheev.lab2.tools.shape.FitTool;
 import fit.g19202.baksheev.lab2.tools.shape.RotateTool;
-import fit.g19202.baksheev.lab2.tools.utilities.*;
+import fit.g19202.baksheev.lab2.tools.utilities.AboutTool;
+import fit.g19202.baksheev.lab2.tools.utilities.ExitTool;
+import fit.g19202.baksheev.lab2.tools.utilities.OpenTool;
+import fit.g19202.baksheev.lab2.tools.utilities.SaveTool;
 import lombok.Getter;
 
 import java.util.List;
@@ -33,7 +36,8 @@ public class ToolManager {
                 new EmbossingTool(),
                 new WatercolorTool(),
                 new RotateTool(),
-                new SmoothingTool()
+                new SmoothingTool(),
+                new AboutTool()
         );
     }
 }

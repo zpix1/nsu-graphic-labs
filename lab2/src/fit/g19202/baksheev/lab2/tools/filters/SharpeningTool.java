@@ -16,7 +16,7 @@ public class SharpeningTool extends Tool {
 
     @Override
     public String getName() {
-        return "Sharpening Filter";
+        return "Sharpening filter";
     }
 
     @Override

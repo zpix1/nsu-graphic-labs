@@ -16,7 +16,7 @@ public class EmbossingTool extends Tool {
 
     @Override
     public String getName() {
-        return "Embossing Filter";
+        return "Embossing filter";
     }
 
     @Override

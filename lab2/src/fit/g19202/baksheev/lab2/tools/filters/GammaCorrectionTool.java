@@ -15,7 +15,7 @@ public class GammaCorrectionTool extends Tool {
 
     @Override
     public String getName() {
-        return "Gamma Correction";
+        return "Gamma correction";
     }
 
     @Override
@@ -25,7 +25,7 @@ public class GammaCorrectionTool extends Tool {
 
     @Override
     public String getMenuPath() {
-        return "Tools/" + getName();
+        return "Filters/" + getName();
     }
 
     @Override
