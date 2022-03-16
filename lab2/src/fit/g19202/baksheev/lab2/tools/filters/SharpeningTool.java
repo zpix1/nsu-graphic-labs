@@ -1,4 +1,4 @@
-package fit.g19202.baksheev.lab2.tools.utilities;
+package fit.g19202.baksheev.lab2.tools.filters;
 
 import fit.g19202.baksheev.lab2.tools.Context;
 import fit.g19202.baksheev.lab2.tools.ImageUtils;

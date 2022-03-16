@@ -1,21 +1,22 @@
-package fit.g19202.baksheev.lab2.tools.utilities;
+package fit.g19202.baksheev.lab2.tools.filters;
 
 import fit.g19202.baksheev.lab2.tools.Context;
 import fit.g19202.baksheev.lab2.tools.ImageUtils;
 import fit.g19202.baksheev.lab2.tools.Tool;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
-public class BlackWhiteTool extends Tool {
+public class NegativeFilter extends Tool {
     @Override
     public String getName() {
-        return "Black & White filter";
+        return "Negative filter";
     }
 
     @Override
     public File getIconPath() {
-        return new File("tools/bw.png");
+        return new File("tools/negative.png");
     }
 
     @Override
@@ -32,8 +33,7 @@ public class BlackWhiteTool extends Tool {
                 var r = ImageUtils.getRed(rgb);
                 var g = ImageUtils.getGreen(rgb);
                 var b = ImageUtils.getBlue(rgb);
-                int Y = (int) (0.299 * r + 0.587 * g + 0.114 * b);
-                result.setRGB(x, y, ImageUtils.composeColor(Y, Y, Y));
+                result.setRGB(x, y, ImageUtils.composeColor(255 - r, 255 - g, 255 - b));
             }
         }
         return result;
