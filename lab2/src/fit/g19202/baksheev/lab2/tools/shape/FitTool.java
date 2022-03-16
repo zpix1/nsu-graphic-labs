@@ -1,4 +1,4 @@
-package fit.g19202.baksheev.lab2.tools.utilities;
+package fit.g19202.baksheev.lab2.tools.shape;
 
 import fit.g19202.baksheev.lab2.tools.Context;
 import fit.g19202.baksheev.lab2.tools.Tool;
@@ -21,7 +21,7 @@ public class FitTool extends Tool {
 
     @Override
     public String getMenuPath() {
-        return "Filter/" + getName();
+        return "Tools/" + getName();
     }
 
     @Override

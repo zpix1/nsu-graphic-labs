@@ -68,7 +68,7 @@ public class OrderedDitheringTool extends Tool {
 
     @Override
     public String getMenuPath() {
-        return "Filter/" + getName();
+        return "Filters/" + getName();
     }
 
     @Override

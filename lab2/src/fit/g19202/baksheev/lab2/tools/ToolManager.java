@@ -1,6 +1,8 @@
 package fit.g19202.baksheev.lab2.tools;
 
 import fit.g19202.baksheev.lab2.tools.filters.*;
+import fit.g19202.baksheev.lab2.tools.shape.FitTool;
+import fit.g19202.baksheev.lab2.tools.shape.RotateTool;
 import fit.g19202.baksheev.lab2.tools.utilities.*;
 import lombok.Getter;
 
@@ -29,6 +31,8 @@ public class ToolManager {
                 new GammaCorrectionTool(),
                 new SharpeningTool(),
                 new EmbossingTool(),
-                new WatercolorTool());
+                new WatercolorTool(),
+                new RotateTool()
+        );
     }
 }
