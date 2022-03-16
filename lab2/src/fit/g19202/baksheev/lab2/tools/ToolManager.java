@@ -24,9 +24,11 @@ public class ToolManager {
     }
 
     private ToolManager() {
-        toolList = List.of(new OpenTool(),
+        toolList = List.of(
+                new OpenTool(),
                 new SaveTool(),
                 new ExitTool(),
+                new ContourTool(),
                 new NegativeFilter(),
                 new BlackWhiteTool(),
                 new OrderedDitheringTool(),

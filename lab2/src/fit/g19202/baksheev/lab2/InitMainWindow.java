@@ -115,38 +115,6 @@ public class InitMainWindow extends MainFrame {
         imagePanel.setAutoscrolls(true);
     }
 
-//    private void selectButtonFromSet(int index, ButtonGroup group) {
-////        does not work for some reason
-////        group.clearSelection();
-//        Collections.list(group.getElements()).forEach(button -> button.setSelected(false));
-//        if (index != -1) {
-//            Collections.list(group.getElements()).get(index).setSelected(true);
-//        }
-//    }
-//
-//    /**
-//     * Help/About... - shows program version and copyright information
-//     */
-//    public void onAbout() {
-//        JOptionPane.showMessageDialog(this,
-//                """
-//                        Lab2: Filter
-//                        Main features:
-//                        * !TODO: 123
-//                        March 2022.
-//                        Made by Ivan Baksheev, 19202.
-//                        Swing, Java, IntelliJ IDEA, Mac OS X.
-//                        \s""",
-//                "About Paint", JOptionPane.INFORMATION_MESSAGE);
-//    }
-//
-//    /**
-//     * File/Exit - exits application
-//     */
-//    public void onExit() {
-//        System.exit(0);
-//    }
-
     /**
      * Application main entry point
      *
