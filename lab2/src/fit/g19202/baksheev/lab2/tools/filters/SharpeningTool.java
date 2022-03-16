@@ -8,7 +8,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 
 public class SharpeningTool extends Tool {
-    private final double[][] filter = {
+    public static final double[][] filter = {
             {0, -1, 0},
             {-1, 5, -1},
             {0, -1, 0}

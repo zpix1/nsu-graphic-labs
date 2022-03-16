@@ -32,7 +32,7 @@ public class InitMainWindow extends MainFrame {
         setMinimumSize(new Dimension(640, 480));
 
         imagePanel = new ImagePanel();
-        var toolManager = new ToolManager();
+        var toolManager = ToolManager.getInstance();
 
         try {
             for (var tool : toolManager.getToolList()) {

@@ -18,9 +18,8 @@ public class ToolManager {
         return ToolManagerHolder.HOLDER_INSTANCE;
     }
 
-    public ToolManager() {
-        toolList = List.of(new Tool[]{
-                new OpenTool(),
+    private ToolManager() {
+        toolList = List.of(new OpenTool(),
                 new SaveTool(),
                 new ExitTool(),
                 new NegativeFilter(),
@@ -29,7 +28,7 @@ public class ToolManager {
                 new FitTool(),
                 new GammaCorrectionTool(),
                 new SharpeningTool(),
-                new EmbossingTool()
-        });
+                new EmbossingTool(),
+                new WatercolorTool());
     }
 }
