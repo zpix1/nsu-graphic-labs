@@ -6,6 +6,7 @@ import fit.g19202.baksheev.lab2.tools.Tool;
 import fit.g19202.baksheev.lab2.tools.UIUtils;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.List;
@@ -54,7 +55,9 @@ public class OrderedDitheringTool extends Tool {
                     {170, 106, 154, 90, 166, 102, 150, 86, 169, 105, 153, 89, 165, 101, 149, 85}
             }
     };
-    private int colorSpaceSpread = 2;
+    private int redColorSpaceSpread = 16;
+    private int greenColorSpaceSpread = 16;
+    private int blueColorSpaceSpread = 16;
 
     @Override
     public String getName() {
@@ -74,17 +77,50 @@ public class OrderedDitheringTool extends Tool {
     @Override
     public boolean showSettingsDialog(Context context) {
         var panel = new JPanel();
-        AtomicReference<Integer> tempColorSpaceSpread = new AtomicReference<>(colorSpaceSpread);
-        panel.add(new JLabel("Spread factor"));
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        AtomicReference<Integer> tempRedColorSpaceSpread = new AtomicReference<>(redColorSpaceSpread);
+        AtomicReference<Integer> tempGreenColorSpaceSpread = new AtomicReference<>(greenColorSpaceSpread);
+        AtomicReference<Integer> tempBlueColorSpaceSpread = new AtomicReference<>(blueColorSpaceSpread);
+
+        panel.add(new JLabel("Red spread factor"));
         panel.add(
                 UIUtils.getSliderSpinnerPair(
-                        tempColorSpaceSpread.get(),
+                        tempRedColorSpaceSpread.get(),
                         2,
                         128,
                         16,
                         16,
                         UIUtils.getLabels(new int[]{2, 64, 128}),
-                        tempColorSpaceSpread::set
+                        tempRedColorSpaceSpread::set,
+                        false
+                )
+        );
+
+        panel.add(new JLabel("Green spread factor"));
+        panel.add(
+                UIUtils.getSliderSpinnerPair(
+                        tempGreenColorSpaceSpread.get(),
+                        2,
+                        128,
+                        16,
+                        16,
+                        UIUtils.getLabels(new int[]{2, 64, 128}),
+                        tempGreenColorSpaceSpread::set,
+                        false
+                )
+        );
+
+        panel.add(new JLabel("Blue spread factor"));
+        panel.add(
+                UIUtils.getSliderSpinnerPair(
+                        tempBlueColorSpaceSpread.get(),
+                        2,
+                        128,
+                        16,
+                        16,
+                        UIUtils.getLabels(new int[]{2, 64, 128}),
+                        tempBlueColorSpaceSpread::set,
+                        false
                 )
         );
         int result = JOptionPane.showOptionDialog(context.getMainFrame(), panel, "Configure " + getName(),
@@ -92,16 +128,16 @@ public class OrderedDitheringTool extends Tool {
                 null, new Object[]{"Apply", "Cancel"}, null);
 
         if (result == JOptionPane.YES_OPTION) {
-            colorSpaceSpread = tempColorSpaceSpread.get();
+            redColorSpaceSpread = tempRedColorSpaceSpread.get();
+            greenColorSpaceSpread = tempGreenColorSpaceSpread.get();
+            blueColorSpaceSpread = tempBlueColorSpaceSpread.get();
             return true;
         }
 
         return false;
     }
 
-    @Override
-    public BufferedImage apply(Context context) {
-        var result = ImageUtils.templateBufferedImage(context.getOriginalImage());
+    private int[][] getMatrix(int colorSpaceSpread) {
         int[][] matrix = null;
         for (int[][] m : matrices) {
             if (m == null) {
@@ -115,21 +151,36 @@ public class OrderedDitheringTool extends Tool {
         }
         if (matrix == null) {
             throw new RuntimeException("Can't find a good matrix");
-        } else {
-            System.out.println("Found " + matrix.length + " matrix");
         }
+        return matrix;
+    }
+
+    private int getSteppedColor(int value, int[][] matrix, int x, int y, int spread) {
+        var rv = 256 / (spread - 1);
         var matrixDim = matrix.length;
-        var rv = 256 / (colorSpaceSpread - 1);
+        var threshold = (int) (rv * (((double) matrix[x % matrixDim][y % matrixDim] + 1) / (matrixDim * matrixDim) - 0.5));
+        return ImageUtils.colorStep(value + threshold, rv);
+    }
+
+    @Override
+    public BufferedImage apply(Context context) {
+        var result = ImageUtils.templateBufferedImage(context.getOriginalImage());
+
+        var redMatrix = getMatrix(redColorSpaceSpread);
+        var greenMatrix = getMatrix(greenColorSpaceSpread);
+        var blueMatrix = getMatrix(blueColorSpaceSpread);
+
         for (int x = 0; x < context.getOriginalImage().getWidth(); x++) {
             for (int y = 0; y < context.getOriginalImage().getHeight(); y++) {
                 var rgb = context.getOriginalImage().getRGB(x, y);
                 var r = ImageUtils.getRed(rgb);
                 var g = ImageUtils.getGreen(rgb);
                 var b = ImageUtils.getBlue(rgb);
-                var threshold = (int) (rv * (((double) matrix[x % matrixDim][y % matrixDim] + 1) / (matrixDim * matrixDim) - 0.5));
-                var red = ImageUtils.colorStep(r + threshold, rv);
-                var green = ImageUtils.colorStep(g + threshold, rv);
-                var blue = ImageUtils.colorStep(b + threshold, rv);
+
+                var red = getSteppedColor(r, redMatrix, x, y, redColorSpaceSpread);
+                var green = getSteppedColor(g, greenMatrix, x, y, greenColorSpaceSpread);
+                var blue = getSteppedColor(b, blueMatrix, x, y, blueColorSpaceSpread);
+
                 var newRgb = ImageUtils.composeColor(red, green, blue);
                 result.setRGB(x, y, newRgb);
             }

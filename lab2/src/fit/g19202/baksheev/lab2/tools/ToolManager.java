@@ -32,7 +32,8 @@ public class ToolManager {
                 new SharpeningTool(),
                 new EmbossingTool(),
                 new WatercolorTool(),
-                new RotateTool()
+                new RotateTool(),
+                new SmoothingTool()
         );
     }
 }

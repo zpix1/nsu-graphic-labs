@@ -42,7 +42,8 @@ public class RotateTool extends Tool {
                         60,
                         30,
                         UIUtils.getLabels(new int[]{-180, -120, -60, 0, 60, 120, 180}),
-                        tempAngle::set
+                        tempAngle::set,
+                        false
                 )
         );
 

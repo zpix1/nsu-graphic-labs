@@ -6,7 +6,7 @@ import java.util.Hashtable;
 import java.util.function.Consumer;
 
 public class UIUtils {
-    public static JPanel getSliderSpinnerPair(int defaultValue, int min, int max, int majorTickSpacing, int minorTickSpacing, Dictionary<Integer, JLabel> labels, Consumer<Integer> onChange) {
+    public static JPanel getSliderSpinnerPair(int defaultValue, int min, int max, int majorTickSpacing, int minorTickSpacing, Dictionary<Integer, JLabel> labels, Consumer<Integer> onChange, boolean snapToTicks) {
         var spinner = new JSpinner(new SpinnerNumberModel(defaultValue, min, max, minorTickSpacing));
         spinner.setEditor(new JSpinner.NumberEditor(spinner, "#"));
         JFormattedTextField spinnerTextField = ((JSpinner.DefaultEditor) spinner.getEditor()).getTextField();
@@ -17,6 +17,8 @@ public class UIUtils {
         slider.setPaintTicks(true);
         slider.setMajorTickSpacing(majorTickSpacing);
         slider.setMinorTickSpacing(minorTickSpacing);
+        slider.setSnapToTicks(snapToTicks);
+
         if (labels != null) {
             slider.setLabelTable(labels);
             slider.setPaintLabels(true);
