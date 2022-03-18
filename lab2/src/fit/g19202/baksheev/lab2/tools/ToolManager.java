@@ -32,6 +32,7 @@ public class ToolManager {
                 new ContourTool(),
                 new NegativeFilter(),
                 new BlackWhiteTool(),
+                new SepiaTool(),
                 new OrderedDitheringTool(),
                 new FSDithering(),
                 new GammaCorrectionTool(),
