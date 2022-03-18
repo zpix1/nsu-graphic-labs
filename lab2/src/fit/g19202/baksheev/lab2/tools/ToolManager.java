@@ -32,6 +32,7 @@ public class ToolManager {
                 new NegativeFilter(),
                 new BlackWhiteTool(),
                 new OrderedDitheringTool(),
+                new FSDithering(),
                 new FitTool(),
                 new GammaCorrectionTool(),
                 new SharpeningTool(),

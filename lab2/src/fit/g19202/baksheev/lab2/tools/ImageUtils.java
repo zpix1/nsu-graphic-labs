@@ -25,6 +25,10 @@ public class ImageUtils {
         return colorTruncate((int) (Math.round((double) value / stepSize) * stepSize));
     }
 
+    public static int findClosestPaletteColor(int color, int paletteSize) {
+        return colorStep(color, 256 / (paletteSize - 1));
+    }
+
     public static int getRed(int rgb) {
         return (rgb >> 16) & 0xFF;
     }

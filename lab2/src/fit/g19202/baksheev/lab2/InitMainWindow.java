@@ -98,13 +98,17 @@ public class InitMainWindow extends MainFrame {
             return;
         }
 
-        var newImage = tool.apply(context);
-        if (newImage == null) {
-            return;
-        }
-        currentImage = newImage;
-        if (tool.getName().equals("Open")) {
-            originalImage = newImage;
+        try {
+            var newImage = tool.apply(context);
+            if (newImage == null) {
+                return;
+            }
+            currentImage = newImage;
+            if (tool.getName().equals("Open")) {
+                originalImage = newImage;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         sync();
     }
