@@ -12,12 +12,13 @@ import java.awt.image.BufferedImage;
 
 public class ImagePanel extends JPanel implements MouseListener {
     private BufferedImage img;
+    private int fitMode = 0;
     private static final int borderWidth = 5;
 
     static class ResizeListener extends ComponentAdapter {
         @Override
         public void componentResized(ComponentEvent e) {
-            e.getComponent().setSize(new Dimension(e.getComponent().getWidth(), e.getComponent().getHeight()));
+//            e.getComponent().setSize(new Dimension(e.getComponent().getWidth(), e.getComponent().getHeight()));
             super.componentResized(e);
         }
     }
@@ -28,6 +29,12 @@ public class ImagePanel extends JPanel implements MouseListener {
 
     public void setImage(BufferedImage img) {
         this.img = img;
+        repaint();
+        revalidate();
+    }
+
+    public void setFitMode(int fitMode) {
+        this.fitMode = fitMode;
         repaint();
         revalidate();
     }
@@ -47,8 +54,12 @@ public class ImagePanel extends JPanel implements MouseListener {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         if (img != null) {
-            g.drawImage(img, borderWidth + 1, borderWidth + 1, img.getWidth() + borderWidth + 1, img.getHeight() + borderWidth + 1, null);
-            setPreferredSize(new Dimension(img.getWidth(), img.getHeight()));
+            if (fitMode != 0) {
+                var drawImage = img.getScaledInstance(getWidth(), getHeight(), fitMode);
+                g.drawImage(drawImage, borderWidth + 1, borderWidth + 1, getWidth() + borderWidth + 1, getHeight() + borderWidth + 1, null);
+            } else {
+                g.drawImage(img, borderWidth + 1, borderWidth + 1, img.getWidth() + borderWidth + 1, img.getHeight() + borderWidth + 1, null);
+            }
         }
     }
 
