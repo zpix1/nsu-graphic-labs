@@ -22,7 +22,7 @@ public class FSDithering extends Tool {
 
     @Override
     public File getIconPath() {
-        return new File("tools/dither.png");
+        return new File("tools/fs.png");
     }
 
     @Override
