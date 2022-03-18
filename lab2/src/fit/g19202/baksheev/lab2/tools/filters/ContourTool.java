@@ -8,10 +8,15 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 
 public class ContourTool extends Tool {
-    public static final double[][] filter = {
+    public static final double[][] sobelFilter = {
             {-1, 0, 1},
             {-2, 0, 2},
             {-1, 0, 1}
+    };
+
+    public static final double[][] robertsFilter = {
+            {1, 0},
+            {0, -1}
     };
 
     @Override
@@ -31,6 +36,6 @@ public class ContourTool extends Tool {
 
     @Override
     public BufferedImage apply(Context context) {
-        return ImageUtils.applyFilter(context.getOriginalImage(), filter, 1. / 4, 0);
+        return ImageUtils.applyFilter(context.getOriginalImage(), robertsFilter, 1. / 2, 0);
     }
 }
