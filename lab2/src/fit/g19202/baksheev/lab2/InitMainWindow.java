@@ -19,7 +19,7 @@ import java.util.Arrays;
  */
 public class InitMainWindow extends MainFrame {
     private final static String TITLE = "Filter";
-    private JImagePanel imagePanel;
+    private final JImagePanel imagePanel;
     private BufferedImage originalImage;
     private BufferedImage currentImage;
 
@@ -38,20 +38,18 @@ public class InitMainWindow extends MainFrame {
             for (var tool : toolManager.getToolList()) {
                 Arrays.stream(tool.getMenuPath().split("/")).reduce((path, item) -> {
                     if (getMenuElement(path) == null)
-                    addSubMenu(path, 0);
+                        addSubMenu(path, 0);
                     return path + "/" + item;
                 });
                 addToolMenu(tool);
             }
             var sp = new JScrollPane();
             imagePanel = new JImagePanel(sp, this);
+            imagePanel.realSize();
             add(sp);
             var ma = new MouseAdapter() {
-                private Point origin;
-
                 @Override
                 public void mousePressed(MouseEvent e) {
-                    origin = new Point(e.getPoint());
                     imagePanel.setImage(originalImage, false);
                 }
 
@@ -59,7 +57,6 @@ public class InitMainWindow extends MainFrame {
                 public void mouseReleased(MouseEvent e) {
                     imagePanel.setImage(currentImage, false);
                 }
-
             };
 
             imagePanel.addMouseListener(ma);
@@ -92,8 +89,10 @@ public class InitMainWindow extends MainFrame {
             currentImage = newImage;
             if (tool.getName().equals("Open")) {
                 originalImage = newImage;
-                sync();
+                imagePanel.setImage(currentImage, false);
                 imagePanel.realSize();
+            } else {
+                imagePanel.setImage(currentImage, false);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -103,7 +102,6 @@ public class InitMainWindow extends MainFrame {
 
     private void sync() {
         setTitle(TITLE + ": " + currentImage.getWidth() + "x" + currentImage.getHeight());
-        imagePanel.setImage(currentImage, false);
 //        imagePanel.setAutoscrolls(true);
     }
 

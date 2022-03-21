@@ -1,11 +1,11 @@
 package fit.g19202.baksheev.lab2.tools.shape;
 
 import fit.g19202.baksheev.lab2.tools.Context;
-import fit.g19202.baksheev.lab2.tools.ImageUtils;
 import fit.g19202.baksheev.lab2.tools.Tool;
 import fit.g19202.baksheev.lab2.tools.UIUtils;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.concurrent.atomic.AtomicReference;
@@ -60,13 +60,19 @@ public class RotateTool extends Tool {
     @Override
     public BufferedImage apply(Context context) {
         var image = context.getOriginalImage();
-        int w = image.getWidth();
-        int h = image.getHeight();
-        var rotated = ImageUtils.templateBufferedImage(image);
-        var graphic = rotated.createGraphics();
-        graphic.rotate(Math.toRadians(angle), w / 2, h / 2);
-        graphic.drawImage(image, null, 0, 0);
-        graphic.dispose();
-        return rotated;
+        var sin = Math.abs(Math.sin(Math.toRadians(angle)));
+        var cos = Math.abs(Math.cos(Math.toRadians(angle)));
+        var w = image.getWidth();
+        var h = image.getHeight();
+        var newW = (int) Math.floor(w * cos + h * sin);
+        var newH = (int) Math.floor(h * cos + w * sin);
+        System.out.println(newW + " " + newH + " " + w + " " + h);
+        var result = new BufferedImage(newW, newH, image.getType());
+        var g = result.createGraphics();
+        g.translate((newW - w) / 2, (newH - h) / 2);
+        g.rotate(Math.toRadians(angle), w / 2, h / 2);
+        g.drawRenderedImage(image, null);
+        g.dispose();
+        return result;
     }
 }
