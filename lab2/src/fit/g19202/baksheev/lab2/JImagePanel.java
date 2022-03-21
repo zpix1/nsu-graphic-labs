@@ -1,5 +1,8 @@
 package fit.g19202.baksheev.lab2;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -10,7 +13,7 @@ import java.awt.image.BufferedImage;
  *
  * @author Serge
  */
-public class JImagePanel extends JFrame implements MouseListener, MouseMotionListener, MouseWheelListener {
+public class JImagePanel extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener {
     private static final long serialVersionUID = 3L;
 
     private Dimension panelSize;        // visible image size
@@ -20,6 +23,9 @@ public class JImagePanel extends JFrame implements MouseListener, MouseMotionLis
     private Dimension imSize = null;    // real image size
     private int lastX = 0, lastY = 0;        // last captured mouse coordinates
     private double zoomK = 0.05;        // scroll zoom coefficient
+    @Setter
+    @Getter
+    private Object hints = RenderingHints.VALUE_INTERPOLATION_BICUBIC;
 
     /**
      * Creates default Image-viewer in the given JScrollPane.
@@ -34,7 +40,7 @@ public class JImagePanel extends JFrame implements MouseListener, MouseMotionLis
         spIm = scrollPane;
         spIm.setWheelScrollingEnabled(false);
         spIm.setDoubleBuffered(true);
-//        spIm.setViewportView(this);
+        spIm.setViewportView(this);
 
         this.parentComponent = parentComponent;
 
@@ -64,10 +70,13 @@ public class JImagePanel extends JFrame implements MouseListener, MouseMotionLis
 
     public void paint(Graphics g) {
         if (img == null) {
-            g.setColor(Color.black);
+            g.setColor(new Color(parentComponent.getBackground().getRGB()));
             g.fillRect(0, 0, getWidth(), getHeight());
-        } else
-            g.drawImage(img, 0, 0, panelSize.width, panelSize.height, null);
+        } else {
+            var g2d = (Graphics2D) g;
+            g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, hints);
+            g2d.drawImage(img, 0, 0, panelSize.width, panelSize.height, null);
+        }
     }
 
 //	public void update(Graphics g)

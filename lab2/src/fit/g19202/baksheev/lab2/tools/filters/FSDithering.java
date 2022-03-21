@@ -113,7 +113,8 @@ public class FSDithering extends Tool {
     public BufferedImage apply(Context context) {
         var result = ImageUtils.templateBufferedImage(context.getOriginalImage());
         var original = context.getOriginalImage();
-
+        System.out.println(redColorSpaceSpread);
+        System.out.println(ImageUtils.findClosestPaletteColor(10, redColorSpaceSpread));
         for (int x = 0; x < original.getWidth(); x++) {
             for (int y = 0; y < original.getHeight(); y++) {
                 var rgb = original.getRGB(x, y);

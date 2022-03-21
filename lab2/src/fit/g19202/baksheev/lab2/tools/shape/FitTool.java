@@ -9,10 +9,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 
 public class FitTool extends Tool {
-    private static final String[] options = {"None", "Bilinear"};
+    private static final String[] options = {"None", "Bilinear", "Bicubic", "Nearest Neighbour"};
 
     private int fitModeIndex = 0;
-    private int fitMode = 0;
 
     @Override
     public String getName() {
@@ -34,7 +33,6 @@ public class FitTool extends Tool {
         var panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-        final int[] tempFitMode = {fitMode};
         final int[] tempFitModeIndex = {fitModeIndex};
 
         panel.add(new JLabel("Scale"));
@@ -44,10 +42,6 @@ public class FitTool extends Tool {
             var box = (JComboBox) e.getSource();
             var index = box.getSelectedIndex();
             tempFitModeIndex[0] = index;
-            switch (index) {
-                case 0 -> tempFitMode[0] = 0;
-                case 1 -> tempFitMode[0] = Image.SCALE_FAST;
-            }
         });
         panel.add(optionList);
 
@@ -56,7 +50,6 @@ public class FitTool extends Tool {
                 null, new Object[]{"Apply", "Cancel"}, null);
 
         if (result == JOptionPane.YES_OPTION) {
-            fitMode = tempFitMode[0];
             fitModeIndex = tempFitModeIndex[0];
 
             return true;
@@ -67,7 +60,21 @@ public class FitTool extends Tool {
 
     @Override
     public BufferedImage apply(Context context) {
-        context.getImagePanel().setFitMode(fitMode);
+        switch (fitModeIndex) {
+            case 0 -> context.getImagePanel().realSize();
+            case 1 -> {
+                context.getImagePanel().setHints(RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+                context.getImagePanel().fitScreen();
+            }
+            case 2 -> {
+                context.getImagePanel().setHints(RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+                context.getImagePanel().fitScreen();
+            }
+            case 3 -> {
+                context.getImagePanel().setHints(RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+                context.getImagePanel().fitScreen();
+            }
+        }
         return null;
     }
 }

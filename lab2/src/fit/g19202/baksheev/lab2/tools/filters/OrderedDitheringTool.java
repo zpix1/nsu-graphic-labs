@@ -158,7 +158,7 @@ public class OrderedDitheringTool extends Tool {
     private int getSteppedColor(int value, int[][] matrix, int x, int y, int spread) {
         var rv = 256 / (spread - 1);
         var matrixDim = matrix.length;
-        var threshold = (int) (rv * (((double) matrix[x % matrixDim][y % matrixDim] + 1) / (matrixDim * matrixDim) - 0.5));
+        var threshold = (int) (rv * (((double) matrix[x % matrixDim][y % matrixDim]) / (matrixDim * matrixDim) - 0.5));
         return ImageUtils.colorStep(value + threshold, rv);
     }
 
@@ -167,8 +167,11 @@ public class OrderedDitheringTool extends Tool {
         var result = ImageUtils.templateBufferedImage(context.getOriginalImage());
 
         var redMatrix = getMatrix(redColorSpaceSpread);
+        System.out.println("Chosen " + redMatrix.length + " matrix for red");
         var greenMatrix = getMatrix(greenColorSpaceSpread);
+        System.out.println("Chosen " + greenMatrix.length + " matrix for green");
         var blueMatrix = getMatrix(blueColorSpaceSpread);
+        System.out.println("Chosen " + blueMatrix.length + " matrix for blue");
 
         for (int x = 0; x < context.getOriginalImage().getWidth(); x++) {
             for (int y = 0; y < context.getOriginalImage().getHeight(); y++) {

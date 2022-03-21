@@ -19,7 +19,7 @@ import java.util.Arrays;
  */
 public class InitMainWindow extends MainFrame {
     private final static String TITLE = "Filter";
-    private final ImagePanel imagePanel;
+    private JImagePanel imagePanel;
     private BufferedImage originalImage;
     private BufferedImage currentImage;
 
@@ -31,7 +31,7 @@ public class InitMainWindow extends MainFrame {
 
         setMinimumSize(new Dimension(640, 480));
 
-        imagePanel = new ImagePanel();
+//        imagePanel = new ImagePanel();
         var toolManager = ToolManager.getInstance();
 
         try {
@@ -43,44 +43,28 @@ public class InitMainWindow extends MainFrame {
                 });
                 addToolMenu(tool);
             }
-            var sp = new JScrollPane(imagePanel);
+            var sp = new JScrollPane();
+            imagePanel = new JImagePanel(sp, this);
+            add(sp);
             var ma = new MouseAdapter() {
                 private Point origin;
 
                 @Override
                 public void mousePressed(MouseEvent e) {
                     origin = new Point(e.getPoint());
-                    imagePanel.setImage(originalImage);
+                    imagePanel.setImage(originalImage, false);
                 }
 
                 @Override
                 public void mouseReleased(MouseEvent e) {
-                    imagePanel.setImage(currentImage);
-                }
-
-                @Override
-                public void mouseDragged(MouseEvent e) {
-                    if (origin != null) {
-                        JViewport viewPort = (JViewport) SwingUtilities.getAncestorOfClass(JViewport.class, imagePanel);
-                        if (viewPort != null) {
-                            int deltaX = origin.x - e.getX();
-                            int deltaY = origin.y - e.getY();
-
-                            Rectangle view = viewPort.getViewRect();
-                            view.x += deltaX;
-                            view.y += deltaY;
-
-                            imagePanel.scrollRectToVisible(view);
-                        }
-                    }
+                    imagePanel.setImage(currentImage, false);
                 }
 
             };
 
             imagePanel.addMouseListener(ma);
-            imagePanel.addMouseMotionListener(ma);
+//            imagePanel.addMouseMotionListener(ma);
 
-            add(sp);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -108,6 +92,8 @@ public class InitMainWindow extends MainFrame {
             currentImage = newImage;
             if (tool.getName().equals("Open")) {
                 originalImage = newImage;
+                sync();
+                imagePanel.realSize();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -117,8 +103,8 @@ public class InitMainWindow extends MainFrame {
 
     private void sync() {
         setTitle(TITLE + ": " + currentImage.getWidth() + "x" + currentImage.getHeight());
-        imagePanel.setImage(currentImage);
-        imagePanel.setAutoscrolls(true);
+        imagePanel.setImage(currentImage, false);
+//        imagePanel.setAutoscrolls(true);
     }
 
     /**

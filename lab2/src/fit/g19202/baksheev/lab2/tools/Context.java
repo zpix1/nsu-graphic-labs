@@ -1,6 +1,7 @@
 package fit.g19202.baksheev.lab2.tools;
 
 import fit.g19202.baksheev.lab2.ImagePanel;
+import fit.g19202.baksheev.lab2.JImagePanel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,5 +18,5 @@ public class Context {
     @Getter
     JFrame mainFrame;
     @Getter
-    ImagePanel imagePanel;
+    JImagePanel imagePanel;
 }

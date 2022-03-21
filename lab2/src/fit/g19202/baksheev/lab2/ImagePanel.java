@@ -51,13 +51,15 @@ public class ImagePanel extends JPanel implements MouseListener {
 
     @Override
     public void paintComponent(Graphics g) {
-        System.out.println();
         super.paintComponent(g);
         if (img != null) {
             if (fitMode != 0) {
-                var drawImage = img.getScaledInstance(getWidth(), getHeight(), fitMode);
                 var w = g.getClipBounds().getSize().width;
                 var h = g.getClipBounds().getSize().height;
+                if (img.getWidth() > img.getHeight()) {
+                    h = (int) (h * (double) img.getHeight() / img.getWidth());
+                }
+                var drawImage = img.getScaledInstance(w, h, fitMode);
                 g.drawImage(drawImage, borderWidth + 1, borderWidth + 1, w + borderWidth + 1, h + borderWidth + 1, null);
                 setPreferredSize(new Dimension(w, h));
             } else {
