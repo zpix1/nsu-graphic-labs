@@ -101,49 +101,53 @@ public class FSDithering extends Tool {
     }
 
     private void errorDiff(BufferedImage original, BufferedImage result, int x, int y, int rError, int gError, int bError, double k) {
-        int rgb = original.getRGB(x, y);
+        int rgb = result.getRGB(x, y);
         result.setRGB(x, y, ImageUtils.composeColor(
-                ImageUtils.getRed(rgb) + ImageUtils.colorTruncate((int) (k * rError)),
-                ImageUtils.getGreen(rgb) + ImageUtils.colorTruncate((int) (k * gError)),
-                ImageUtils.getBlue(rgb) + ImageUtils.colorTruncate((int) (k * bError))
+                ImageUtils.colorTruncate(ImageUtils.getRed(rgb) + (int) (k * rError)),
+                ImageUtils.colorTruncate(ImageUtils.getGreen(rgb) + (int) (k * gError)),
+                ImageUtils.colorTruncate(ImageUtils.getBlue(rgb) + (int) (k * bError))
         ));
+    }
+
+    private int getSpread(int idx) {
+        if (idx == 0) return redColorSpaceSpread;
+        if (idx == 1) return greenColorSpaceSpread;
+        if (idx == 2) return blueColorSpaceSpread;
+        return -1;
     }
 
     @Override
     public BufferedImage apply(Context context) {
-        var result = ImageUtils.templateBufferedImage(context.getOriginalImage());
         var original = context.getOriginalImage();
-        System.out.println(redColorSpaceSpread);
-        System.out.println(ImageUtils.findClosestPaletteColor(10, redColorSpaceSpread));
-        for (int x = 0; x < original.getWidth(); x++) {
-            for (int y = 0; y < original.getHeight(); y++) {
+        var img = ImageUtils.templateBufferedImage(context.getOriginalImage());
+        var colors = new double[img.getWidth()][img.getHeight()][3];
+
+        for (int y = 0; y < img.getHeight(); y++) {
+            for (int x = 0; x < img.getWidth(); x++) {
                 var rgb = original.getRGB(x, y);
-                var r = ImageUtils.getRed(rgb);
-                var rNew = ImageUtils.findClosestPaletteColor(r, redColorSpaceSpread);
-                var rError = r - rNew;
-                var g = ImageUtils.getGreen(rgb);
-                var gNew = ImageUtils.findClosestPaletteColor(g, greenColorSpaceSpread);
-                var gError = g - gNew;
-                var b = ImageUtils.getBlue(rgb);
-                var bNew = ImageUtils.findClosestPaletteColor(b, blueColorSpaceSpread);
-                var bError = b - bNew;
-
-                result.setRGB(x, y, ImageUtils.composeColor(rNew, gNew, bNew));
-
-                if (x + 1 < original.getWidth()) {
-                    errorDiff(original, result, x + 1, y, rError, gError, bError, 7. / 16);
+                var setRgb = 0;
+                for (int i = 0; i < 3; i++) {
+                    var bValue = ImageUtils.getColor(rgb, i);
+                    var currentColor = bValue + colors[x][y][i];
+                    var newColor = ImageUtils.findClosestPaletteColor((int) currentColor, getSpread(i));
+                    setRgb = ImageUtils.setColor(setRgb, i, newColor);
+                    var e = currentColor - newColor;
+                    if (x + 1 < original.getWidth()) {
+                        colors[x+1][y][i] += 7. * e / 16;
+                    }
+                    if (x - 1 >= 0 && y + 1 < original.getHeight()) {
+                        colors[x-1][y+1][i] += 3. * e / 16;
+                    }
+                    if (y + 1 < original.getHeight()) {
+                        colors[x][y+1][i] += 5. * e / 16;
+                    }
+                    if (x + 1 < original.getWidth() && y + 1 < original.getHeight()) {
+                        colors[x+1][y+1][i] += 1. * e / 16;
+                    }
                 }
-                if (x - 1 >= 0 && y + 1 < original.getHeight()) {
-                    errorDiff(original, result, x - 1, y + 1, rError, gError, bError, 3. / 16);
-                }
-                if (y + 1 < original.getHeight()) {
-                    errorDiff(original, result, x, y + 1, rError, gError, bError, 5. / 16);
-                }
-                if (x + 1 < original.getWidth() && y + 1 < original.getHeight()) {
-                    errorDiff(original, result, x + 1, y + 1, rError, gError, bError, 1. / 16);
-                }
+                img.setRGB(x, y, setRgb);
             }
         }
-        return result;
+        return img;
     }
 }

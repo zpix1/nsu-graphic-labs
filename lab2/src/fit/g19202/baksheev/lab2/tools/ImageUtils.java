@@ -29,6 +29,20 @@ public class ImageUtils {
         return colorStep(color, 256 / (paletteSize - 1));
     }
 
+    public static int getColor(int rgb, int index) {
+        if (index == 0) return getRed(rgb);
+        if (index == 1) return getGreen(rgb);
+        if (index == 2) return getBlue(rgb);
+        return -1;
+    }
+
+    public static int setColor(int rgb, int index, int color) {
+        if (index == 0) return composeColor(color, getGreen(rgb), getBlue(rgb));
+        if (index == 1) return composeColor(getRed(rgb), color, getBlue(rgb));
+        if (index == 2) return composeColor(getRed(rgb), getGreen(rgb), color);
+        return -1;
+    }
+
     public static int getRed(int rgb) {
         return (rgb >> 16) & 0xFF;
     }
