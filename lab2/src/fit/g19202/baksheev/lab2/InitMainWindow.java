@@ -99,7 +99,9 @@ public class InitMainWindow extends MainFrame {
         }
 
         try {
+            this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             var newImage = tool.apply(context);
+            this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             if (newImage == null) {
                 return;
             }
