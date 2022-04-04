@@ -1,5 +1,6 @@
 package fit.g19202.baksheev.lab4.tools.scene;
 
+import fit.g19202.baksheev.lab4.lib.BSpline;
 import fit.g19202.baksheev.lab4.lib.Point2D;
 
 import javax.swing.*;
@@ -9,25 +10,30 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+import static fit.g19202.baksheev.lab4.tools.Config.*;
+
 public class PointsPanel extends JPanel {
-    final Color AXIS_COLOR = Color.GRAY;
-    final Color BACKGROUND_COLOR = Color.BLACK;
-    final Color POINT_COLOR = Color.RED;
-    final int POINT_RADIUS = 10;
-
-
-    private final class MouseInputListener extends MouseInputAdapter {
+    private final class PointDragListener extends MouseInputAdapter {
         private PointsPanel.MovablePoint2D currentPoint = null;
-        private boolean removeMode = false;
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+        }
 
         @Override
         public void mousePressed(MouseEvent e) {
-            currentPoint = findPoint(e.getX(), e.getY());
-
-            if (removeMode && currentPoint != null) {
-                removePoint(currentPoint);
-                currentPoint = null;
-                repaint();
+            if (e.getButton() == MouseEvent.BUTTON1) {
+                currentPoint = findPoint(e.getX(), e.getY());
+                if (currentPoint == null) {
+                    addPoint(e.getX(), e.getY());
+                    repaint();
+                }
+            } else if (e.getButton() == MouseEvent.BUTTON3) {
+                var toRemovePoint = findPoint(e.getX(), e.getY());
+                if (toRemovePoint != null) {
+                    removePoint(toRemovePoint);
+                    repaint();
+                }
             }
         }
 
@@ -38,7 +44,7 @@ public class PointsPanel extends JPanel {
 
         @Override
         public void mouseDragged(MouseEvent e) {
-            if (currentPoint != null) {
+            if (e.getButton() == MouseEvent.BUTTON1 && currentPoint != null) {
                 currentPoint.setImageX(e.getX());
                 currentPoint.setImageY(e.getY());
                 repaint();
@@ -46,11 +52,17 @@ public class PointsPanel extends JPanel {
         }
     }
 
-    MouseInputListener listener;
+    PointDragListener listener;
 
     private class MovablePoint2D extends Point2D {
         MovablePoint2D(double x, double y) {
             super(x, y);
+        }
+
+        MovablePoint2D(int imageX, int imageY) {
+            super(0, 0);
+            setImageX(imageX);
+            setImageY(imageY);
         }
 
         void setX(double x) {
@@ -62,19 +74,19 @@ public class PointsPanel extends JPanel {
         }
 
         void setImageX(int imageX) {
-            x = 1. * imageX / getWidth();
+            x = (imageX - getWidth() / 2.) / getWidth();
         }
 
         void setImageY(int imageY) {
-            y = 1. * imageY / getHeight();
+            y = (imageY - getHeight() / 2.) / getHeight();
         }
 
         int getImageX() {
-            return (int) (x * getWidth());
+            return (int) ((x + 0.5) * getWidth());
         }
 
         int getImageY() {
-            return (int) (y * getHeight());
+            return (int) ((y + 0.5) * getHeight());
         }
     }
 
@@ -86,24 +98,19 @@ public class PointsPanel extends JPanel {
             points.add(new MovablePoint2D(point.getX(), point.getY()));
         }
         setBackground(BACKGROUND_COLOR);
-        listener = new MouseInputListener();
+        listener = new PointDragListener();
 
         addMouseListener(listener);
         addMouseMotionListener(listener);
     }
 
-    public void toggleRemoveMode() {
-        if (listener.removeMode) {
-            setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-            listener.removeMode = false;
-        } else {
-            setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
-            listener.removeMode = true;
-        }
-    }
-
     public void addPoint() {
         points.add(new MovablePoint2D(0.5, 0.5));
+        repaint();
+    }
+
+    public void addPoint(int imageX, int imageY) {
+        points.add(new MovablePoint2D(imageX, imageY));
         repaint();
     }
 
@@ -113,6 +120,7 @@ public class PointsPanel extends JPanel {
         Graphics2D g2 = (Graphics2D) g;
         drawAxes(g2);
         drawPoints(g2);
+        drawSpline(g2);
     }
 
     private void drawAxes(Graphics2D g2) {
@@ -125,12 +133,45 @@ public class PointsPanel extends JPanel {
 
     private void drawPoints(Graphics2D g2) {
         g2.setColor(POINT_COLOR);
+        MovablePoint2D prev = null;
         for (var point : points) {
             g2.drawOval(
                     point.getImageX() - POINT_RADIUS / 2,
                     point.getImageY() - POINT_RADIUS / 2,
                     POINT_RADIUS,
                     POINT_RADIUS
+            );
+            if (prev != null) {
+                g2.drawLine(
+                        point.getImageX(),
+                        point.getImageY(),
+                        prev.getImageX(),
+                        prev.getImageY()
+                );
+            }
+            prev = point;
+        }
+    }
+
+    private void drawSpline(Graphics2D g2) {
+        var spline = new BSpline(points.toArray(new Point2D[0]));
+        var splinePoints = spline.getSplinePoints(10);
+        if (splinePoints == null) {
+            return;
+        }
+        var width = getWidth();
+        var height = getHeight();
+        g2.setColor(SPLINE_COLOR);
+        for (int i = 1; i < splinePoints.length; i++) {
+//            System.out.println("from x");
+//            System.out.println((int) (width * (splinePoints[i - 1].getX() + 0.5)));
+//            System.out.println("to x");
+//            System.out.println((int) (width * (splinePoints[i].getX() + 0.5)));
+            g2.drawLine(
+                    (int) (width * (splinePoints[i - 1].getX() + 0.5)),
+                    (int) (height * (splinePoints[i - 1].getY() + 0.5)),
+                    (int) (width * (splinePoints[i].getX() + 0.5)),
+                    (int) (height * (splinePoints[i].getY() + 0.5))
             );
         }
     }

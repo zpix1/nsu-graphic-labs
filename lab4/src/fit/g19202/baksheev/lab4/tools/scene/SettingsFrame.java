@@ -12,7 +12,7 @@ public class SettingsFrame extends JFrame {
 
     public SettingsFrame() {
         super("Edit scene parameters");
-        setMinimumSize(new Dimension(640, 480));
+        setMinimumSize(new Dimension(1400, 900));
         setResizable(false);
 
         init();
@@ -24,8 +24,7 @@ public class SettingsFrame extends JFrame {
         all.add(points);
 
         var controls = new JPanel(new GridLayout(4, 4));
-        controls.add(UIUtils.makeClickableButton("+", (e) -> points.addPoint()));
-        controls.add(UIUtils.makeClickableButton("-", (e) -> points.toggleRemoveMode()));
+        controls.add(new JLabel("Use left mouse button to add points and right mouse button to remove them"));
         all.add(controls);
 
         add(all);
