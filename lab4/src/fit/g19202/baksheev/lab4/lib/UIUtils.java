@@ -1,6 +1,7 @@
 package fit.g19202.baksheev.lab4.lib;
 
 import javax.swing.*;
+import java.awt.event.ActionListener;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.function.Consumer;
@@ -82,5 +83,11 @@ public class UIUtils {
         return JOptionPane.showOptionDialog(parent, panel, "Configure " + toolName,
                 JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE,
                 null, new Object[]{"Apply", "Cancel"}, null) == JOptionPane.YES_OPTION;
+    }
+
+    public static JButton makeClickableButton(String label, ActionListener onClick) {
+        var btn = new JButton(label);
+        btn.addActionListener(onClick);
+        return btn;
     }
 }

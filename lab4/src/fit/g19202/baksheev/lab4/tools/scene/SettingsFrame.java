@@ -1,6 +1,7 @@
 package fit.g19202.baksheev.lab4.tools.scene;
 
 import fit.g19202.baksheev.lab4.lib.Point2D;
+import fit.g19202.baksheev.lab4.lib.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,11 +24,8 @@ public class SettingsFrame extends JFrame {
         all.add(points);
 
         var controls = new JPanel(new GridLayout(4, 4));
-        controls.add(new JButton("Alive"));
-        controls.add(new JButton("Alive"));
-        controls.add(new JButton("Alive"));
-        controls.add(new JButton("Alive"));
-        controls.add(new JButton("Alive"));
+        controls.add(UIUtils.makeClickableButton("+", (e) -> points.addPoint()));
+        controls.add(UIUtils.makeClickableButton("-", (e) -> points.toggleRemoveMode()));
         all.add(controls);
 
         add(all);
