@@ -1,4 +1,4 @@
-package fit.g19202.baksheev.lab4.tools;
+package fit.g19202.baksheev.lab4.lib;
 
 import javax.swing.*;
 import java.util.Dictionary;

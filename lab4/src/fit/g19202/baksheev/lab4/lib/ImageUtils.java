@@ -1,4 +1,4 @@
-package fit.g19202.baksheev.lab2.tools;
+package fit.g19202.baksheev.lab4.lib;
 
 import java.awt.image.BufferedImage;
 

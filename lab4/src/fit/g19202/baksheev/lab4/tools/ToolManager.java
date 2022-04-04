@@ -1,5 +1,6 @@
 package fit.g19202.baksheev.lab4.tools;
 
+import fit.g19202.baksheev.lab4.tools.scene.SettingsTool;
 import fit.g19202.baksheev.lab4.tools.utilities.*;
 import lombok.Getter;
 
@@ -22,6 +23,7 @@ public class ToolManager {
                 new OpenTool(),
                 new SaveTool(),
                 new ExitTool(),
+                new SettingsTool(),
                 new AboutTool()
         );
     }

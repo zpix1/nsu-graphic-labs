@@ -15,6 +15,7 @@ import java.util.Arrays;
  */
 public class InitMainWindow extends MainFrame {
     private final static String TITLE = "WireFrame";
+    private final Context ctx;
 
     /**
      * Default constructor to create main window
@@ -23,6 +24,7 @@ public class InitMainWindow extends MainFrame {
         super(640, 480, TITLE);
 
         var toolManager = ToolManager.getInstance();
+        ctx = new Context(this, null);
 
         setMinimumSize(new Dimension(640, 480));
 
@@ -46,10 +48,8 @@ public class InitMainWindow extends MainFrame {
     }
 
     private void applyTool(Tool tool) {
-        var context = new Context(null, null, this);
-
         try {
-            tool.execute(context);
+            tool.execute(ctx);
         } catch (Exception e) {
             e.printStackTrace();
         }

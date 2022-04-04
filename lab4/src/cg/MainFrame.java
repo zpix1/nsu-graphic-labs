@@ -72,7 +72,6 @@ public class MainFrame extends JFrame {
         };
         item.setMnemonic(mnemonic);
         item.setToolTipText(tooltip);
-        System.out.println(new ImageIcon(getClass().getResource("/" + icon), title));
         if (icon != null)
             item.setIcon(new ImageIcon(getClass().getResource("/" + icon), title));
         item.addActionListener(actionMethod);
