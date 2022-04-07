@@ -4,7 +4,10 @@ import cg.MainFrame;
 import fit.g19202.baksheev.lab4.tools.Context;
 import fit.g19202.baksheev.lab4.tools.Tool;
 import fit.g19202.baksheev.lab4.tools.ToolManager;
+import fit.g19202.baksheev.lab4.tools.scene.Scene;
+import fit.g19202.baksheev.lab4.tools.scene.SceneParameters;
 
+import javax.swing.*;
 import java.awt.*;
 import java.util.Arrays;
 
@@ -16,6 +19,7 @@ import java.util.Arrays;
 public class InitMainWindow extends MainFrame {
     private final static String TITLE = "WireFrame";
     private final Context ctx;
+    private final Scene scene;
 
     /**
      * Default constructor to create main window
@@ -24,9 +28,14 @@ public class InitMainWindow extends MainFrame {
         super(640, 480, TITLE);
 
         var toolManager = ToolManager.getInstance();
-        ctx = new Context(this, null);
 
         setMinimumSize(new Dimension(640, 480));
+
+        var sceneParameters = SceneParameters.getEmptyInstance();
+        scene = new Scene(sceneParameters);
+        ctx = new Context(this, scene, sceneParameters);
+
+        add(scene);
 
         try {
             for (var tool : toolManager.getToolList()) {
@@ -61,7 +70,9 @@ public class InitMainWindow extends MainFrame {
      * @param args command line arguments (unused)
      */
     public static void main(String[] args) {
-        InitMainWindow mainFrame = new InitMainWindow();
-        mainFrame.setVisible(true);
+        SwingUtilities.invokeLater(() -> {
+            InitMainWindow mainFrame = new InitMainWindow();
+            mainFrame.setVisible(true);
+        });
     }
 }

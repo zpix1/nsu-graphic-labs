@@ -8,10 +8,6 @@ import java.io.File;
 public class SettingsTool extends Tool {
     SettingsFrame frame;
 
-    public SettingsTool() {
-        frame = new SettingsFrame();
-    }
-
     @Override
     public String getName() {
         return "Edit scene parameters";
@@ -29,6 +25,7 @@ public class SettingsTool extends Tool {
 
     @Override
     public void execute(Context context) {
+        frame = new SettingsFrame(context);
         frame.setVisible(true);
     }
 }

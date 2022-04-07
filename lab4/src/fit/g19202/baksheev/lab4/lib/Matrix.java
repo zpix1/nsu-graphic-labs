@@ -61,7 +61,7 @@ public class Matrix {
         return C;
     }
 
-    double get(int i, int j) {
+    public double get(int i, int j) {
         return data[i][j];
     }
 

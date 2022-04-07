@@ -1,6 +1,7 @@
 package fit.g19202.baksheev.lab4.tools.scene;
 
 import fit.g19202.baksheev.lab4.lib.BSpline;
+import fit.g19202.baksheev.lab4.lib.Matrix;
 import fit.g19202.baksheev.lab4.lib.Point2D;
 
 import javax.swing.*;
@@ -8,6 +9,7 @@ import javax.swing.event.MouseInputAdapter;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static fit.g19202.baksheev.lab4.tools.Config.*;
@@ -91,10 +93,13 @@ public class PointsPanel extends JPanel {
     }
 
     private final List<MovablePoint2D> points;
+    private final SceneParameters sceneParameters;
 
-    public PointsPanel(List<Point2D> initialPoints) {
+    public PointsPanel(SceneParameters sceneParameters) {
+        this.sceneParameters = sceneParameters;
+
         this.points = new ArrayList<>();
-        for (var point : initialPoints) {
+        for (var point : sceneParameters.getSplineBasePoints()) {
             points.add(new MovablePoint2D(point.getX(), point.getY()));
         }
         setBackground(BACKGROUND_COLOR);
@@ -155,7 +160,7 @@ public class PointsPanel extends JPanel {
 
     private void drawSpline(Graphics2D g2) {
         var spline = new BSpline(points.toArray(new Point2D[0]));
-        var splinePoints = spline.getSplinePoints(10);
+        var splinePoints = spline.getSplinePoints(sceneParameters.getSplineN());
         if (splinePoints == null) {
             return;
         }
@@ -163,10 +168,6 @@ public class PointsPanel extends JPanel {
         var height = getHeight();
         g2.setColor(SPLINE_COLOR);
         for (int i = 1; i < splinePoints.length; i++) {
-//            System.out.println("from x");
-//            System.out.println((int) (width * (splinePoints[i - 1].getX() + 0.5)));
-//            System.out.println("to x");
-//            System.out.println((int) (width * (splinePoints[i].getX() + 0.5)));
             g2.drawLine(
                     (int) (width * (splinePoints[i - 1].getX() + 0.5)),
                     (int) (height * (splinePoints[i - 1].getY() + 0.5)),
@@ -188,5 +189,67 @@ public class PointsPanel extends JPanel {
 
     private void removePoint(MovablePoint2D point) {
         points.remove(point);
+    }
+
+    public List<Point2D> getSplinePoints() {
+        var spline = new BSpline(points.toArray(new Point2D[0]));
+        var splinePoints = spline.getSplinePoints(sceneParameters.getSplineN());
+        if (splinePoints == null) {
+            return new ArrayList<>();
+        }
+        return Arrays.asList(splinePoints);
+    }
+
+    public List<? extends Point2D> getBasePoints() {
+        return points;
+    }
+
+    public List<Matrix[]> getScenePoints() {
+        var points2d = getSplinePoints();
+        var vertices = new ArrayList<Matrix[]>();
+        var angleN = sceneParameters.getAngleN();
+        for (int j = 0; j < angleN; j++) {
+            for (Point2D p : points2d) {
+                var Fiv = p.getX();
+                var Fuv = p.getY();
+                vertices.add(new Matrix[]{
+                        new Matrix(new double[]{
+                                Fiv * Math.cos(j * 2 * Math.PI / angleN),
+                                Fiv * Math.sin(j * 2 * Math.PI / angleN),
+                                Fuv,
+                                1
+                        }),
+                        new Matrix(new double[]{
+                                Fiv * Math.cos((j + 1) % angleN * 2 * Math.PI / angleN),
+                                Fiv * Math.sin((j + 1) % angleN * 2 * Math.PI / angleN),
+                                Fuv,
+                                1
+                        }),
+                });
+            }
+        }
+
+        for (int i = 1; i < points2d.size(); i++) {
+            for (int j = 0; j < angleN; j++) {
+                var p1 = points2d.get(i);
+                var p2 = points2d.get(i - 1);
+
+                vertices.add(new Matrix[]{
+                        new Matrix(new double[]{
+                                p1.getX() * Math.cos(j * 2 * Math.PI / angleN),
+                                p1.getX() * Math.sin(j * 2 * Math.PI / angleN),
+                                p1.getY(),
+                                1
+                        }),
+                        new Matrix(new double[]{
+                                p2.getX() * Math.cos(j * 2 * Math.PI / angleN),
+                                p2.getX() * Math.sin(j * 2 * Math.PI / angleN),
+                                p2.getY(),
+                                1
+                        }),
+                });
+            }
+        }
+        return vertices;
     }
 }
