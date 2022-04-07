@@ -29,7 +29,7 @@ public class SceneParameters {
                 10,
                 0.1,
                 10,
-                4
+                3
         );
     }
 }

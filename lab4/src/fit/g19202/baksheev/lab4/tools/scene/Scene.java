@@ -30,8 +30,8 @@ public class Scene extends JPanel {
             @Override
             public void mouseDragged(MouseEvent e) {
                 super.mouseDragged(e);
-                thetaX = (startedX - e.getX()) * 0.1;
-                thetaZ = (startedY - e.getY()) * 0.1;
+                thetaZ = (startedX - e.getX()) * 0.03;
+                thetaX = (startedY - e.getY()) * 0.03;
                 repaint();
             }
 
@@ -84,10 +84,6 @@ public class Scene extends JPanel {
                 {0, 0, -near * q, 0}
         });
 
-        g2.setColor(Color.BLACK);
-        g2.fillRect(0, 0, width, height);
-        g2.setColor(Color.WHITE);
-
         var rotZ = new Matrix(new double[][]{
                 {Math.cos(thetaZ), Math.sin(thetaZ), 0, 0},
                 {-Math.sin(thetaZ), Math.cos(thetaZ), 0, 0},
@@ -101,6 +97,10 @@ public class Scene extends JPanel {
                 {0, -Math.sin(thetaX), Math.cos(thetaX), 0},
                 {0, 0, 0, 1},
         });
+
+        g2.setColor(Color.BLACK);
+        g2.fillRect(0, 0, width, height);
+        g2.setColor(Color.WHITE);
 
         for (var line : sceneParameters.getPoints()) {
             var A = line[0].times(rotZ).times(rotX).times(clipMatrix);
