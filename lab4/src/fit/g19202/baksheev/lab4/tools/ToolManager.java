@@ -24,6 +24,7 @@ public class ToolManager {
                 new SaveTool(),
                 new ExitTool(),
                 new SettingsTool(),
+                new ResetTool(),
                 new AboutTool()
         );
     }

@@ -63,6 +63,30 @@ public class UIUtils {
         return line;
     }
 
+    public static JPanel getDoubleInput(String label, double defaultValue, double min, double max, double minorTickSpacing, Consumer<Double> onChange) {
+        var result = new JPanel();
+        result.add(new JLabel(label));
+        result.add(getSliderSpinnerPair(defaultValue, min, max, minorTickSpacing, onChange));
+        return result;
+    }
+
+    public static JPanel getIntegerInput(String label, int defaultValue, int min, int max, int minorTickSpacing, Consumer<Integer> onChange) {
+        var result = new JPanel();
+        result.add(new JLabel(label));
+
+        var spinner = new JSpinner(new SpinnerNumberModel(defaultValue, min, max, minorTickSpacing));
+        spinner.setEditor(new JSpinner.NumberEditor(spinner, "#"));
+        JFormattedTextField spinnerTextField = ((JSpinner.DefaultEditor) spinner.getEditor()).getTextField();
+        spinnerTextField.setColumns(3);
+        spinner.addChangeListener(event -> {
+            var value = (int) ((JSpinner) event.getSource()).getValue();
+            onChange.accept(value);
+        });
+
+        result.add(spinner);
+        return result;
+    }
+
     public static Dictionary<Integer, JLabel> getLabels(int[] ticks) {
         Dictionary<Integer, JLabel> labels = new Hashtable<>();
         for (var tick : ticks) {

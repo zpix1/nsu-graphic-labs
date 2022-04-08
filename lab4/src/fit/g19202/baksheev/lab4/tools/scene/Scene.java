@@ -117,10 +117,10 @@ public class Scene extends JPanel {
     }
 
     private void drawParams(Graphics2D g2) {
-        g2.drawString(String.format("Theta X: %.2f", sceneParameters.getThetaX()), 5, 20);
-        g2.drawString(String.format("Theta Y: %.2f", sceneParameters.getThetaY()), 5, 40);
-        g2.drawString(String.format("Theta Z: %.2f", sceneParameters.getThetaZ()), 5, 60);
-        g2.drawString(String.format("FOV: %.2f", sceneParameters.getFov()), 5, 80);
+        g2.drawString(String.format("Theta X: %.0f°", sceneParameters.getDegThetaX()), 5, 20);
+        g2.drawString(String.format("Theta Y: %.0f°", sceneParameters.getDegThetaY()), 5, 40);
+        g2.drawString(String.format("Theta Z: %.0f°", sceneParameters.getDegThetaZ()), 5, 60);
+        g2.drawString(String.format("FOV: %.0f° (%.2f)", sceneParameters.getDegFov(), sceneParameters.getFov()), 5, 80);
     }
 
     @Override

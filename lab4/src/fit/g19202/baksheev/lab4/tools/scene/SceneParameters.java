@@ -39,4 +39,32 @@ public class SceneParameters implements Serializable {
                 0
         );
     }
+
+    private double degToRad(double deg) {
+        return deg * (Math.PI / 180.0);
+    }
+
+    private double radToDeg(double rad) {
+        return rad * (180.0 / Math.PI);
+    }
+
+    public void setDegFov(double degFov) {
+        setFov(degToRad(degFov));
+    }
+
+    public double getDegFov() {
+        return radToDeg(getFov());
+    }
+
+    public double getDegThetaX() {
+        return radToDeg(getThetaX());
+    }
+
+    public double getDegThetaY() {
+        return radToDeg(getThetaY());
+    }
+
+    public double getDegThetaZ() {
+        return radToDeg(getThetaZ());
+    }
 }

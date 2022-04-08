@@ -90,6 +90,14 @@ public class PointsPanel extends JPanel {
         int getImageY() {
             return (int) ((y + 0.5) * getHeight());
         }
+
+        double distanceTo(MovablePoint2D p) {
+            return Math.sqrt((x - p.x) * (x - p.x) + (y - p.y) * (y - p.y));
+        }
+
+        double imageDistanceTo(MovablePoint2D p) {
+            return Math.sqrt((getImageX() - p.getImageX()) * (getImageX() - p.getImageX()) + (getImageY() - p.getImageY()) * (getImageY() - p.getImageY()));
+        }
     }
 
     private final List<MovablePoint2D> points;
@@ -115,7 +123,18 @@ public class PointsPanel extends JPanel {
     }
 
     public void addPoint(int imageX, int imageY) {
-        points.add(new MovablePoint2D(imageX, imageY));
+        var newPoint = new MovablePoint2D(imageX, imageY);
+        if (points.isEmpty()) {
+            points.add(newPoint);
+        } else {
+            var pFirst = points.get(0);
+            var pLast = points.get(points.size() - 1);
+            if (newPoint.distanceTo(pFirst) < newPoint.distanceTo(pLast)) {
+                points.add(0, newPoint);
+            } else {
+                points.add(newPoint);
+            }
+        }
         repaint();
     }
 
@@ -178,9 +197,9 @@ public class PointsPanel extends JPanel {
     }
 
     private MovablePoint2D findPoint(int imageX, int imageY) {
+        var click = new MovablePoint2D(imageX, imageY);
         for (var point : points) {
-            if ((Math.abs(point.getImageX() - imageX) < POINT_RADIUS) &&
-                    (Math.abs(point.getImageY() - imageY) < POINT_RADIUS)) {
+            if (point.imageDistanceTo(click) <= POINT_RADIUS) {
                 return point;
             }
         }
@@ -256,5 +275,10 @@ public class PointsPanel extends JPanel {
             }
         }
         return vertices;
+    }
+
+    public void reset() {
+        this.points.clear();
+        repaint();
     }
 }
