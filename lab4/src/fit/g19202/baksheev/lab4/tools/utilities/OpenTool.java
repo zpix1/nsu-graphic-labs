@@ -2,8 +2,11 @@ package fit.g19202.baksheev.lab4.tools.utilities;
 
 import fit.g19202.baksheev.lab4.tools.Context;
 import fit.g19202.baksheev.lab4.tools.Tool;
+import fit.g19202.baksheev.lab4.tools.scene.SceneParameters;
 
-import java.io.File;
+import java.io.*;
+
+import static cg.FileUtils.getOpenFileName;
 
 public class OpenTool extends Tool {
     @Override
@@ -23,16 +26,19 @@ public class OpenTool extends Tool {
 
     @Override
     public void execute(Context context) {
-//        var file = getOpenFileName(context.getMainFrame(), new String[]{"png", "jpeg", "bmp", "gif"}, "Images");
-//        if (file == null) {
-//            System.out.println("File not selected");
-//            return;
-//        }
-//        try {
-//            return ImageIO.read(file.getFile());
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
+        var file = getOpenFileName(context.getMainFrame(), new String[]{"wirescene"}, "Wireframe scene file");
+        if (file == null) {
+            System.out.println("File not selected");
+            return;
+        }
+        try (var fos = new FileInputStream(file.getFile().getAbsolutePath());
+             var ois = new ObjectInputStream(fos)) {
+            var sceneParameters = (SceneParameters) ois.readObject();
+            context.setSceneParameters(sceneParameters);
+            context.getScene().updateParameters(sceneParameters);
+        } catch (IOException | ClassNotFoundException ex) {
+            ex.printStackTrace();
+        }
     }
 
     @Override

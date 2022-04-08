@@ -15,5 +15,6 @@ public class Context {
     @Getter
     Scene scene;
     @Getter
+    @Setter
     SceneParameters sceneParameters;
 }

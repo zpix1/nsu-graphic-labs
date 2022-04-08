@@ -15,7 +15,7 @@ public class SettingsTool extends Tool {
 
     @Override
     public File getIconPath() {
-        return new File("about.gif");
+        return new File("edit.png");
     }
 
     @Override

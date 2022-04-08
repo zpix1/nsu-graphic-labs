@@ -2,7 +2,9 @@ package fit.g19202.baksheev.lab4.lib;
 
 import lombok.Getter;
 
-public class Matrix {
+import java.io.Serializable;
+
+public class Matrix implements Serializable {
     @Getter
     private final int M;
     @Getter
