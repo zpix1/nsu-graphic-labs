@@ -68,8 +68,8 @@ public class SettingsFrame extends JFrame {
             sp.setSplineN(v);
             pointsPanel.repaint();
         }));
-        controls.add(UIUtils.getDoubleInput("Z Far", sp.getFar(), 0, 1000, 0.1, sp::setFar));
-        controls.add(UIUtils.getDoubleInput("Z Near", sp.getNear(), 0, 1000, 0.1, sp::setNear));
+//        controls.add(UIUtils.getDoubleInput("Z Far", sp.getFar(), 0, 1000, 0.1, sp::setFar));
+//        controls.add(UIUtils.getDoubleInput("Z Near", sp.getNear(), 0, 1000, 0.1, sp::setNear));
 
         c.fill = GridBagConstraints.BOTH;
         c.gridx = 0;

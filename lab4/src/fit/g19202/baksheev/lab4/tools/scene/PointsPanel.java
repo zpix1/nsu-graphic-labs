@@ -17,6 +17,11 @@ import static fit.g19202.baksheev.lab4.tools.Config.*;
 public class PointsPanel extends JPanel {
     private final class PointDragListener extends MouseInputAdapter {
         private PointsPanel.MovablePoint2D currentPoint = null;
+        private int pressedX = 0;
+        private int pressedY = 0;
+        private int savedOffsetX = 0;
+        private int savedOffsetY = 0;
+
 
         @Override
         public void mouseClicked(MouseEvent e) {
@@ -35,6 +40,11 @@ public class PointsPanel extends JPanel {
                 if (toRemovePoint != null) {
                     removePoint(toRemovePoint);
                     repaint();
+                } else {
+                    pressedX = e.getX();
+                    pressedY = e.getY();
+                    savedOffsetX = offsetX;
+                    savedOffsetY = offsetY;
                 }
             }
         }
@@ -50,11 +60,18 @@ public class PointsPanel extends JPanel {
                 currentPoint.setImageX(e.getX());
                 currentPoint.setImageY(e.getY());
                 repaint();
+            } else if (e.getButton() == MouseEvent.BUTTON3) {
+                offsetX = savedOffsetX + e.getX() - pressedX;
+                offsetY = savedOffsetY + e.getY() - pressedY;
+                repaint();
             }
         }
     }
 
     PointDragListener listener;
+
+    private int offsetX = 0;
+    private int offsetY = 0;
 
     private class MovablePoint2D extends Point2D {
         MovablePoint2D(double x, double y) {
@@ -76,19 +93,19 @@ public class PointsPanel extends JPanel {
         }
 
         void setImageX(int imageX) {
-            x = (imageX - getWidth() / 2.) / getWidth();
+            x = (imageX - offsetX - getWidth() / 2.) / getWidth();
         }
 
         void setImageY(int imageY) {
-            y = (imageY - getHeight() / 2.) / getHeight();
+            y = (imageY - offsetY - getHeight() / 2.) / getHeight();
         }
 
         int getImageX() {
-            return (int) ((x + 0.5) * getWidth());
+            return (int) ((x + 0.5) * getWidth()) + offsetX;
         }
 
         int getImageY() {
-            return (int) ((y + 0.5) * getHeight());
+            return (int) ((y + 0.5) * getHeight()) + offsetY;
         }
 
         double distanceTo(MovablePoint2D p) {
@@ -151,8 +168,8 @@ public class PointsPanel extends JPanel {
         int width = getWidth();
         int height = getHeight();
         g2.setColor(AXIS_COLOR);
-        g2.drawLine(0, height / 2, width, height / 2);
-        g2.drawLine(width / 2, 0, width / 2, height);
+        g2.drawLine(0, height / 2 + offsetY, width , height / 2 + offsetY);
+        g2.drawLine(width / 2 + offsetX, 0, width / 2 + offsetX, height);
     }
 
     private void drawPoints(Graphics2D g2) {
@@ -188,10 +205,10 @@ public class PointsPanel extends JPanel {
         g2.setColor(SPLINE_COLOR);
         for (int i = 1; i < splinePoints.length; i++) {
             g2.drawLine(
-                    (int) (width * (splinePoints[i - 1].getX() + 0.5)),
-                    (int) (height * (splinePoints[i - 1].getY() + 0.5)),
-                    (int) (width * (splinePoints[i].getX() + 0.5)),
-                    (int) (height * (splinePoints[i].getY() + 0.5))
+                    (int) (width * (splinePoints[i - 1].getX() + 0.5)) + offsetX,
+                    (int) (height * (splinePoints[i - 1].getY() + 0.5)) + offsetY,
+                    (int) (width * (splinePoints[i].getX() + 0.5)) + offsetX,
+                    (int) (height * (splinePoints[i].getY() + 0.5)) + offsetY
             );
         }
     }
@@ -252,24 +269,11 @@ public class PointsPanel extends JPanel {
                                 1
                         }),
                 });
+
+                if (i + psStep >= points2d.size() - 1 && i != points2d.size() - 1) {
+                    i = points2d.size() - 1 - psStep;
+                }
             }
-            var p = points2d.get(points2d.size() - 1);
-            var Fiv = p.getX();
-            var Fuv = p.getY();
-            vertices.add(new Matrix[]{
-                    new Matrix(new double[]{
-                            Fiv * Math.cos(j * 2 * Math.PI / angleN) * a,
-                            Fiv * Math.sin(j * 2 * Math.PI / angleN) * a,
-                            Fuv,
-                            1
-                    }),
-                    new Matrix(new double[]{
-                            Fiv * Math.cos((j + 1) % angleN * 2 * Math.PI / angleN) * a,
-                            Fiv * Math.sin((j + 1) % angleN * 2 * Math.PI / angleN) * a,
-                            Fuv,
-                            1
-                    }),
-            });
         }
 
         var normalAngleN = sceneParameters.getAngleN();
