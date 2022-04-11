@@ -22,6 +22,7 @@ public class Matrix implements Serializable {
 
     /**
      * Creates a vector (horizontal)
+     *
      * @param data vector to use
      */
     public Matrix(double[] data) {
@@ -69,8 +70,9 @@ public class Matrix implements Serializable {
 
     public void show() {
         for (int i = 0; i < M; i++) {
-            for (int j = 0; j < N; j++)
-                System.out.printf("%9.4f ", data[i][j]);
+            for (int j = 0; j < N; j++) {
+                System.out.printf("%5.2f ", data[i][j]);
+            }
             System.out.println();
         }
     }

@@ -5,6 +5,8 @@ import fit.g19202.baksheev.lab4.lib.Matrix;
 import javax.swing.*;
 import javax.swing.event.MouseInputAdapter;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 
@@ -13,7 +15,7 @@ public class Scene extends JPanel {
 
     public Scene(SceneParameters parameters) {
         updateParameters(parameters);
-        var adapter = new MouseInputAdapter() {
+        var mouseAdapter = new MouseInputAdapter() {
             private int startedX;
             private int startedY;
 
@@ -40,9 +42,24 @@ public class Scene extends JPanel {
             }
         };
 
-        addMouseListener(adapter);
-        addMouseMotionListener(adapter);
-        addMouseWheelListener(adapter);
+        var keyboardAdapter = new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                super.keyPressed(e);
+                if (e.getKeyChar() == KeyEvent.VK_UP) {
+                    sceneParameters.setThetaX(sceneParameters.getThetaX() + 0.03);
+                    repaint();
+                } else if (e.getKeyChar() == KeyEvent.VK_DOWN) {
+                    sceneParameters.setThetaX(sceneParameters.getThetaX() - 0.03);
+                    repaint();
+                }
+            }
+        };
+
+        addKeyListener(keyboardAdapter);
+        addMouseListener(mouseAdapter);
+        addMouseMotionListener(mouseAdapter);
+        addMouseWheelListener(mouseAdapter);
     }
 
     public void updateParameters(SceneParameters parameters) {

@@ -6,6 +6,12 @@ import fit.g19202.baksheev.lab4.tools.Context;
 import javax.swing.*;
 import java.awt.*;
 
+// Parameters
+// k - число опорных точек
+// N - отрезков для участка (между опорными точками)
+// M - число образующих
+// M1 - число отрезков для участка на отк-тях
+
 public class SettingsFrame extends JFrame {
     private final Context context;
     private PointsPanel pointsPanel;
@@ -54,10 +60,14 @@ public class SettingsFrame extends JFrame {
         c.weightx = 0;
         all.add(new JLabel("Use left mouse button to add points and right mouse button to remove them"), c);
 
-        var controls = new JPanel(new GridLayout(1, 4, 0 ,0 ));
+        var controls = new JPanel(new GridLayout(1, 4, 0, 0));
 
-        controls.add(UIUtils.getIntegerInput("Rot angle count", sp.getAngleN(), 3, 100, 1, sp::setAngleN));
-        controls.add(UIUtils.getIntegerInput("Spline points count", sp.getSplineN(), 3, 100, 1, sp::setSplineN));
+        controls.add(UIUtils.getIntegerInput("Rot angle count", sp.getAngleN(), 2, 100, 1, sp::setAngleN));
+        controls.add(UIUtils.getIntegerInput("Virtual rot angle count", sp.getVirtualAngleN(), 1, 100, 1, sp::setVirtualAngleN));
+        controls.add(UIUtils.getIntegerInput("Spline points count", sp.getSplineN(), 1, 100, 1, v -> {
+            sp.setSplineN(v);
+            pointsPanel.repaint();
+        }));
         controls.add(UIUtils.getDoubleInput("Z Far", sp.getFar(), 0, 1000, 0.1, sp::setFar));
         controls.add(UIUtils.getDoubleInput("Z Near", sp.getNear(), 0, 1000, 0.1, sp::setNear));
 
@@ -69,11 +79,10 @@ public class SettingsFrame extends JFrame {
         all.add(controls, c);
 
 
-        var buttons = new JPanel(new GridLayout(1, 4, 0 ,0 ));
+        var buttons = new JPanel(new GridLayout(1, 4, 0, 0));
         buttons.add(UIUtils.makeClickableButton("Submit", event -> submit()));
         buttons.add(UIUtils.makeClickableButton("Apply", event -> apply()));
         buttons.add(UIUtils.makeClickableButton("Remove all points", event -> reset()));
-
 
         c.fill = GridBagConstraints.BOTH;
         c.gridx = 0;

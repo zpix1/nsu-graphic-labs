@@ -4,7 +4,11 @@ import fit.g19202.baksheev.lab4.tools.Context;
 import fit.g19202.baksheev.lab4.tools.Tool;
 import fit.g19202.baksheev.lab4.tools.scene.SceneParameters;
 
-import java.io.*;
+import javax.swing.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 
 import static cg.FileUtils.getOpenFileName;
 
@@ -37,6 +41,7 @@ public class OpenTool extends Tool {
             context.setSceneParameters(sceneParameters);
             context.getScene().updateParameters(sceneParameters);
         } catch (IOException | ClassNotFoundException ex) {
+            JOptionPane.showMessageDialog(context.getMainFrame(), "Selected file " + file.getFile().getName() + " can not be opened.");
             ex.printStackTrace();
         }
     }

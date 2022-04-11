@@ -20,6 +20,7 @@ public class SceneParameters implements Serializable {
     private double far;
     private double near;
     private int angleN;
+    private int virtualAngleN;
     private int splineN;
     private double thetaX;
     private double thetaY;
@@ -33,6 +34,7 @@ public class SceneParameters implements Serializable {
                 10,
                 0.1,
                 10,
+                3,
                 3,
                 0,
                 0,
