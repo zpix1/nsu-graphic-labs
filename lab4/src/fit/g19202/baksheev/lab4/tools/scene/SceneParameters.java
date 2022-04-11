@@ -5,8 +5,9 @@ import fit.g19202.baksheev.lab4.lib.Point2D;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 
-import java.io.Serializable;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,6 +42,19 @@ public class SceneParameters implements Serializable {
                 0
         );
     }
+
+//    @SneakyThrows
+//    public static SceneParameters getSomeObject() {
+//        var uri = SceneParameters.class.getResource("/hat.wireframe");
+//        var file = new File(uri.toURI());
+//        try (var fos = new FileInputStream(file.getAbsolutePath());
+//             var ois = new ObjectInputStream(fos)) {
+//            return (SceneParameters) ois.readObject();
+//        } catch (IOException | ClassNotFoundException ex) {
+//            ex.printStackTrace();
+//        }
+//        return null;
+//    }
 
     private double degToRad(double deg) {
         return deg * (Math.PI / 180.0);
