@@ -19,18 +19,30 @@ public class Scene extends JPanel {
             private int startedX;
             private int startedY;
 
+            private double savedThetaX;
+            private double savedThetaY;
+            private double savedThetaZ;
+
             @Override
             public void mousePressed(MouseEvent e) {
                 super.mousePressed(e);
                 startedX = e.getX();
                 startedY = e.getY();
+                savedThetaX = sceneParameters.getThetaX();
+                savedThetaY = sceneParameters.getThetaY();
+                savedThetaZ = sceneParameters.getThetaZ();
             }
 
             @Override
             public void mouseDragged(MouseEvent e) {
                 super.mouseDragged(e);
-                sceneParameters.setThetaZ((startedX - e.getX()) * 0.03);
-                sceneParameters.setThetaX((startedY - e.getY()) * 0.03);
+                if (e.getButton() == MouseEvent.BUTTON1) {
+                    sceneParameters.setThetaZ(savedThetaZ + (startedX - e.getX()) * 0.03);
+                    sceneParameters.setThetaX(savedThetaX + (startedY - e.getY()) * 0.03);
+                } else if (e.getButton() == MouseEvent.BUTTON3) {
+                    sceneParameters.setThetaY(savedThetaZ + (startedX - e.getX()) * 0.03);
+                    sceneParameters.setThetaX(savedThetaX + (startedY - e.getY()) * 0.03);
+                }
                 repaint();
             }
 

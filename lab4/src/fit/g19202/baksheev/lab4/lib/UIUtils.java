@@ -1,10 +1,18 @@
 package fit.g19202.baksheev.lab4.lib;
 
+import fit.g19202.baksheev.lab4.tools.scene.SceneParameters;
+
 import javax.swing.*;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.function.Consumer;
+
+import static cg.FileUtils.getOpenFileName;
 
 public class UIUtils {
     public static JPanel getSliderSpinnerPair(int defaultValue, int min, int max, int majorTickSpacing, int minorTickSpacing, Dictionary<Integer, JLabel> labels, Consumer<Integer> onChange, boolean snapToTicks) {
@@ -113,5 +121,15 @@ public class UIUtils {
         var btn = new JButton(label);
         btn.addActionListener(onClick);
         return btn;
+    }
+
+    public static Object loadObject(File f) {
+        try (var fos = new FileInputStream(f.getAbsolutePath());
+             var ois = new ObjectInputStream(fos)) {
+            return ois.readObject();
+        } catch (IOException | ClassNotFoundException ex) {
+            ex.printStackTrace();
+            return null;
+        }
     }
 }

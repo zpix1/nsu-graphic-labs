@@ -1,6 +1,7 @@
 package fit.g19202.baksheev.lab4;
 
 import cg.MainFrame;
+import fit.g19202.baksheev.lab4.lib.UIUtils;
 import fit.g19202.baksheev.lab4.tools.Context;
 import fit.g19202.baksheev.lab4.tools.Tool;
 import fit.g19202.baksheev.lab4.tools.ToolManager;
@@ -9,6 +10,7 @@ import fit.g19202.baksheev.lab4.tools.scene.SceneParameters;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
 import java.util.Arrays;
 
 /**
@@ -31,7 +33,8 @@ public class InitMainWindow extends MainFrame {
 
         setMinimumSize(new Dimension(640, 480));
 
-        var sceneParameters = SceneParameters.getEmptyInstance();
+//        var sceneParameters = SceneParameters.getEmptyInstance();
+        var sceneParameters = (SceneParameters) UIUtils.loadObject(new File("./out/production/hat2.wirescene"));
         scene = new Scene(sceneParameters);
         ctx = new Context(this, scene, sceneParameters);
 
