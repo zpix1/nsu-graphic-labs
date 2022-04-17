@@ -38,10 +38,10 @@ public class Scene extends JPanel {
                 super.mouseDragged(e);
                 if (e.getButton() == MouseEvent.BUTTON1) {
                     sceneParameters.setThetaZ(savedThetaZ + (startedX - e.getX()) * 0.03);
-                    sceneParameters.setThetaX(savedThetaX + (startedY - e.getY()) * 0.03);
+                    sceneParameters.setThetaX(savedThetaX + (startedY - e.getY()) * -0.03);
                 } else if (e.getButton() == MouseEvent.BUTTON3) {
                     sceneParameters.setThetaY(savedThetaZ + (startedX - e.getX()) * 0.03);
-                    sceneParameters.setThetaX(savedThetaX + (startedY - e.getY()) * 0.03);
+                    sceneParameters.setThetaX(savedThetaX + (startedY - e.getY()) * -0.03);
                 }
                 repaint();
             }

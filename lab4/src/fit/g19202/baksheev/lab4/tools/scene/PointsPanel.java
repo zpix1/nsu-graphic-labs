@@ -10,6 +10,7 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 import static fit.g19202.baksheev.lab4.tools.Config.*;
@@ -168,7 +169,7 @@ public class PointsPanel extends JPanel {
         int width = getWidth();
         int height = getHeight();
         g2.setColor(AXIS_COLOR);
-        g2.drawLine(0, height / 2 + offsetY, width , height / 2 + offsetY);
+        g2.drawLine(0, height / 2 + offsetY, width, height / 2 + offsetY);
         g2.drawLine(width / 2 + offsetX, 0, width / 2 + offsetX, height);
     }
 
@@ -244,17 +245,24 @@ public class PointsPanel extends JPanel {
         return res;
     }
 
+    private double findMaxCoordinate() {
+        var xMax = getSplinePoints().stream().max(Comparator.comparingDouble(Point2D::getX)).get().getX();
+        var yMax = getSplinePoints().stream().max(Comparator.comparingDouble(Point2D::getY)).get().getY();
+        return Math.max(xMax, yMax);
+    }
+
     public List<Matrix[]> getScenePoints() {
         var points2d = getSplinePoints();
         var vertices = new ArrayList<Matrix[]>();
         var angleN = sceneParameters.getAngleN() * sceneParameters.getVirtualAngleN();
         var a = getWidth() * 1. / getHeight();
         var psStep = sceneParameters.getSplineN();
+        var k = 1.;
         for (int j = 0; j < angleN; j++) {
             for (int i = 0; i < points2d.size(); i += psStep) {
                 var p = points2d.get(i);
-                var Fiv = p.getX();
-                var Fuv = p.getY();
+                var Fiv = p.getX() * k;
+                var Fuv = p.getY() * k;
                 vertices.add(new Matrix[]{
                         new Matrix(new double[]{
                                 Fiv * Math.cos(j * 2 * Math.PI / angleN) * a,
@@ -285,15 +293,15 @@ public class PointsPanel extends JPanel {
 
                 vertices.add(new Matrix[]{
                         new Matrix(new double[]{
-                                p1.getX() * Math.cos(j * 2 * Math.PI / normalAngleN) * a,
-                                p1.getX() * Math.sin(j * 2 * Math.PI / normalAngleN) * a,
-                                p1.getY(),
+                                p1.getX() * k * Math.cos(j * 2 * Math.PI / normalAngleN) * a,
+                                p1.getX() * k * Math.sin(j * 2 * Math.PI / normalAngleN) * a,
+                                p1.getY() * k,
                                 1
                         }),
                         new Matrix(new double[]{
-                                p2.getX() * Math.cos(j * 2 * Math.PI / normalAngleN) * a,
-                                p2.getX() * Math.sin(j * 2 * Math.PI / normalAngleN) * a,
-                                p2.getY(),
+                                p2.getX() * k * Math.cos(j * 2 * Math.PI / normalAngleN) * a,
+                                p2.getX() * k * Math.sin(j * 2 * Math.PI / normalAngleN) * a,
+                                p2.getY() * k,
                                 1
                         }),
                 });
