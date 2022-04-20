@@ -1,4 +1,4 @@
-package fit.g19202.baksheev.lab5.tools.scene.config.datas;
+package fit.g19202.baksheev.lab5.lib.datas;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
