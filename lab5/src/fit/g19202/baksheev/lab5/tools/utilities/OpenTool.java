@@ -39,7 +39,7 @@ public class OpenTool extends Tool {
              var ois = new ObjectInputStream(fos)) {
             var sceneParameters = (SceneConfig) ois.readObject();
             context.setSceneParameters(sceneParameters);
-            context.getScene().updateParameters(sceneParameters);
+            context.getScene().setSceneConfig(sceneParameters);
         } catch (IOException | ClassNotFoundException ex) {
             JOptionPane.showMessageDialog(context.getMainFrame(), "Selected file " + file.getFile().getName() + " can not be opened.");
             ex.printStackTrace();

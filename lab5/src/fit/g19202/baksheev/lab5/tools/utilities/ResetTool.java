@@ -30,6 +30,6 @@ public class ResetTool extends Tool {
         context.getSceneParameters().setThetaX(defaultParameters.getThetaX());
         context.getSceneParameters().setThetaY(defaultParameters.getThetaY());
         context.getSceneParameters().setThetaZ(defaultParameters.getThetaZ());
-        context.getScene().updateParameters(context.getSceneParameters());
+        context.getScene().setSceneConfig(context.getSceneParameters());
     }
 }

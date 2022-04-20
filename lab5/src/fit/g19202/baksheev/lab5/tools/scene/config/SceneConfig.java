@@ -1,24 +1,25 @@
 package fit.g19202.baksheev.lab5.tools.scene.config;
 
 import fit.g19202.baksheev.lab5.lib.Vec4;
+import fit.g19202.baksheev.lab5.lib.datas.SceneShape;
 import fit.g19202.baksheev.lab5.lib.datas.shapes.SceneBox;
 import fit.g19202.baksheev.lab5.lib.datas.shapes.SceneQuadrangle;
 import fit.g19202.baksheev.lab5.lib.datas.shapes.SceneSphere;
 import fit.g19202.baksheev.lab5.lib.datas.shapes.SceneTriangle;
 import fit.g19202.baksheev.lab5.lib.txt.ConfigScanner;
 import fit.g19202.baksheev.lab5.lib.txt.ConfigSerializable;
-import fit.g19202.baksheev.lab5.lib.datas.SceneShape;
 import fit.g19202.baksheev.lab5.lib.txt.ConfigUtils;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 public class SceneConfig implements ConfigSerializable {
@@ -83,6 +84,7 @@ public class SceneConfig implements ConfigSerializable {
                     shape.setOpticalParameters(configScanner.readOpticalParameters());
                     shapes.add(shape);
                 }
+                default -> throw new RuntimeException("Failed to parse " + sectionHeader + " as section header");
             }
         }
     }
