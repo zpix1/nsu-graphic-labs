@@ -26,16 +26,16 @@ public class AboutTool extends Tool {
     public void execute(Context context) {
         JOptionPane.showMessageDialog(context.getMainFrame(),
                 """
-                        Lab4: Wireframe
+                        Lab5: Raytracing
                         Main features:
-                        * Create scenes using b-splines
-                        * Display them as rotation objects
-                        * Save and load scenes
-                        April 2022.
+                        * Load and save scenes
+                        * Display scenes in wire view
+                        * Render scenes
+                        May 2022.
                         Made by Ivan Baksheev, 19202.
                         Swing, Java, IntelliJ IDEA, Mac OS X.
                         \s""",
-                "About WireFrame", JOptionPane.INFORMATION_MESSAGE);
+                "About Raytracing", JOptionPane.INFORMATION_MESSAGE);
 //        return ;
     }
 }

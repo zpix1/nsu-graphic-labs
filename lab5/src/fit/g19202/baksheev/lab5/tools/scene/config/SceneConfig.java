@@ -9,16 +9,16 @@ import fit.g19202.baksheev.lab5.lib.datas.shapes.SceneTriangle;
 import fit.g19202.baksheev.lab5.lib.txt.ConfigScanner;
 import fit.g19202.baksheev.lab5.lib.txt.ConfigSerializable;
 import fit.g19202.baksheev.lab5.lib.txt.ConfigUtils;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Scanner;
+import java.util.regex.Pattern;
 
+@ToString
 @NoArgsConstructor
 @Getter
 @Setter
@@ -37,7 +37,8 @@ public class SceneConfig implements ConfigSerializable {
     @Override
     public void loadConfigFromString(String input) {
         var preprocessed = ConfigUtils.removeComments(input);
-        var scanner = new Scanner(preprocessed);
+        var scanner = new Scanner(preprocessed).useLocale(Locale.US);;
+        scanner.useDelimiter(Pattern.compile("\\s+"));
         var configScanner = new ConfigScanner(scanner);
         A = configScanner.readColor();
         NL = scanner.nextInt();

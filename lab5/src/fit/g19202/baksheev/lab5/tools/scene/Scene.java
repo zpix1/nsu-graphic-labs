@@ -94,58 +94,58 @@ public class Scene extends JPanel {
     }
 
     private void drawFigure(Graphics2D g2) {
-        var width = getWidth();
-        var height = getHeight();
-
-        var a = height * 1. / width;
-        var f = 1.0 / Math.tan(sceneConfig.getFov() / 2);
-        var far = sceneConfig.getFar();
-        var near = sceneConfig.getNear();
-        var q = far / (far - near);
-        var clipMatrix = new Matrix(new double[][]{
-                {a * f, 0, 0, 0},
-                {0, f, 0, 0},
-                {0, 0, q, 1},
-                {0, 0, -near * q, 0}
-        });
-
-        var thetaX = sceneConfig.getThetaX();
-        var thetaY = sceneConfig.getThetaY();
-        var thetaZ = sceneConfig.getThetaZ();
-
-        var rotZ = new Matrix(new double[][]{
-                {Math.cos(thetaZ), Math.sin(thetaZ), 0, 0},
-                {-Math.sin(thetaZ), Math.cos(thetaZ), 0, 0},
-                {0, 0, 1, 0},
-                {0, 0, 0, 1},
-        });
-
-        var rotX = new Matrix(new double[][]{
-                {1, 0, 0, 0},
-                {0, Math.cos(thetaX), Math.sin(thetaX), 0},
-                {0, -Math.sin(thetaX), Math.cos(thetaX), 0},
-                {0, 0, 0, 1},
-        });
-
-        var rotY = new Matrix(new double[][]{
-                {Math.cos(thetaY), 0, Math.sin(thetaY), 0},
-                {0, 1, 0, 0},
-                {-Math.sin(thetaY), 0, Math.cos(thetaY), 0},
-                {0, 0, 0, 1},
-        });
-
-        var rot = rotX.times(rotY).times(rotZ);
-
-        g2.setColor(Color.BLACK);
-        g2.fillRect(0, 0, width, height);
-        g2.setColor(Color.WHITE);
-
-        for (var line : sceneConfig.getPoints()) {
-            var A = line[0].times(rot).times(clipMatrix);
-            var B = line[1].times(rot).times(clipMatrix);
-
-            drawLine(g2, A, B, width, height);
-        }
+//        var width = getWidth();
+//        var height = getHeight();
+//
+//        var a = height * 1. / width;
+//        var f = 1.0 / Math.tan(sceneConfig.getFov() / 2);
+//        var far = sceneConfig.getFar();
+//        var near = sceneConfig.getNear();
+//        var q = far / (far - near);
+//        var clipMatrix = new Matrix(new double[][]{
+//                {a * f, 0, 0, 0},
+//                {0, f, 0, 0},
+//                {0, 0, q, 1},
+//                {0, 0, -near * q, 0}
+//        });
+//
+//        var thetaX = sceneConfig.getThetaX();
+//        var thetaY = sceneConfig.getThetaY();
+//        var thetaZ = sceneConfig.getThetaZ();
+//
+//        var rotZ = new Matrix(new double[][]{
+//                {Math.cos(thetaZ), Math.sin(thetaZ), 0, 0},
+//                {-Math.sin(thetaZ), Math.cos(thetaZ), 0, 0},
+//                {0, 0, 1, 0},
+//                {0, 0, 0, 1},
+//        });
+//
+//        var rotX = new Matrix(new double[][]{
+//                {1, 0, 0, 0},
+//                {0, Math.cos(thetaX), Math.sin(thetaX), 0},
+//                {0, -Math.sin(thetaX), Math.cos(thetaX), 0},
+//                {0, 0, 0, 1},
+//        });
+//
+//        var rotY = new Matrix(new double[][]{
+//                {Math.cos(thetaY), 0, Math.sin(thetaY), 0},
+//                {0, 1, 0, 0},
+//                {-Math.sin(thetaY), 0, Math.cos(thetaY), 0},
+//                {0, 0, 0, 1},
+//        });
+//
+//        var rot = rotX.times(rotY).times(rotZ);
+//
+//        g2.setColor(Color.BLACK);
+//        g2.fillRect(0, 0, width, height);
+//        g2.setColor(Color.WHITE);
+//
+//        for (var line : sceneConfig.getPoints()) {
+//            var A = line[0].times(rot).times(clipMatrix);
+//            var B = line[1].times(rot).times(clipMatrix);
+//
+//            drawLine(g2, A, B, width, height);
+//        }
     }
 
     private void drawParams(Graphics2D g2) {
@@ -159,7 +159,7 @@ public class Scene extends JPanel {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         if (sceneConfig == null || renderConfig == null) {
-            g.drawString("Please load both scene and render config", getWidth() / 2, getHeight() / 2);
+            g.drawString("Please load both scene and render config", getWidth() / 2 - 110, getHeight() / 2);
             return;
         }
         Graphics2D g2 = (Graphics2D) g;

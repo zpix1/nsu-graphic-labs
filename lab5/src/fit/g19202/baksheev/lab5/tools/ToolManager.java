@@ -1,6 +1,5 @@
 package fit.g19202.baksheev.lab5.tools;
 
-import trash.SettingsTool;
 import fit.g19202.baksheev.lab5.tools.utilities.*;
 import lombok.Getter;
 
@@ -20,10 +19,9 @@ public class ToolManager {
 
     private ToolManager() {
         toolList = List.of(
-                new OpenTool(),
+                new OpenSceneTool(),
                 new SaveTool(),
                 new ExitTool(),
-                new SettingsTool(),
                 new ResetTool(),
                 new AboutTool()
         );

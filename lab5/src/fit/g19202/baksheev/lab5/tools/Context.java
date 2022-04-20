@@ -14,7 +14,4 @@ public class Context {
     JFrame mainFrame;
     @Getter
     Scene scene;
-    @Getter
-    @Setter
-    SceneConfig sceneParameters;
 }

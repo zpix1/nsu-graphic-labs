@@ -2,7 +2,9 @@ package fit.g19202.baksheev.lab5.lib;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.ToString;
 
+@ToString
 @AllArgsConstructor
 public class Vec4 {
     @Getter
