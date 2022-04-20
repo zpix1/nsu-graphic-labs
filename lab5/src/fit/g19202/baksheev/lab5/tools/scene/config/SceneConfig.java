@@ -36,10 +36,8 @@ public class SceneConfig implements ConfigSerializable {
 
     @Override
     public void loadConfigFromString(String input) {
-        var preprocessed = ConfigUtils.removeComments(input);
-        var scanner = new Scanner(preprocessed).useLocale(Locale.US);;
-        scanner.useDelimiter(Pattern.compile("\\s+"));
-        var configScanner = new ConfigScanner(scanner);
+        var configScanner = new ConfigScanner(input);
+        var scanner = configScanner.getRawScanner();
         A = configScanner.readColor();
         NL = scanner.nextInt();
         lColors = new Color[NL];

@@ -1,5 +1,6 @@
 package fit.g19202.baksheev.lab5.lib.datas.shapes;
 
+import fit.g19202.baksheev.lab5.lib.Tri;
 import fit.g19202.baksheev.lab5.lib.Vec4;
 import fit.g19202.baksheev.lab5.lib.datas.SceneShape;
 import lombok.Getter;
@@ -14,4 +15,38 @@ import lombok.ToString;
 public class SceneBox extends SceneShape {
     private Vec4 minPoint;
     private Vec4 maxPoint;
+
+    @Override
+    public Tri[] getTriangles() {
+        Vec4
+                p000 = minPoint,
+                p010 = new Vec4(minPoint.getX(), maxPoint.getY(), minPoint.getZ()),
+                p100 = new Vec4(maxPoint.getX(), minPoint.getY(), minPoint.getZ()),
+                p110 = new Vec4(maxPoint.getX(), maxPoint.getY(), minPoint.getZ()),
+
+                p001 = new Vec4(minPoint.getX(), minPoint.getY(), maxPoint.getZ()),
+                p011 = new Vec4(minPoint.getX(), maxPoint.getY(), maxPoint.getZ()),
+                p101 = new Vec4(maxPoint.getX(), minPoint.getY(), maxPoint.getZ()),
+                p111 = maxPoint;
+
+        return new Tri[]{
+                new Tri(p100, p010, p000),
+                new Tri(p100, p010, p110),
+
+                new Tri(p100, p001, p000),
+                new Tri(p100, p001, p101),
+
+                new Tri(p001, p010, p000),
+                new Tri(p001, p010, p011),
+
+                new Tri(p101, p110, p100),
+                new Tri(p101, p110, p111),
+
+                new Tri(p110, p011, p010),
+                new Tri(p110, p011, p111),
+
+                new Tri(p101, p011, p001),
+                new Tri(p101, p011, p111),
+        };
+    }
 }

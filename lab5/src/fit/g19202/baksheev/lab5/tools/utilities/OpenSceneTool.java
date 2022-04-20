@@ -42,9 +42,8 @@ public class OpenSceneTool extends Tool {
             var sceneConfig = new SceneConfig();
             sceneConfig.loadConfigFromString(sceneConfigString);
             context.getScene().setSceneConfig(sceneConfig);
-            System.out.println(sceneConfig.toString());
 
-            var renderConfigFile = new File(UIUtils.removeSuffixIfExists(sceneConfigFile.getFile().getAbsolutePath(), sceneConfigFile.getExtension()));
+            var renderConfigFile = new File(UIUtils.removeSuffixIfExists(sceneConfigFile.getFile().getAbsolutePath(), sceneConfigFile.getExtension()) + "render");
             if (renderConfigFile.exists()) {
                 System.out.println("Also loaded render config: " + renderConfigFile.getName());
                 var renderConfigString = Files.readString(renderConfigFile.toPath(), StandardCharsets.UTF_8);

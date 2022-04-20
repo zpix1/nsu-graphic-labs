@@ -2,14 +2,24 @@ package fit.g19202.baksheev.lab5.lib.txt;
 
 import fit.g19202.baksheev.lab5.lib.Vec4;
 import fit.g19202.baksheev.lab5.lib.datas.OpticalParameters;
-import lombok.AllArgsConstructor;
 
 import java.awt.*;
+import java.util.Locale;
 import java.util.Scanner;
+import java.util.regex.Pattern;
 
-@AllArgsConstructor
 public class ConfigScanner {
     private final Scanner scanner;
+
+    public ConfigScanner(String input) {
+        var preprocessed = ConfigUtils.removeComments(input);
+        scanner = new Scanner(preprocessed).useLocale(Locale.US);
+        scanner.useDelimiter(Pattern.compile("\\s+"));
+    }
+
+    public Scanner getRawScanner() {
+        return scanner;
+    }
 
     public Color readColor() {
         int r = scanner.nextInt();

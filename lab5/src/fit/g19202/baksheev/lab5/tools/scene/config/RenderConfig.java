@@ -46,9 +46,8 @@ public class RenderConfig implements ConfigSerializable {
 
     @Override
     public void loadConfigFromString(String input) {
-        var preprocessed = ConfigUtils.removeComments(input);
-        var scanner = new Scanner(preprocessed);
-        var configScanner = new ConfigScanner(scanner);
+        var configScanner = new ConfigScanner(input);
+        var scanner = configScanner.getRawScanner();
         B = configScanner.readColor();
         GAMMA = scanner.nextDouble();
         DEPTH = scanner.nextDouble();
