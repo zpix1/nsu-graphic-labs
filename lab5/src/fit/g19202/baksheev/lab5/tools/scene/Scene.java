@@ -51,9 +51,9 @@ public class Scene extends JPanel {
             public void mouseWheelMoved(MouseWheelEvent e) {
                 super.mouseWheelMoved(e);
                 if (e.isControlDown()) {
-                    var delta = renderConfig.getView().sub(renderConfig.getEye());
-                    delta = delta.times(delta.abs() * 0.01);
-                    renderConfig.setEye(renderConfig.getEye().add(delta.times(e.getPreciseWheelRotation())));
+                    var delta = renderConfig.getView().sub(renderConfig.getEye()).normalized();
+                    renderConfig.setEye(renderConfig.getEye().add(delta.times(0.1 * e.getPreciseWheelRotation())));
+                    System.out.println(renderConfig.getEye());
                 } else {
                     renderConfig.setZN(renderConfig.getZN() + e.getPreciseWheelRotation() * 0.01);
                 }
@@ -108,8 +108,8 @@ public class Scene extends JPanel {
 
         var a = height * 1. / width;
         var f = 1.0;
-        var far = renderConfig.getZF();
-        var near = renderConfig.getZN();
+        var far = 10.;//renderConfig.getZF();
+        var near = 1.;//renderConfig.getZN();
         var q = far / (far - near);
         var clipMatrix = new Matrix(new double[][]{
                 {a * f, 0, 0, 0},
@@ -139,6 +139,19 @@ public class Scene extends JPanel {
                 {0, 0, 0, 1},
         });
 
+        var eye = renderConfig.getEye();
+        var forward = eye.sub(renderConfig.getView()).normalized();
+        var up = renderConfig.getUp();
+        var right = up.cross(forward);
+
+        var cameraMatrix = new Matrix(new double[][]{
+                right.getData(0),
+                up.getData(0),
+                forward.getData(0),
+                eye.getData(1)
+        }).transpose();
+        cameraMatrix.show();
+
         var rot = rotX.times(rotY).times(rotZ);
 
         g2.setColor(Color.BLACK);
@@ -147,10 +160,12 @@ public class Scene extends JPanel {
 
         for (var shape : sceneConfig.getShapes()) {
             for (var tri : shape.getTriangles()) {
-                var A = tri.getP1().times(rot).times(clipMatrix);
-                var B = tri.getP2().times(rot).times(clipMatrix);
-                var C = tri.getP3().times(rot).times(clipMatrix);
-
+                var A = tri.getP1().times(cameraMatrix).times(clipMatrix);
+                var B = tri.getP2().times(cameraMatrix).times(clipMatrix);
+                var C = tri.getP3().times(cameraMatrix).times(clipMatrix);
+                System.out.println(tri.getP3().times(cameraMatrix));
+//                System.out.println("Withotu clip");
+//                System.out.println(tri.getP3().times(cameraMatrix).wize());
                 drawLine(g2, A, B, width, height);
                 drawLine(g2, B, C, width, height);
                 drawLine(g2, C, A, width, height);
