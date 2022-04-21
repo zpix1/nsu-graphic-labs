@@ -1,13 +1,20 @@
 package fit.g19202.baksheev.lab5;
 
+import cg.FileUtils;
 import cg.MainFrame;
+import fit.g19202.baksheev.lab5.lib.UIUtils;
 import fit.g19202.baksheev.lab5.tools.Context;
 import fit.g19202.baksheev.lab5.tools.Tool;
 import fit.g19202.baksheev.lab5.tools.ToolManager;
 import fit.g19202.baksheev.lab5.tools.scene.Scene;
+import fit.g19202.baksheev.lab5.tools.scene.config.RenderConfig;
+import fit.g19202.baksheev.lab5.tools.scene.config.SceneConfig;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Arrays;
 
 /**
@@ -17,8 +24,8 @@ import java.util.Arrays;
  */
 public class InitMainWindow extends MainFrame {
     private final static String TITLE = "WireFrame";
-    private Context ctx;
-    private Scene scene;
+    private final Context context;
+    private final Scene scene;
 
     /**
      * Default constructor to create main window
@@ -32,7 +39,26 @@ public class InitMainWindow extends MainFrame {
 
         scene = new Scene();
         add(scene);
-        ctx = new Context(this, scene);
+        context = new Context(this, scene);
+
+        try {
+            var sceneConfigFile = new FileUtils.FileWithExtension(new File("./out/production/scene1.scene"), "scene");
+            var sceneConfigString = Files.readString(sceneConfigFile.getFile().toPath(), StandardCharsets.UTF_8);
+            var sceneConfig = new SceneConfig();
+            sceneConfig.loadConfigFromString(sceneConfigString);
+            context.getScene().setSceneConfig(sceneConfig);
+
+            var renderConfigFile = new File(UIUtils.removeSuffixIfExists(sceneConfigFile.getFile().getAbsolutePath(), sceneConfigFile.getExtension()) + "render");
+            if (renderConfigFile.exists()) {
+                System.out.println("Also loaded render config: " + renderConfigFile.getName());
+                var renderConfigString = Files.readString(renderConfigFile.toPath(), StandardCharsets.UTF_8);
+                var renderConfig = new RenderConfig();
+                renderConfig.loadConfigFromString(renderConfigString);
+                context.getScene().setRenderConfig(renderConfig);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
 
         try {
             for (var tool : toolManager.getToolList()) {
@@ -55,7 +81,7 @@ public class InitMainWindow extends MainFrame {
 
     private void applyTool(Tool tool) {
         try {
-            tool.execute(ctx);
+            tool.execute(context);
         } catch (Exception e) {
             e.printStackTrace();
         }

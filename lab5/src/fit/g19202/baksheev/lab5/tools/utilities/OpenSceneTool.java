@@ -29,7 +29,6 @@ public class OpenSceneTool extends Tool {
         return "File/Open Scene";
     }
 
-
     @Override
     public void execute(Context context) {
         var sceneConfigFile = getOpenFileName(context.getMainFrame(), new String[]{"scene"}, "Scene config file");

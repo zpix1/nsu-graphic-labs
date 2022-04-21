@@ -8,13 +8,17 @@ import fit.g19202.baksheev.lab5.tools.scene.config.SceneConfig;
 import javax.swing.*;
 import javax.swing.event.MouseInputAdapter;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 
 public class Scene extends JPanel {
     private SceneConfig sceneConfig;
     private RenderConfig renderConfig;
     private double thetaX, thetaY, thetaZ;
-    private final double speed = 0.5;
+    private final double speed = 0.05f;
+    private double fov = 1.5;
 
     public Scene() {
         var mouseAdapter = new MouseInputAdapter() {
@@ -63,7 +67,6 @@ public class Scene extends JPanel {
         addMouseWheelListener(mouseAdapter);
         addKeyListener(getKeyAdapter());
     }
-
 
     public void setSceneConfig(SceneConfig config) {
         this.sceneConfig = config;
@@ -116,7 +119,7 @@ public class Scene extends JPanel {
         var width = getWidth();
         var height = getHeight();
         var a = height * 1. / width;
-        var f = 1.0 / Math.tan(1.5 / 2);
+        var f = 1.0 / Math.tan(fov / 2);
         var far = 10.;
         var near = 0.1;
         var q = far / (far - near);
@@ -139,8 +142,15 @@ public class Scene extends JPanel {
                 right.getData(0),
                 up.getData(0),
                 forward.getData(0),
-                eye.getData(1)
-        });
+                new double[]{0, 0, 0, 1}
+        }).times(new Matrix(
+                new double[][]{
+                        {1, 0, 0, -eye.getX()},
+                        {0, 1, 0, -eye.getY()},
+                        {0, 0, 1, -eye.getZ()},
+                        {0, 0, 0, 1},
+                }
+        ));
     }
 
     private void drawFigure(Graphics2D g2) {
@@ -169,10 +179,14 @@ public class Scene extends JPanel {
     }
 
     private void drawParams(Graphics2D g2) {
-//        g2.drawString(String.format("Theta X: %.0f°", sceneConfig.getDegThetaX()), 5, 20);
-//        g2.drawString(String.format("Theta Y: %.0f°", sceneConfig.getDegThetaY()), 5, 40);
-//        g2.drawString(String.format("Theta Z: %.0f°", sceneConfig.getDegThetaZ()), 5, 60);
-//        g2.drawString(String.format("FOV: %.0f° (%.2f)", sceneConfig.getDegFov(), sceneConfig.getFov()), 5, 80);
+        g2.drawString(String.format("Theta X: %.0f°", thetaX), 5, 20);
+        g2.drawString(String.format("Theta Y: %.0f°", thetaY), 5, 40);
+        g2.drawString(String.format("Theta Z: %.0f°", thetaZ), 5, 60);
+        g2.drawString(String.format("FOV: %.0f° (%.2f)", fov * 180 / Math.PI, fov), 5, 80);
+        var view = renderConfig.getView();
+        g2.drawString(String.format("View at: %.2f %.2f %.2f", view.getX(), view.getY(), view.getZ()), 5, 100);
+        var cam = renderConfig.getEye();
+        g2.drawString(String.format("Cam at: %.2f %.2f %.2f", cam.getX(), cam.getY(), cam.getZ()), 5, 120);
     }
 
     @Override
@@ -192,17 +206,25 @@ public class Scene extends JPanel {
             @Override
             public void keyPressed(KeyEvent e) {
                 super.keyPressed(e);
-                if (e.getKeyChar() == KeyEvent.VK_UP || e.getExtendedKeyCode() == 0x26) {
-                    renderConfig.setEye(renderConfig.getEye().add(new Vec4(0, 0, speed)));
-                    repaint();
+                Vec4 v = null;
+                if (e.isControlDown() || e.isShiftDown()) {
+                    if (e.getKeyChar() == KeyEvent.VK_UP || e.getExtendedKeyCode() == 0x26) {
+                        v = new Vec4(-speed, 0, 0);
+                    } else if (e.getKeyChar() == KeyEvent.VK_DOWN || e.getExtendedKeyCode() == 0x28) {
+                        v = new Vec4(speed, 0, 0);
+                    }
+                } else if (e.getKeyChar() == KeyEvent.VK_UP || e.getExtendedKeyCode() == 0x26) {
+                    v = new Vec4(0, -speed, 0);
                 } else if (e.getKeyChar() == KeyEvent.VK_DOWN || e.getExtendedKeyCode() == 0x28) {
-                    renderConfig.setEye(renderConfig.getEye().add(new Vec4(0, 0, -speed)));
-                    repaint();
+                    v = new Vec4(0, speed, 0);
                 } else if (e.getKeyChar() == KeyEvent.VK_RIGHT || e.getExtendedKeyCode() == 0x27) {
-                    renderConfig.setEye(renderConfig.getEye().add(new Vec4(0, speed, 0)));
-                    repaint();
+                    v = new Vec4(0, 0, -speed);
                 } else if (e.getKeyChar() == KeyEvent.VK_LEFT || e.getExtendedKeyCode() == 0x25) {
-                    renderConfig.setEye(renderConfig.getEye().add(new Vec4(0, -speed, 0)));
+                    v = new Vec4(0, 0, speed);
+                }
+                if (v != null) {
+                    renderConfig.setEye(renderConfig.getEye().add(v));
+                    renderConfig.setView(renderConfig.getView().add(v));
                     repaint();
                 }
             }
