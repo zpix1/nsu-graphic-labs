@@ -17,6 +17,13 @@ public class Vec4 {
         this.w = 1;
     }
 
+    public Vec4(Matrix A) {
+        this.x = A.get(0, 0);
+        this.y = A.get(1, 0);
+        this.z = A.get(2, 0);
+        this.w = A.get(3, 0);
+    }
+
     // do not add w
     public Vec4 add(Vec4 another) {
         return new Vec4(x + another.x, y + another.y, z + another.z, w);
@@ -52,6 +59,10 @@ public class Vec4 {
     }
 
     public double[] getData(double w) {
+        return new double[]{x, y, z, w};
+    }
+
+    public double[] getData() {
         return new double[]{x, y, z, w};
     }
 

@@ -102,22 +102,7 @@ public class Scene extends JPanel {
         );
     }
 
-    private void drawFigure(Graphics2D g2) {
-        var width = getWidth();
-        var height = getHeight();
-
-        var a = height * 1. / width;
-        var f = 1.0;
-        var far = 10.;//renderConfig.getZF();
-        var near = 1.;//renderConfig.getZN();
-        var q = far / (far - near);
-        var clipMatrix = new Matrix(new double[][]{
-                {a * f, 0, 0, 0},
-                {0, f, 0, 0},
-                {0, 0, q, 1},
-                {0, 0, -near * q, 0}
-        });
-
+    private Matrix getRotMatrix() {
         var rotZ = new Matrix(new double[][]{
                 {Math.cos(thetaZ), Math.sin(thetaZ), 0, 0},
                 {-Math.sin(thetaZ), Math.cos(thetaZ), 0, 0},
@@ -139,6 +124,28 @@ public class Scene extends JPanel {
                 {0, 0, 0, 1},
         });
 
+
+        return rotX.times(rotY).times(rotZ);
+    }
+
+    private Matrix getProjectionMatrix() {
+        var width = getWidth();
+        var height = getHeight();
+        var a = height * 1. / width;
+        var f = 1.0 / Math.tan(1.5 / 2);
+        var far = 10.;
+        var near = 0.1;
+        var q = far / (far - near);
+        return new Matrix(new double[][]{
+                {a * f, 0, 0, 0},
+                {0, f, 0, 0},
+                {0, 0, q, 1},
+                {0, 0, -near * q, 0}
+        });
+
+    }
+
+    private Matrix getCameraMatrix() {
         var eye = renderConfig.getEye();
         var forward = eye.sub(renderConfig.getView()).normalized();
         var up = renderConfig.getUp();
@@ -150,25 +157,31 @@ public class Scene extends JPanel {
                 forward.getData(0),
                 eye.getData(1)
         }).transpose();
-        cameraMatrix.show();
 
-        var rot = rotX.times(rotY).times(rotZ);
+        return cameraMatrix;
+    }
+
+    private void drawFigure(Graphics2D g2) {
+        var width = getWidth();
+        var height = getHeight();
 
         g2.setColor(Color.BLACK);
         g2.fillRect(0, 0, width, height);
         g2.setColor(Color.WHITE);
 
+        var cameraMatrix = getCameraMatrix();
+        var rotMatrix = getRotMatrix();
+        var clipMatrix = getProjectionMatrix();
+        var apply = clipMatrix.times(rotMatrix);
+
         for (var shape : sceneConfig.getShapes()) {
             for (var tri : shape.getTriangles()) {
-                var A = tri.getP1().times(cameraMatrix).times(clipMatrix);
-                var B = tri.getP2().times(cameraMatrix).times(clipMatrix);
-                var C = tri.getP3().times(cameraMatrix).times(clipMatrix);
-                System.out.println(tri.getP3().times(cameraMatrix));
-//                System.out.println("Withotu clip");
-//                System.out.println(tri.getP3().times(cameraMatrix).wize());
-                drawLine(g2, A, B, width, height);
-                drawLine(g2, B, C, width, height);
-                drawLine(g2, C, A, width, height);
+                var a = new Vec4(apply.times(new Matrix(tri.getP1().getData()).transpose()));
+                var b = new Vec4(apply.times(new Matrix(tri.getP2().getData()).transpose()));
+                var c = new Vec4(apply.times(new Matrix(tri.getP3().getData()).transpose()));
+                drawLine(g2, a, b, width, height);
+                drawLine(g2, b, c, width, height);
+                drawLine(g2, c, a, width, height);
             }
         }
     }

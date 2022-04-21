@@ -64,6 +64,22 @@ public class Matrix implements Serializable {
         return C;
     }
 
+    public Vec4 times(Vec4 b) {
+        if (N != 4) {
+            throw new RuntimeException("Illegal matrix dimensions: " + N + " != " + 4);
+        }
+        var x = data[0][0] * b.getX() + data[1][0] * b.getY() + data[2][0] * b.getZ() + data[3][0];
+        var y = data[0][1] * b.getX() + data[1][1] * b.getY() + data[2][1] * b.getZ() + data[3][1];
+        var z = data[0][2] * b.getX() + data[1][2] * b.getY() + data[2][2] * b.getZ() + data[3][2];
+        var w = data[0][3] * b.getX() + data[1][3] * b.getY() + data[2][3] * b.getZ() + data[3][3];
+        if (w != 0) {
+            x /= w;
+            y /= w;
+            z /= w;
+        }
+        return new Vec4(x, y, z);
+    }
+
     public double get(int i, int j) {
         return data[i][j];
     }
