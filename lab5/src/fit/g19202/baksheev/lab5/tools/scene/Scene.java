@@ -8,15 +8,13 @@ import fit.g19202.baksheev.lab5.tools.scene.config.SceneConfig;
 import javax.swing.*;
 import javax.swing.event.MouseInputAdapter;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
+import java.awt.event.*;
 
 public class Scene extends JPanel {
     private SceneConfig sceneConfig;
     private RenderConfig renderConfig;
-    double thetaX, thetaY, thetaZ;
+    private double thetaX, thetaY, thetaZ;
+    private final double speed = 0.5;
 
     public Scene() {
         var mouseAdapter = new MouseInputAdapter() {
@@ -30,6 +28,7 @@ public class Scene extends JPanel {
             @Override
             public void mousePressed(MouseEvent e) {
                 super.mousePressed(e);
+                requestFocusInWindow();
                 startedX = e.getX();
                 startedY = e.getY();
                 savedThetaX = thetaX;
@@ -53,33 +52,18 @@ public class Scene extends JPanel {
                 if (e.isControlDown()) {
                     var delta = renderConfig.getView().sub(renderConfig.getEye()).normalized();
                     renderConfig.setEye(renderConfig.getEye().add(delta.times(0.1 * e.getPreciseWheelRotation())));
-                    System.out.println(renderConfig.getEye());
                 } else {
                     renderConfig.setZN(renderConfig.getZN() + e.getPreciseWheelRotation() * 0.01);
                 }
                 repaint();
             }
         };
-
-        var keyboardAdapter = new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                super.keyPressed(e);
-                if (e.getKeyChar() == KeyEvent.VK_UP) {
-                    renderConfig.setEye(renderConfig.getEye().add(new Vec4(0, 0, 0.1)));
-                    repaint();
-                } else if (e.getKeyChar() == KeyEvent.VK_DOWN) {
-                    renderConfig.setEye(renderConfig.getEye().add(new Vec4(0, 0, -0.1)));
-                    repaint();
-                }
-            }
-        };
-
-        addKeyListener(keyboardAdapter);
         addMouseListener(mouseAdapter);
         addMouseMotionListener(mouseAdapter);
         addMouseWheelListener(mouseAdapter);
+        addKeyListener(getKeyAdapter());
     }
+
 
     public void setSceneConfig(SceneConfig config) {
         this.sceneConfig = config;
@@ -142,7 +126,6 @@ public class Scene extends JPanel {
                 {0, 0, q, 1},
                 {0, 0, -near * q, 0}
         });
-
     }
 
     private Matrix getCameraMatrix() {
@@ -151,14 +134,13 @@ public class Scene extends JPanel {
         var up = renderConfig.getUp();
         var right = up.cross(forward);
 
-        var cameraMatrix = new Matrix(new double[][]{
+
+        return new Matrix(new double[][]{
                 right.getData(0),
                 up.getData(0),
                 forward.getData(0),
                 eye.getData(1)
-        }).transpose();
-
-        return cameraMatrix;
+        });
     }
 
     private void drawFigure(Graphics2D g2) {
@@ -172,7 +154,7 @@ public class Scene extends JPanel {
         var cameraMatrix = getCameraMatrix();
         var rotMatrix = getRotMatrix();
         var clipMatrix = getProjectionMatrix();
-        var apply = clipMatrix.times(rotMatrix);
+        var apply = clipMatrix.times(cameraMatrix).times(rotMatrix);
 
         for (var shape : sceneConfig.getShapes()) {
             for (var tri : shape.getTriangles()) {
@@ -204,4 +186,27 @@ public class Scene extends JPanel {
         drawFigure(g2);
         drawParams(g2);
     }
+
+    public KeyAdapter getKeyAdapter() {
+        return new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                super.keyPressed(e);
+                if (e.getKeyChar() == KeyEvent.VK_UP || e.getExtendedKeyCode() == 0x26) {
+                    renderConfig.setEye(renderConfig.getEye().add(new Vec4(0, 0, speed)));
+                    repaint();
+                } else if (e.getKeyChar() == KeyEvent.VK_DOWN || e.getExtendedKeyCode() == 0x28) {
+                    renderConfig.setEye(renderConfig.getEye().add(new Vec4(0, 0, -speed)));
+                    repaint();
+                } else if (e.getKeyChar() == KeyEvent.VK_RIGHT || e.getExtendedKeyCode() == 0x27) {
+                    renderConfig.setEye(renderConfig.getEye().add(new Vec4(0, speed, 0)));
+                    repaint();
+                } else if (e.getKeyChar() == KeyEvent.VK_LEFT || e.getExtendedKeyCode() == 0x25) {
+                    renderConfig.setEye(renderConfig.getEye().add(new Vec4(0, -speed, 0)));
+                    repaint();
+                }
+            }
+        };
+    }
+
 }

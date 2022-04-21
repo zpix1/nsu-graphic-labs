@@ -17,8 +17,8 @@ import java.util.Arrays;
  */
 public class InitMainWindow extends MainFrame {
     private final static String TITLE = "WireFrame";
-    private final Context ctx;
-    private final Scene scene;
+    private Context ctx;
+    private Scene scene;
 
     /**
      * Default constructor to create main window
@@ -31,9 +31,8 @@ public class InitMainWindow extends MainFrame {
         setMinimumSize(new Dimension(640, 480));
 
         scene = new Scene();
-        ctx = new Context(this, scene);
-
         add(scene);
+        ctx = new Context(this, scene);
 
         try {
             for (var tool : toolManager.getToolList()) {

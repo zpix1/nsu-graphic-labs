@@ -2,7 +2,10 @@ package cg;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.security.InvalidParameterException;
 
@@ -70,7 +73,9 @@ public class MainFrame extends JFrame {
             case BASIC -> new JMenuItem(title);
             case RADIO -> new JRadioButtonMenuItem(title);
         };
-        item.setMnemonic(mnemonic);
+        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_5, InputEvent.CTRL_DOWN_MASK));
+
+//        item.setMnemonic(mnemonic);
         item.setToolTipText(tooltip);
         if (icon != null)
             item.setIcon(new ImageIcon(getClass().getResource("/" + icon), title));
@@ -102,7 +107,7 @@ public class MainFrame extends JFrame {
      */
     public JMenu createSubMenu(String title, int mnemonic) {
         JMenu menu = new JMenu(title);
-        menu.setMnemonic(mnemonic);
+//        menu.setMnemonic(mnemonic);
         return menu;
     }
 
