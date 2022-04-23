@@ -22,8 +22,8 @@ public class Scene extends JPanel {
     private final double fov = 1.5;
     private Vec4 lookDir = new Vec4(0, 0, 0);
 
-    private double fYaw;
-    private double fTheta;
+    private double yawAngle;
+    private double thetaAngle;
 
     public Scene() {
         var mouseAdapter = new MouseInputAdapter() {
@@ -216,7 +216,7 @@ public class Scene extends JPanel {
         var camera = renderConfig.getEye();
         var up = new Vec4(0, 1, 0);
         var target = new Vec4(0, 0, 1);
-        var cameraRotationMatrix = makeYRotationMatrix(fYaw);
+        var cameraRotationMatrix = makeYRotationMatrix(yawAngle);
         lookDir = cameraRotationMatrix.times(target);
         target = camera.add(lookDir);
         var cameraMatrix = makePointAtMatrix(camera, target, up);
@@ -310,10 +310,10 @@ public class Scene extends JPanel {
                     renderConfig.setEye(renderConfig.getEye().sub(forward));
                 }
                 if (e.getKeyChar() == KeyEvent.VK_A || e.getExtendedKeyCode() == 65) {
-                    fYaw -= 0.2;
+                    yawAngle -= 0.2;
                 }
                 if (e.getKeyChar() == KeyEvent.VK_D || e.getExtendedKeyCode() == 68) {
-                    fYaw += 0.2;
+                    yawAngle += 0.2;
                 }
 
                 renderConfig.setEye(renderConfig.getEye().add(v));
