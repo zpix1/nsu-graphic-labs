@@ -73,4 +73,10 @@ public class Vec4 {
 
         return new Vec4(newX, newY, newZ);
     }
+
+    public double dot(Vec4 another) {
+        return this.x * another.x +
+                this.y * another.y +
+                this.z * another.z;
+    }
 }

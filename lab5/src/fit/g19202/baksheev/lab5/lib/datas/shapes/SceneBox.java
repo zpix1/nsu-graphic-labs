@@ -30,23 +30,28 @@ public class SceneBox extends SceneShape {
                 p111 = maxPoint;
 
         return new Tri[]{
-                new Tri(p100, p010, p000),
-                new Tri(p100, p010, p110),
+                new Tri(p000, p010, p110),
+                new Tri(p000, p110, p100),
 
-                new Tri(p100, p001, p000),
-                new Tri(p100, p001, p101),
+// EAST
+                new Tri(p100, p110, p111),
+                new Tri(p100, p111, p101),
 
-                new Tri(p001, p010, p000),
-                new Tri(p001, p010, p011),
-
-                new Tri(p101, p110, p100),
-                new Tri(p101, p110, p111),
-
-                new Tri(p110, p011, p010),
-                new Tri(p110, p011, p111),
-
+// NORTH
+                new Tri(p101, p111, p011),
                 new Tri(p101, p011, p001),
-                new Tri(p101, p011, p111),
+
+// WEST
+                new Tri(p001, p011, p010),
+                new Tri(p001, p010, p000),
+
+// TOP
+                new Tri(p010, p011, p111),
+                new Tri(p010, p111, p110),
+
+// BOTTOM
+                new Tri(p101, p001, p000),
+                new Tri(p101, p000, p100),
         };
     }
 }

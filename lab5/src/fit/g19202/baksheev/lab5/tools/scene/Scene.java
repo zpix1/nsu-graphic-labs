@@ -1,6 +1,7 @@
 package fit.g19202.baksheev.lab5.tools.scene;
 
 import fit.g19202.baksheev.lab5.lib.Matrix;
+import fit.g19202.baksheev.lab5.lib.Tri;
 import fit.g19202.baksheev.lab5.lib.Vec4;
 import fit.g19202.baksheev.lab5.tools.scene.config.RenderConfig;
 import fit.g19202.baksheev.lab5.tools.scene.config.SceneConfig;
@@ -89,6 +90,28 @@ public class Scene extends JPanel {
         );
     }
 
+    private void fillTri(Graphics2D g2, Tri tri, Color c, int width, int height) {
+        var x1 = (int) ((tri.getP1().getX() + 1.0) * width / 2.);
+        var y1 = (int) ((tri.getP1().getY() + 1.0) * height / 2.);
+        var x2 = (int) ((tri.getP2().getX() + 1.0) * width / 2.);
+        var y2 = (int) ((tri.getP2().getY() + 1.0) * height / 2.);
+        var x3 = (int) ((tri.getP3().getX() + 1.0) * width / 2.);
+        var y3 = (int) ((tri.getP3().getY() + 1.0) * height / 2.);
+        g2.setColor(c);
+        g2.fillPolygon(new int[] {x1, x2, x3}, new int[] {y1, y2, y3}, 3);
+    }
+
+    private void drawTri(Graphics2D g2, Tri tri, Color c, int width, int height) {
+        var x1 = (int) ((tri.getP1().getX() + 1.0) * width / 2.);
+        var y1 = (int) ((tri.getP1().getY() + 1.0) * height / 2.);
+        var x2 = (int) ((tri.getP2().getX() + 1.0) * width / 2.);
+        var y2 = (int) ((tri.getP2().getY() + 1.0) * height / 2.);
+        var x3 = (int) ((tri.getP3().getX() + 1.0) * width / 2.);
+        var y3 = (int) ((tri.getP3().getY() + 1.0) * height / 2.);
+        g2.setColor(c);
+        g2.drawPolygon(new int[] {x1, x2, x3}, new int[] {y1, y2, y3}, 3);
+    }
+
     private Matrix getRotMatrix() {
         var rotZ = new Matrix(new double[][]{
                 {Math.cos(thetaZ), Math.sin(thetaZ), 0, 0},
@@ -134,9 +157,8 @@ public class Scene extends JPanel {
     private Matrix getCameraMatrix() {
         var eye = renderConfig.getEye();
         var forward = eye.sub(renderConfig.getView()).normalized();
-        var up = renderConfig.getUp();
-        var right = up.cross(forward);
-
+        var up = renderConfig.getUp().normalized();
+        var right = up.cross(forward).normalized();
 
         return new Matrix(new double[][]{
                 right.getData(0),
@@ -164,21 +186,38 @@ public class Scene extends JPanel {
         var cameraMatrix = getCameraMatrix();
         var rotMatrix = getRotMatrix();
         var clipMatrix = getProjectionMatrix();
-        var apply = clipMatrix.times(cameraMatrix).times(rotMatrix);
+
+        var project = clipMatrix;
+        var rotate = rotMatrix;
 
         for (var shape : sceneConfig.getShapes()) {
             for (var tri : shape.getTriangles()) {
-                var a = new Vec4(apply.times(new Matrix(tri.getP1().getData()).transpose()));
-                var b = new Vec4(apply.times(new Matrix(tri.getP2().getData()).transpose()));
-                var c = new Vec4(apply.times(new Matrix(tri.getP3().getData()).transpose()));
-                drawLine(g2, a, b, width, height);
-                drawLine(g2, b, c, width, height);
-                drawLine(g2, c, a, width, height);
+                var rotatedTri = tri.applyMatrix(rotate);
+                var normal = rotatedTri.normal();
+                if (normal.getZ() < 0.) {
+                    var displayedTri = rotatedTri.applyMatrix(project);
+                    fillTri(g2, displayedTri, Color.RED, width, height);
+                    drawTri(g2, displayedTri, Color.WHITE, width, height);
+
+//                    drawLine(g2, displayedTri.getP1(), displayedTri.getP2(), width, height);
+//                    drawLine(g2, displayedTri.getP2(), displayedTri.getP3(), width, height);
+//                    drawLine(g2, displayedTri.getP3(), displayedTri.getP1(), width, height);
+                }
+//                var center = rotatedTri.getP1();
+//                drawLine(
+//                        g2,
+//                        project.times(center),
+//                        project.times(center.add(normal.times(1./10))),
+//                        width,
+//                        height
+//                );
+//                }
             }
         }
     }
 
     private void drawParams(Graphics2D g2) {
+        g2.setColor(Color.WHITE);
         g2.drawString(String.format("Theta X: %.0f°", thetaX), 5, 20);
         g2.drawString(String.format("Theta Y: %.0f°", thetaY), 5, 40);
         g2.drawString(String.format("Theta Z: %.0f°", thetaZ), 5, 60);
@@ -224,7 +263,7 @@ public class Scene extends JPanel {
                 }
                 if (v != null) {
                     renderConfig.setEye(renderConfig.getEye().add(v));
-                    renderConfig.setView(renderConfig.getView().add(v));
+//                    renderConfig.setView(renderConfig.getView().add(v));
                     repaint();
                 }
             }
