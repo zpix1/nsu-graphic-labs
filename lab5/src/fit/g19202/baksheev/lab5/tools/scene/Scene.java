@@ -19,7 +19,11 @@ public class Scene extends JPanel {
     private RenderConfig renderConfig;
     private double thetaX, thetaY, thetaZ;
     private final double speed = 0.05f;
-    private double fov = 1.5;
+    private final double fov = 1.5;
+    private Vec4 lookDir = new Vec4(0, 0, 0);
+
+    private double fYaw;
+    private double fTheta;
 
     public Scene() {
         var mouseAdapter = new MouseInputAdapter() {
@@ -56,7 +60,7 @@ public class Scene extends JPanel {
                 super.mouseWheelMoved(e);
                 if (e.isControlDown()) {
                     var delta = renderConfig.getView().sub(renderConfig.getEye()).normalized();
-                    renderConfig.setEye(renderConfig.getEye().add(delta.times(0.1 * e.getPreciseWheelRotation())));
+                    renderConfig.setEye(renderConfig.getEye().add(delta.mul(0.1 * e.getPreciseWheelRotation())));
                 } else {
                     renderConfig.setZN(renderConfig.getZN() + e.getPreciseWheelRotation() * 0.01);
                 }
@@ -112,31 +116,33 @@ public class Scene extends JPanel {
         g2.drawPolygon(new int[]{x1, x2, x3}, new int[]{y1, y2, y3}, 3);
     }
 
-    private Matrix getRotMatrix() {
-        var rotZ = new Matrix(new double[][]{
-                {Math.cos(thetaZ), Math.sin(thetaZ), 0, 0},
-                {-Math.sin(thetaZ), Math.cos(thetaZ), 0, 0},
-                {0, 0, 1, 0},
-                {0, 0, 0, 1},
-        });
-
-        var rotX = new Matrix(new double[][]{
-                {1, 0, 0, 0},
-                {0, Math.cos(thetaX), Math.sin(thetaX), 0},
-                {0, -Math.sin(thetaX), Math.cos(thetaX), 0},
-                {0, 0, 0, 1},
-        });
-
-        var rotY = new Matrix(new double[][]{
-                {Math.cos(thetaY), 0, Math.sin(thetaY), 0},
+    private Matrix makeYRotationMatrix(double theta) {
+        return new Matrix(new double[][]{
+                {Math.cos(theta), 0, Math.sin(theta), 0},
                 {0, 1, 0, 0},
-                {-Math.sin(thetaY), 0, Math.cos(thetaY), 0},
+                {-Math.sin(theta), 0, Math.cos(theta), 0},
                 {0, 0, 0, 1},
         });
-
-
-        return rotX.times(rotY).times(rotZ);
     }
+
+//    private Matrix getRotMatrix() {
+//        var rotZ = new Matrix(new double[][]{
+//                {Math.cos(thetaZ), Math.sin(thetaZ), 0, 0},
+//                {-Math.sin(thetaZ), Math.cos(thetaZ), 0, 0},
+//                {0, 0, 1, 0},
+//                {0, 0, 0, 1},
+//        });
+//
+//        var rotX = new Matrix(new double[][]{
+//                {1, 0, 0, 0},
+//                {0, Math.cos(thetaX), Math.sin(thetaX), 0},
+//                {0, -Math.sin(thetaX), Math.cos(thetaX), 0},
+//                {0, 0, 0, 1},
+//        });
+//
+//
+//        return rotX.times(rotY).times(rotZ);
+//    }
 
     private Matrix getProjectionMatrix() {
         var width = getWidth();
@@ -158,7 +164,7 @@ public class Scene extends JPanel {
         var forward = renderConfig.getView()
                 .sub(renderConfig.getEye())
                 .normalized();
-        var a = forward.times(
+        var a = forward.mul(
                 renderConfig.getUp().dot(forward)
         );
         var up = renderConfig.getUp().sub(a).normalized();
@@ -185,6 +191,15 @@ public class Scene extends JPanel {
 //        ));
     }
 
+    private Matrix makeTranslationMatrix(Vec4 how) {
+        return new Matrix(new double[][]{
+                {1, 0, 0, 0},
+                {0, 1, 0, 0},
+                {0, 0, 1, 0},
+                how.getData(1)
+        });
+    }
+
     private void drawFigure(Graphics2D g2) {
         var width = getWidth();
         var height = getHeight();
@@ -193,34 +208,56 @@ public class Scene extends JPanel {
         g2.fillRect(0, 0, width, height);
         g2.setColor(Color.WHITE);
 
-        var cameraMatrix = getCameraMatrix();
+        var projectionMatrix = makeProjectionMatrix(90., height * 1. / width, 0.1, 1000.);
+
+        var translationMatrix = makeTranslationMatrix(new Vec4(0, 0, 0));
+        var worldMatrix = translationMatrix;
+
+        var camera = renderConfig.getEye();
+        var up = new Vec4(0, 1, 0);
+        var target = new Vec4(0, 0, 1);
+        var cameraRotationMatrix = makeYRotationMatrix(fYaw);
+        lookDir = cameraRotationMatrix.times(target);
+        target = camera.add(lookDir);
+        var cameraMatrix = makePointAtMatrix(camera, target, up);
         var viewMatrix = cameraMatrix.inverse();
-        var rotMatrix = getRotMatrix();
-        var projectMatrix = getProjectionMatrix();
-
-        var worldMatrix = rotMatrix;
-
+//        viewMatrix.show();
         for (var shape : sceneConfig.getShapes()) {
             for (var sceneTri : shape.getTriangles()) {
-                var tri = sceneTri;
-//                var normal = tri.normal();
-//                var cameraRay = tri.getP1().sub(renderConfig.getEye());
-//                if (normal.dot(cameraRay) < 0.) {
-
-                var viewTri = tri.applyMatrix(viewMatrix);
-                var projectedTri = viewTri.applyMatrix(projectMatrix);
-                drawTri(g2, projectedTri, Color.WHITE, width, height);
-
-//                    drawLine(
-//                            g2,
-//                            projectMatrix.times(center),
-//                            projectMatrix.times(center.add(normal.times(1. / 10))),
-//                            width,
-//                            height
-//                    );
-//                }
+                var worldTri = sceneTri.applyMatrix(worldMatrix);
+//                System.out.println(worldTri);
+                var viewTri = worldTri.applyMatrix(viewMatrix);
+                var projectTri = viewTri.applyMatrix(projectionMatrix);
+//                System.out.println(projectTri);
+                drawTri(g2, projectTri, Color.WHITE, width, height);
+//                break;
             }
         }
+    }
+
+    private Matrix makeProjectionMatrix(double fovDeg, double ar, double near, double far) {
+        double fovRad = 1. / Math.tan(fovDeg * 0.5 / 180 * Math.PI);
+        return new Matrix(new double[][]{
+                {ar * fovRad, 0, 0, 0},
+                {0, fovRad, 0, 0},
+                {0, 0, far / (far - near), 0},
+                {0, 0, -far * near / (far - near), 0}
+        });
+    }
+
+    private Matrix makePointAtMatrix(Vec4 cam, Vec4 target, Vec4 up) {
+        var forward = target.sub(cam).normalized();
+
+        var a = forward.mul(up.dot(forward));
+        var newUp = up.sub(a).normalized();
+        var right = newUp.cross(forward).normalized();
+
+        return new Matrix(new double[][]{
+                right.getData(0),
+                up.getData(0),
+                forward.getData(0),
+                renderConfig.getEye().getData(1.)
+        });
     }
 
     private void drawParams(Graphics2D g2) {
@@ -252,27 +289,35 @@ public class Scene extends JPanel {
             @Override
             public void keyPressed(KeyEvent e) {
                 super.keyPressed(e);
-                Vec4 v = null;
-                if (e.isControlDown() || e.isShiftDown()) {
-                    if (e.getKeyChar() == KeyEvent.VK_UP || e.getExtendedKeyCode() == 0x26) {
-                        v = new Vec4(-speed, 0, 0);
-                    } else if (e.getKeyChar() == KeyEvent.VK_DOWN || e.getExtendedKeyCode() == 0x28) {
-                        v = new Vec4(speed, 0, 0);
-                    }
-                } else if (e.getKeyChar() == KeyEvent.VK_UP || e.getExtendedKeyCode() == 0x26) {
-                    v = new Vec4(0, -speed, 0);
-                } else if (e.getKeyChar() == KeyEvent.VK_DOWN || e.getExtendedKeyCode() == 0x28) {
-                    v = new Vec4(0, speed, 0);
-                } else if (e.getKeyChar() == KeyEvent.VK_RIGHT || e.getExtendedKeyCode() == 0x27) {
-                    v = new Vec4(0, 0, -speed);
-                } else if (e.getKeyChar() == KeyEvent.VK_LEFT || e.getExtendedKeyCode() == 0x25) {
-                    v = new Vec4(0, 0, speed);
+                Vec4 v = new Vec4(0, 0, 0);
+                if (e.getKeyChar() == KeyEvent.VK_UP || e.getExtendedKeyCode() == 0x26) {
+                    v = v.add(new Vec4(0, -8 * speed, 0));
                 }
-                if (v != null) {
-                    renderConfig.setEye(renderConfig.getEye().add(v));
-//                    renderConfig.setView(renderConfig.getView().add(v));
-                    repaint();
+                if (e.getKeyChar() == KeyEvent.VK_DOWN || e.getExtendedKeyCode() == 0x28) {
+                    v = v.add(new Vec4(0, +8 * speed, 0));
                 }
+                if (e.getKeyChar() == KeyEvent.VK_RIGHT || e.getExtendedKeyCode() == 0x27) {
+                    v = v.add(new Vec4(8 * speed, 0, 0));
+                }
+                if (e.getKeyChar() == KeyEvent.VK_LEFT || e.getExtendedKeyCode() == 0x25) {
+                    v = v.add(new Vec4(-8 * speed, 0, 0));
+                }
+                Vec4 forward = lookDir.mul(.08f);
+                if (e.getKeyChar() == KeyEvent.VK_W || e.getExtendedKeyCode() == 87) {
+                    renderConfig.setEye(renderConfig.getEye().add(forward));
+                }
+                if (e.getKeyChar() == KeyEvent.VK_S || e.getExtendedKeyCode() == 83) {
+                    renderConfig.setEye(renderConfig.getEye().sub(forward));
+                }
+                if (e.getKeyChar() == KeyEvent.VK_A || e.getExtendedKeyCode() == 65) {
+                    fYaw -= 0.2;
+                }
+                if (e.getKeyChar() == KeyEvent.VK_D || e.getExtendedKeyCode() == 68) {
+                    fYaw += 0.2;
+                }
+
+                renderConfig.setEye(renderConfig.getEye().add(v));
+                repaint();
             }
         };
     }

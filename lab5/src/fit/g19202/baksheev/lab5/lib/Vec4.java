@@ -26,21 +26,16 @@ public class Vec4 {
 
     // do not add w
     public Vec4 add(Vec4 another) {
-        return new Vec4(x + another.x, y + another.y, z + another.z, w);
+        return new Vec4(x + another.x, y + another.y, z + another.z);
     }
 
     // do not sub w
     public Vec4 sub(Vec4 another) {
-        return new Vec4(x - another.x, y - another.y, z - another.z, w);
+        return new Vec4(x - another.x, y - another.y, z - another.z);
     }
 
-    public Vec4 times(Matrix A) {
-        var res = new Matrix(new double[]{x, y, z, w}).times(A);
-        return new Vec4(res.get(0, 0), res.get(0, 1), res.get(0, 2), res.get(0, 3));
-    }
-
-    public Vec4 times(double k) {
-        return new Vec4(x * k, y * k, z * k, w);
+    public Vec4 mul(double k) {
+        return new Vec4(x * k, y * k, z * k);
     }
 
     public double abs() {
@@ -48,18 +43,11 @@ public class Vec4 {
     }
 
     public Vec4 normalized() {
-        return times(1 / abs());
+        return mul(1 / abs());
     }
 
-    public Vec4 wize() {
-        if (w == 0.) {
-            return this;
-        }
-        return new Vec4(x / w, y / w, z / w, 1.);
-    }
-
-    public double[] getData(double w) {
-        return new double[]{x, y, z, w};
+    public double[] getData(double tw) {
+        return new double[]{x, y, z, tw};
     }
 
     public double[] getData() {
