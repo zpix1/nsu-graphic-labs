@@ -143,7 +143,7 @@ public class Scene extends JPanel {
         var height = getHeight();
         var a = height * 1. / width;
         var f = 1.0 / Math.tan(fov / 2);
-        var far = 10.;
+        var far = 1.;
         var near = 0.1;
         var q = far / (far - near);
         return new Matrix(new double[][]{
@@ -155,24 +155,34 @@ public class Scene extends JPanel {
     }
 
     private Matrix getCameraMatrix() {
-        var eye = renderConfig.getEye();
-        var forward = eye.sub(renderConfig.getView()).normalized();
-        var up = renderConfig.getUp().normalized();
+        var forward = renderConfig.getView()
+                .sub(renderConfig.getEye())
+                .normalized();
+        var a = forward.times(
+                renderConfig.getUp().dot(forward)
+        );
+        var up = renderConfig.getUp().sub(a).normalized();
         var right = up.cross(forward).normalized();
 
         return new Matrix(new double[][]{
                 right.getData(0),
                 up.getData(0),
                 forward.getData(0),
-                new double[]{0, 0, 0, 1}
-        }).times(new Matrix(
-                new double[][]{
-                        {1, 0, 0, -eye.getX()},
-                        {0, 1, 0, -eye.getY()},
-                        {0, 0, 1, -eye.getZ()},
-                        {0, 0, 0, 1},
-                }
-        ));
+                renderConfig.getEye().getData(1.)
+        });
+//        return new Matrix(new double[][]{
+//                right.getData(0),
+//                up.getData(0),
+//                forward.getData(0),
+//                new double[]{0, 0, 0, 1}
+//        }).times(new Matrix(
+//                new double[][]{
+//                        {1, 0, 0, -eye.getX()},
+//                        {0, 1, 0, -eye.getY()},
+//                        {0, 0, 1, -eye.getZ()},
+//                        {0, 0, 0, 1},
+//                }
+//        ));
     }
 
     private void drawFigure(Graphics2D g2) {
@@ -184,37 +194,30 @@ public class Scene extends JPanel {
         g2.setColor(Color.WHITE);
 
         var cameraMatrix = getCameraMatrix();
+        var viewMatrix = cameraMatrix.inverse();
         var rotMatrix = getRotMatrix();
-        var clipMatrix = getProjectionMatrix();
+        var projectMatrix = getProjectionMatrix();
 
-        var project = clipMatrix;
-        var rotate = rotMatrix;
+        var worldMatrix = rotMatrix;
 
         for (var shape : sceneConfig.getShapes()) {
-            for (var tri : shape.getTriangles()) {
-                var rotatedTri = tri.applyMatrix(rotate);
-                var normal = rotatedTri.normal();
-                if (
-                        normal.dot(
-                                rotatedTri.getP1().sub(renderConfig.getEye())
-                        ) < 0.
-                ) {
-                    var displayedTri = rotatedTri.applyMatrix(project);
-//                    fillTri(g2, displayedTri, Color.RED, width, height);
-                    drawTri(g2, displayedTri, Color.WHITE, width, height);
+            for (var sceneTri : shape.getTriangles()) {
+                var tri = sceneTri;
+//                var normal = tri.normal();
+//                var cameraRay = tri.getP1().sub(renderConfig.getEye());
+//                if (normal.dot(cameraRay) < 0.) {
 
-//                    drawLine(g2, displayedTri.getP1(), displayedTri.getP2(), width, height);
-//                    drawLine(g2, displayedTri.getP2(), displayedTri.getP3(), width, height);
-//                    drawLine(g2, displayedTri.getP3(), displayedTri.getP1(), width, height);
-                }
-//                var center = rotatedTri.getP1();
-//                drawLine(
-//                        g2,
-//                        project.times(center),
-//                        project.times(center.add(normal.times(1./10))),
-//                        width,
-//                        height
-//                );
+                var viewTri = tri.applyMatrix(viewMatrix);
+                var projectedTri = viewTri.applyMatrix(projectMatrix);
+                drawTri(g2, projectedTri, Color.WHITE, width, height);
+
+//                    drawLine(
+//                            g2,
+//                            projectMatrix.times(center),
+//                            projectMatrix.times(center.add(normal.times(1. / 10))),
+//                            width,
+//                            height
+//                    );
 //                }
             }
         }

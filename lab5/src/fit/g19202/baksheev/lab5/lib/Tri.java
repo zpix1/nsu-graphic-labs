@@ -23,4 +23,10 @@ public class Tri {
                 A.times(p3)
         );
     }
+
+    public Vec4 getCenter() {
+        var line1 = p2.sub(p1);
+        var line2 = p3.sub(p1);
+        return p1.add(line1.add(line2).times(1./3));
+    }
 }

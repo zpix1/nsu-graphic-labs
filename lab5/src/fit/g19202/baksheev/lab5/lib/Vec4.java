@@ -53,7 +53,7 @@ public class Vec4 {
 
     public Vec4 wize() {
         if (w == 0.) {
-            w = 1;
+            return this;
         }
         return new Vec4(x / w, y / w, z / w, 1.);
     }
