@@ -98,7 +98,7 @@ public class Scene extends JPanel {
         var x3 = (int) ((tri.getP3().getX() + 1.0) * width / 2.);
         var y3 = (int) ((tri.getP3().getY() + 1.0) * height / 2.);
         g2.setColor(c);
-        g2.fillPolygon(new int[] {x1, x2, x3}, new int[] {y1, y2, y3}, 3);
+        g2.fillPolygon(new int[]{x1, x2, x3}, new int[]{y1, y2, y3}, 3);
     }
 
     private void drawTri(Graphics2D g2, Tri tri, Color c, int width, int height) {
@@ -109,7 +109,7 @@ public class Scene extends JPanel {
         var x3 = (int) ((tri.getP3().getX() + 1.0) * width / 2.);
         var y3 = (int) ((tri.getP3().getY() + 1.0) * height / 2.);
         g2.setColor(c);
-        g2.drawPolygon(new int[] {x1, x2, x3}, new int[] {y1, y2, y3}, 3);
+        g2.drawPolygon(new int[]{x1, x2, x3}, new int[]{y1, y2, y3}, 3);
     }
 
     private Matrix getRotMatrix() {
@@ -194,9 +194,13 @@ public class Scene extends JPanel {
             for (var tri : shape.getTriangles()) {
                 var rotatedTri = tri.applyMatrix(rotate);
                 var normal = rotatedTri.normal();
-                if (normal.getZ() < 0.) {
+                if (
+                        normal.dot(
+                                rotatedTri.getP1().sub(renderConfig.getEye())
+                        ) < 0.
+                ) {
                     var displayedTri = rotatedTri.applyMatrix(project);
-                    fillTri(g2, displayedTri, Color.RED, width, height);
+//                    fillTri(g2, displayedTri, Color.RED, width, height);
                     drawTri(g2, displayedTri, Color.WHITE, width, height);
 
 //                    drawLine(g2, displayedTri.getP1(), displayedTri.getP2(), width, height);
