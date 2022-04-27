@@ -57,4 +57,21 @@ public class SceneSphere extends SceneShape {
 //                new Tri(center, center.add(new Vec4(0, -radius, 0)), center.add(new Vec4(radius, 0, 0))),
 //        };
     }
+
+    public Inter intersect(Vec4 from, Vec4 ray) {
+        var l = center.sub(from);
+        var tca = l.dot(ray);
+//        System.out.print("l");
+//        System.out.println(l);
+//        System.out.print("tca");
+//        System.out.println(tca);
+        if (tca < 0) return null;
+        var d2 = l.dot(l) - tca * tca;
+        if (d2 > radius * radius) return null;
+        var thc = Math.sqrt(radius * radius - d2);
+        return new Inter(
+                tca - thc,
+                tca + thc
+        );
+    }
 }
