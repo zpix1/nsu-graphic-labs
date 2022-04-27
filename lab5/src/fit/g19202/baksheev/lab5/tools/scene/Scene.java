@@ -23,7 +23,6 @@ public class Scene extends JPanel {
     private Vec4 lookDir = new Vec4(0, 0, 0);
 
     private double yawAngle;
-    private double thetaAngle;
 
     public Scene() {
         var mouseAdapter = new MouseInputAdapter() {
@@ -182,19 +181,6 @@ public class Scene extends JPanel {
                 forward.getData(0),
                 renderConfig.getEye().getData(1.)
         });
-//        return new Matrix(new double[][]{
-//                right.getData(0),
-//                up.getData(0),
-//                forward.getData(0),
-//                new double[]{0, 0, 0, 1}
-//        }).times(new Matrix(
-//                new double[][]{
-//                        {1, 0, 0, -eye.getX()},
-//                        {0, 1, 0, -eye.getY()},
-//                        {0, 0, 1, -eye.getZ()},
-//                        {0, 0, 0, 1},
-//                }
-//        ));
     }
 
     private Matrix makeTranslationMatrix(Vec4 how) {
@@ -221,8 +207,8 @@ public class Scene extends JPanel {
         var worldMatrix = translationMatrix.times(rotationMatrix);
 
         var camera = renderConfig.getEye();
-        var up = new Vec4(0, 1, 0);
-        var target = new Vec4(0, 0, 1);
+        var up = renderConfig.getUp();
+        var target = renderConfig.getView();
         var cameraRotationMatrix = makeYRotationMatrix(yawAngle);
         lookDir = cameraRotationMatrix.times(target);
         target = camera.add(lookDir);
@@ -277,7 +263,7 @@ public class Scene extends JPanel {
         g2.drawString(String.format("Theta Y: %.0f°", thetaY), 5, j++ * step);
         g2.drawString(String.format("Theta Z: %.0f°", thetaZ), 5, j++ * step);
         g2.drawString(String.format("Yaw: %.0f°", yawAngle * 180 / Math.PI), 5, j++ * step);
-        g2.drawString(String.format("FOV: %.0f° (%.2f)", fovDeg, fovDeg), 5, j++ * step);
+        g2.drawString(String.format("FOV: %.0f°", fovDeg), 5, j++ * step);
         var view = renderConfig.getView();
         g2.drawString(String.format("View at: %.2f %.2f %.2f", view.getX(), view.getY(), view.getZ()), 5, j++ * step);
         var cam = renderConfig.getEye();
