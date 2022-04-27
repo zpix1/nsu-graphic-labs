@@ -67,4 +67,14 @@ public class Vec4 {
                 this.y * another.y +
                 this.z * another.z;
     }
+
+    public Vec4 wize() {
+        if (w == 0) return this;
+        return new Vec4(
+                this.x / w,
+                this.y / w,
+                this.z / w,
+                1.
+        );
+    }
 }

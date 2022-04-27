@@ -19,7 +19,7 @@ public class Scene extends JPanel {
     private RenderConfig renderConfig;
     private double thetaX, thetaY, thetaZ;
     private final double speed = 0.05f;
-    private final double fov = 1.5;
+    private final double fovDeg = 90;
     private Vec4 lookDir = new Vec4(0, 0, 0);
 
     private double yawAngle;
@@ -125,30 +125,36 @@ public class Scene extends JPanel {
         });
     }
 
-//    private Matrix getRotMatrix() {
-//        var rotZ = new Matrix(new double[][]{
-//                {Math.cos(thetaZ), Math.sin(thetaZ), 0, 0},
-//                {-Math.sin(thetaZ), Math.cos(thetaZ), 0, 0},
-//                {0, 0, 1, 0},
-//                {0, 0, 0, 1},
-//        });
-//
-//        var rotX = new Matrix(new double[][]{
-//                {1, 0, 0, 0},
-//                {0, Math.cos(thetaX), Math.sin(thetaX), 0},
-//                {0, -Math.sin(thetaX), Math.cos(thetaX), 0},
-//                {0, 0, 0, 1},
-//        });
-//
-//
-//        return rotX.times(rotY).times(rotZ);
-//    }
+    private Matrix getRotMatrix(double thetaX, double thetaY, double thetaZ) {
+        var rotZ = new Matrix(new double[][]{
+                {Math.cos(thetaZ), Math.sin(thetaZ), 0, 0},
+                {-Math.sin(thetaZ), Math.cos(thetaZ), 0, 0},
+                {0, 0, 1, 0},
+                {0, 0, 0, 1},
+        });
+
+        var rotY = new Matrix(new double[][]{
+                {Math.cos(thetaY), 0, Math.sin(thetaY), 0},
+                {0, 1, 0, 0},
+                {-Math.sin(thetaY), 0, Math.cos(thetaY), 0},
+                {0, 0, 0, 1},
+        });
+
+        var rotX = new Matrix(new double[][]{
+                {1, 0, 0, 0},
+                {0, Math.cos(thetaX), Math.sin(thetaX), 0},
+                {0, -Math.sin(thetaX), Math.cos(thetaX), 0},
+                {0, 0, 0, 1},
+        });
+
+        return rotX.times(rotY).times(rotZ);
+    }
 
     private Matrix getProjectionMatrix() {
         var width = getWidth();
         var height = getHeight();
         var a = height * 1. / width;
-        var f = 1.0 / Math.tan(fov / 2);
+        var f = 1.0 / Math.tan(fovDeg / 2);
         var far = 1.;
         var near = 0.1;
         var q = far / (far - near);
@@ -208,10 +214,11 @@ public class Scene extends JPanel {
         g2.fillRect(0, 0, width, height);
         g2.setColor(Color.WHITE);
 
-        var projectionMatrix = makeProjectionMatrix(90., height * 1. / width, 0.1, 1000.);
+        var projectionMatrix = makeProjectionMatrix(fovDeg, height * 1. / width, renderConfig.getZN(), renderConfig.getZF()).transpose();
 
         var translationMatrix = makeTranslationMatrix(new Vec4(0, 0, 0));
-        var worldMatrix = translationMatrix;
+        var rotationMatrix = getRotMatrix(thetaX, thetaY, thetaZ);
+        var worldMatrix = translationMatrix.times(rotationMatrix);
 
         var camera = renderConfig.getEye();
         var up = new Vec4(0, 1, 0);
@@ -225,12 +232,14 @@ public class Scene extends JPanel {
         for (var shape : sceneConfig.getShapes()) {
             for (var sceneTri : shape.getTriangles()) {
                 var worldTri = sceneTri.applyMatrix(worldMatrix);
-//                System.out.println(worldTri);
                 var viewTri = worldTri.applyMatrix(viewMatrix);
                 var projectTri = viewTri.applyMatrix(projectionMatrix);
-//                System.out.println(projectTri);
+                projectTri = new Tri(
+                        projectTri.getP1().wize(),
+                        projectTri.getP2().wize(),
+                        projectTri.getP3().wize()
+                );
                 drawTri(g2, projectTri, Color.WHITE, width, height);
-//                break;
             }
         }
     }
@@ -262,14 +271,17 @@ public class Scene extends JPanel {
 
     private void drawParams(Graphics2D g2) {
         g2.setColor(Color.WHITE);
-        g2.drawString(String.format("Theta X: %.0f°", thetaX), 5, 20);
-        g2.drawString(String.format("Theta Y: %.0f°", thetaY), 5, 40);
-        g2.drawString(String.format("Theta Z: %.0f°", thetaZ), 5, 60);
-        g2.drawString(String.format("FOV: %.0f° (%.2f)", fov * 180 / Math.PI, fov), 5, 80);
+        var j = 1;
+        var step = 20;
+        g2.drawString(String.format("Theta X: %.0f°", thetaX), 5, j++ * step);
+        g2.drawString(String.format("Theta Y: %.0f°", thetaY), 5, j++ * step);
+        g2.drawString(String.format("Theta Z: %.0f°", thetaZ), 5, j++ * step);
+        g2.drawString(String.format("Yaw: %.0f°", yawAngle * 180 / Math.PI), 5, j++ * step);
+        g2.drawString(String.format("FOV: %.0f° (%.2f)", fovDeg, fovDeg), 5, j++ * step);
         var view = renderConfig.getView();
-        g2.drawString(String.format("View at: %.2f %.2f %.2f", view.getX(), view.getY(), view.getZ()), 5, 100);
+        g2.drawString(String.format("View at: %.2f %.2f %.2f", view.getX(), view.getY(), view.getZ()), 5, j++ * step);
         var cam = renderConfig.getEye();
-        g2.drawString(String.format("Cam at: %.2f %.2f %.2f", cam.getX(), cam.getY(), cam.getZ()), 5, 120);
+        g2.drawString(String.format("Cam at: %.2f %.2f %.2f", cam.getX(), cam.getY(), cam.getZ()), 5, j++ * step);
     }
 
     @Override
@@ -294,7 +306,7 @@ public class Scene extends JPanel {
                     v = v.add(new Vec4(0, -8 * speed, 0));
                 }
                 if (e.getKeyChar() == KeyEvent.VK_DOWN || e.getExtendedKeyCode() == 0x28) {
-                    v = v.add(new Vec4(0, +8 * speed, 0));
+                    v = v.add(new Vec4(0, 8 * speed, 0));
                 }
                 if (e.getKeyChar() == KeyEvent.VK_RIGHT || e.getExtendedKeyCode() == 0x27) {
                     v = v.add(new Vec4(8 * speed, 0, 0));
@@ -302,18 +314,18 @@ public class Scene extends JPanel {
                 if (e.getKeyChar() == KeyEvent.VK_LEFT || e.getExtendedKeyCode() == 0x25) {
                     v = v.add(new Vec4(-8 * speed, 0, 0));
                 }
-                Vec4 forward = lookDir.mul(.08f);
+                Vec4 forward = lookDir.mul(.3);
                 if (e.getKeyChar() == KeyEvent.VK_W || e.getExtendedKeyCode() == 87) {
-                    renderConfig.setEye(renderConfig.getEye().add(forward));
-                }
-                if (e.getKeyChar() == KeyEvent.VK_S || e.getExtendedKeyCode() == 83) {
                     renderConfig.setEye(renderConfig.getEye().sub(forward));
                 }
+                if (e.getKeyChar() == KeyEvent.VK_S || e.getExtendedKeyCode() == 83) {
+                    renderConfig.setEye(renderConfig.getEye().add(forward));
+                }
                 if (e.getKeyChar() == KeyEvent.VK_A || e.getExtendedKeyCode() == 65) {
-                    yawAngle -= 0.2;
+                    yawAngle -= 0.02 * lookDir.abs();
                 }
                 if (e.getKeyChar() == KeyEvent.VK_D || e.getExtendedKeyCode() == 68) {
-                    yawAngle += 0.2;
+                    yawAngle += 0.02 * lookDir.abs();
                 }
 
                 renderConfig.setEye(renderConfig.getEye().add(v));
