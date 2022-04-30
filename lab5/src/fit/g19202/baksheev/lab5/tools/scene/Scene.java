@@ -401,11 +401,11 @@ public class Scene extends JPanel {
             var L = ray.mul(-1);
 
             reflectionDir = N.mul(2 * N.dot(L)).sub(L).normalized();
-//            reflectionColor = traceRay(
-//                    pHit,
-//                    reflectionDir,
-//                    depth + 1
-//            );
+            reflectionColor = traceRay(
+                    pHit,
+                    reflectionDir,
+                    depth + 1
+            );
         }
 
         var A = sceneConfig.getAmbientColor();
@@ -423,11 +423,6 @@ public class Scene extends JPanel {
 
             for (var shadingShape : sceneConfig.getShapes()) {
                 if (shadingShape == shape) {
-//                    var in = shadingShape.intersect(lightPosition, lightDirection);
-//                    if (in != null && pHit.dist2(in.getPHit()) > 0.000001) {
-//                        notInShadow = false;
-//                        break;
-//                    }
                     continue;
                 }
                 var in = shadingShape.intersect(lightPosition, lightDirection);
@@ -435,7 +430,7 @@ public class Scene extends JPanel {
                     continue;
                 }
                 var d = lightPosition.dist2(in.getPHit());
-                if (d >= lightDistance) {
+                if (d > lightDistance) {
                     continue;
                 }
                 notInShadow = false;
