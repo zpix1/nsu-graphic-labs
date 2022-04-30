@@ -1,5 +1,6 @@
 package fit.g19202.baksheev.lab5.lib.datas;
 
+import fit.g19202.baksheev.lab5.lib.Vec4;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,5 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 public class OpticalParameters {
-    private double KDr, KDg, KDb, KSr, KSg, KSb, Power;
+    private Vec4 Kd;
+    private Vec4 Ks;
+    private double Power;
 }

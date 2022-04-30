@@ -3,7 +3,6 @@ package fit.g19202.baksheev.lab5.lib.txt;
 import fit.g19202.baksheev.lab5.lib.Vec4;
 import fit.g19202.baksheev.lab5.lib.datas.OpticalParameters;
 
-import java.awt.*;
 import java.util.Locale;
 import java.util.Scanner;
 import java.util.regex.Pattern;
@@ -21,11 +20,11 @@ public class ConfigScanner {
         return scanner;
     }
 
-    public Color readColor() {
+    public Vec4 readColor() {
         int r = scanner.nextInt();
         int g = scanner.nextInt();
         int b = scanner.nextInt();
-        return new Color(r, g, b);
+        return new Vec4(r / 255., g / 255., b / 255.);
     }
 
     public Vec4 readPoint() {
@@ -36,14 +35,10 @@ public class ConfigScanner {
     }
 
     public OpticalParameters readOpticalParameters() {
-        var KDr = scanner.nextDouble();
-        var KDg = scanner.nextDouble();
-        var KDb = scanner.nextDouble();
-        var KSr = scanner.nextDouble();
-        var KSg = scanner.nextDouble();
-        var KSb = scanner.nextDouble();
+        var Kd = readPoint();
+        var Ks = readPoint();
         var Power = scanner.nextDouble();
-        return new OpticalParameters(KDr, KDg, KDb, KSr, KSg, KSb, Power);
+        return new OpticalParameters(Kd, Ks, Power);
     }
 
     public String readSectionHeader() {

@@ -3,6 +3,7 @@ package fit.g19202.baksheev.lab5.tools.scene;
 import fit.g19202.baksheev.lab5.lib.Matrix;
 import fit.g19202.baksheev.lab5.lib.Tri;
 import fit.g19202.baksheev.lab5.lib.Vec4;
+import fit.g19202.baksheev.lab5.lib.datas.SceneShape;
 import fit.g19202.baksheev.lab5.lib.datas.shapes.SceneSphere;
 import fit.g19202.baksheev.lab5.tools.scene.config.RenderConfig;
 import fit.g19202.baksheev.lab5.tools.scene.config.SceneConfig;
@@ -163,11 +164,12 @@ public class Scene extends JPanel {
 
         var cameraMatrix = getPointAtMatrix();
         var viewMatrix = cameraMatrix.inverse();
+
+        var all = worldMatrix.times(viewMatrix).times(projectionMatrix);
+
         for (var shape : sceneConfig.getShapes()) {
             for (var sceneTri : shape.getTriangles()) {
-                var worldTri = sceneTri.applyMatrix(worldMatrix);
-                var viewTri = worldTri.applyMatrix(viewMatrix);
-                var projectTri = viewTri.applyMatrix(projectionMatrix);
+                var projectTri = sceneTri.applyMatrix(all);
                 projectTri = new Tri(
                         projectTri.getP1().wize(),
                         projectTri.getP2().wize(),
@@ -176,18 +178,43 @@ public class Scene extends JPanel {
                 drawTri(g2, projectTri, Color.WHITE, width, height);
             }
         }
+
+
+        for (var i = 0; i < sceneConfig.getLColors().length; i++) {
+            var shape = new SceneSphere();
+            shape.setCenter(sceneConfig.getLPositions()[i]);
+            shape.setRadius(0.001);
+            System.out.println(sceneConfig.getLColors()[i].toColor());
+            projectAndDrawShape(g2, all, shape, sceneConfig.getLColors()[i].toColor(), width, height);
+        }
+
+        for (var shape : sceneConfig.getShapes()) {
+            projectAndDrawShape(g2, all, shape, Color.WHITE, width, height);
+        }
+    }
+
+    private void projectAndDrawShape(Graphics2D g2, Matrix all, SceneShape shape, Color color, int width, int height) {
+        for (var sceneTri : shape.getTriangles()) {
+            var projectTri = sceneTri.applyMatrix(all);
+            projectTri = new Tri(
+                    projectTri.getP1().wize(),
+                    projectTri.getP2().wize(),
+                    projectTri.getP3().wize()
+            );
+            drawTri(g2, projectTri, color, width, height);
+        }
     }
 
     private Matrix getPointAtMatrix() {
-        var camera = renderConfig.getEye();
-        var up = renderConfig.getUp();
+        var camera = renderConfig.getCameraPosition();
+        var up = renderConfig.getUpVector();
         lookDir = makeYRotationMatrix(yawAngle).times(new Vec4(0, 0, 1));
         var target = camera.add(lookDir);
         return makePointAtMatrix(camera, target, up);
     }
 
     private Matrix getProjectionMatrix(int width, int height) {
-        return makeProjectionMatrix(fovDeg, height * 1. / width, renderConfig.getZN(), renderConfig.getZF()).transpose();
+        return makeProjectionMatrix(fovDeg, height * 1. / width, renderConfig.getZNear(), renderConfig.getZFar()).transpose();
     }
 
     private Matrix makeProjectionMatrix(double fovDeg, double ar, double near, double far) {
@@ -211,7 +238,7 @@ public class Scene extends JPanel {
                 right.getData(0),
                 up.getData(0),
                 forward.getData(0),
-                renderConfig.getEye().getData(1.)
+                renderConfig.getCameraPosition().getData(1.)
         });
     }
 
@@ -224,9 +251,9 @@ public class Scene extends JPanel {
         g2.drawString(String.format("Theta Z: %.0f°", thetaZ), 5, j++ * step);
         g2.drawString(String.format("Yaw: %.0f°", yawAngle * 180 / Math.PI), 5, j++ * step);
         g2.drawString(String.format("FOV: %.0f°", fovDeg), 5, j++ * step);
-        var view = renderConfig.getView();
+        var view = renderConfig.getViewPosition();
         g2.drawString(String.format("View at: %.2f %.2f %.2f", view.getX(), view.getY(), view.getZ()), 5, j++ * step);
-        var cam = renderConfig.getEye();
+        var cam = renderConfig.getCameraPosition();
         g2.drawString(String.format("Cam at: %.2f %.2f %.2f", cam.getX(), cam.getY(), cam.getZ()), 5, j++ * step);
     }
 
@@ -276,10 +303,10 @@ public class Scene extends JPanel {
                 }
                 Vec4 forward = lookDir.mul(.3);
                 if (e.getKeyChar() == KeyEvent.VK_W || e.getExtendedKeyCode() == 87) {
-                    renderConfig.setEye(renderConfig.getEye().sub(forward));
+                    renderConfig.setCameraPosition(renderConfig.getCameraPosition().sub(forward));
                 }
                 if (e.getKeyChar() == KeyEvent.VK_S || e.getExtendedKeyCode() == 83) {
-                    renderConfig.setEye(renderConfig.getEye().add(forward));
+                    renderConfig.setCameraPosition(renderConfig.getCameraPosition().add(forward));
                 }
                 if (e.getKeyChar() == KeyEvent.VK_A || e.getExtendedKeyCode() == 65) {
                     yawAngle -= 0.02 * lookDir.abs();
@@ -288,7 +315,7 @@ public class Scene extends JPanel {
                     yawAngle += 0.02 * lookDir.abs();
                 }
 
-                renderConfig.setEye(renderConfig.getEye().add(v));
+                renderConfig.setCameraPosition(renderConfig.getCameraPosition().add(v));
                 repaint();
             }
         };
@@ -307,81 +334,138 @@ public class Scene extends JPanel {
     public BufferedImage render() {
         int width = getWidth();
         int height = getHeight();
-        var img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        var ar = height * 1. / width;
 
-        var projectionMatrix = getProjectionMatrix(width, height);
+        var pixels = new Vec4[width][height];
+        var maxColor = 0.;
+
         var cameraMatrix = getPointAtMatrix();
         var angle = Math.tan(Math.PI * 0.5 * fovDeg / 180.);
-        var aspectRatio = width * 1. / height;
-        var far = renderConfig.getZF();
-        var near = renderConfig.getZN();
-        var de = far * near / (far - near);
+        var ar = width * 1. / height;
+        var far = renderConfig.getZFar();
+        var near = renderConfig.getZNear();
+        var removeFar = far * near / (far - near);
+
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                var xx = (x * 1. / width - 0.5) * angle * aspectRatio * de;
-                var yy = (y * 1. / height - 0.5) * angle * de;
+                var xx = (x * 1. / width - 0.5) * angle * ar * removeFar;
+                var yy = (y * 1. / height - 0.5) * angle * removeFar;
                 var ray =
                         cameraMatrix.times(
                                         new Vec4(xx, yy, 0, 0)
                                                 .add(new Vec4(0, 0, -1))
                                 )
-                                .sub(renderConfig.getEye()).normalized();
-
-//                System.out.println(ray);
-
-                var color = traceRay(renderConfig.getEye(), ray, 0);
-                img.setRGB(x, y, color.getRGB());
-
-//                System.out.println(ray);
-//                break;
+                                .sub(renderConfig.getCameraPosition()).normalized();
+                var color = traceRay(renderConfig.getCameraPosition(), ray, 0);
+                maxColor = Math.max(maxColor, Math.max(Math.max(color.getX(), color.getY()), color.getY()));
+                pixels[x][y] = color;
             }
         }
-
+        var img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                var r = Math.pow(pixels[x][y].getX() / maxColor, renderConfig.getGamma());
+                var g = Math.pow(pixels[x][y].getY() / maxColor, renderConfig.getGamma());
+                var b = Math.pow(pixels[x][y].getZ() / maxColor, renderConfig.getGamma());
+                var c = new Vec4(r, g, b);
+                img.setRGB(x, y, c.toColor().getRGB());
+            }
+        }
         return img;
     }
 
-    private Color traceRay(Vec4 from, Vec4 ray, int depth) {
-        SceneSphere nearestShape = null;
-        var nearestInter = Double.POSITIVE_INFINITY;
-        for (var shape : sceneConfig.getShapes()) {
-            if (shape instanceof SceneSphere) {
-                var sphere = (SceneSphere) shape;
-                var inter = sphere.intersect(from, ray);
-                if (inter != null) {
-                    var point = inter.getT1() < 0 ? inter.getT2() : inter.getT1();
-                    if (point < nearestInter) {
-                        nearestInter = point;
-                        nearestShape = sphere;
-                    }
+    private Vec4 traceRay(Vec4 from, Vec4 ray, int depth) {
+        var minDistance = Double.MAX_VALUE;
+        SceneShape shape = null;
+        SceneShape.Inter intersection = null;
+
+        for (var intersectingShape : sceneConfig.getShapes()) {
+            var in = intersectingShape.intersect(from, ray);
+            if (in != null) {
+                if (in.getDistance() < minDistance) {
+                    minDistance = in.getDistance();
+                    shape = intersectingShape;
+                    intersection = in;
                 }
             }
         }
-        if (nearestShape == null) {
-            return renderConfig.getB();
+
+        if (shape == null) {
+            return renderConfig.getBackgroundColor();
         }
-        var surfaceColor = Color.BLACK;
-        var pHit = from.add(ray.mul(nearestInter));
-        var nHit = pHit.sub(nearestShape.getCenter()).normalized();
-        var bias = 1e-4;
-        var inside = false;
-        if (ray.dot(nHit) > 0) {
-            nHit = nHit.mul(-1);
-            inside = true;
+
+        var reflectionColor = new Vec4(0, 0, 0);
+        var pHit = intersection.getPHit();
+        Vec4 reflectionDir = new Vec4(0, 0, 0);
+        if (depth < renderConfig.getDepth()) {
+            var N = intersection.getNormal();
+            var L = ray.mul(-1);
+
+            reflectionDir = N.mul(2 * N.dot(L)).sub(L).normalized();
+//            reflectionColor = traceRay(
+//                    pHit,
+//                    reflectionDir,
+//                    depth + 1
+//            );
         }
-        if (depth < 1) {
-            var refldir = ray.sub(nHit.mul(2).mul(ray.dot(nHit))).normalized();
-            var reflection = traceRay(
-                    pHit.add(nHit.mul(bias)),
-                    refldir,
-                    depth + 1
-            );
-            return new Color(
-                    (int) (reflection.getRed() * 0.5),
-                    (int) (reflection.getGreen() * 0.5),
-                    (int) (reflection.getBlue() * 0.5)
-            );
+
+        var A = sceneConfig.getAmbientColor();
+        var Kd = shape.getOpticalParameters().getKd();
+        var Ks = shape.getOpticalParameters().getKs();
+        var power = shape.getOpticalParameters().getPower();
+
+        var lightsColor = new Vec4(0, 0, 0);
+        for (var i = 0; i < sceneConfig.getLColors().length; i++) {
+            var lightColor = sceneConfig.getLColors()[i];
+            var lightPosition = sceneConfig.getLPositions()[i];
+            var lightDirection = pHit.sub(lightPosition).normalized();
+            var notInShadow = true;
+            var lightDistance = lightPosition.dist2(pHit);
+
+            for (var shadingShape : sceneConfig.getShapes()) {
+                if (shadingShape == shape) {
+//                    var in = shadingShape.intersect(lightPosition, lightDirection);
+//                    if (in != null && pHit.dist2(in.getPHit()) > 0.000001) {
+//                        notInShadow = false;
+//                        break;
+//                    }
+                    continue;
+                }
+                var in = shadingShape.intersect(lightPosition, lightDirection);
+                if (in == null) {
+                    continue;
+                }
+                var d = lightPosition.dist2(in.getPHit());
+                if (d >= lightDistance) {
+                    continue;
+                }
+                notInShadow = false;
+                break;
+            }
+
+            if (notInShadow) {
+                var V = ray;
+                var N = intersection.getNormal();
+                var L = lightPosition.sub(pHit);
+                var R = reflectionDir;
+
+                var Ij = lightColor;
+
+                var Id = Kd.mul(N.dot(L));
+                var Is = Ks.mul(Math.pow(R.dot(V), power));
+                var I0 = Id.add(Is);
+
+                var fAttL = 1. / (1. + lightDistance);
+
+                lightsColor = lightsColor.add(I0.mul(fAttL).vdot(Ij));
+            }
         }
-        return Color.blue;
+
+        double fAttR = 1;
+//        if (depth > 0) {
+//            var distToRef = pHit.dist2(from);
+//            fAttR = 1 / (1 + distToRef);
+//        }
+
+        return  A.vdot(Kd).add(reflectionColor).add(lightsColor).mul(fAttR);
     }
 }

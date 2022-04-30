@@ -59,19 +59,32 @@ public class SceneSphere extends SceneShape {
     }
 
     public Inter intersect(Vec4 from, Vec4 ray) {
-        var l = center.sub(from);
-        var tca = l.dot(ray);
-//        System.out.print("l");
-//        System.out.println(l);
-//        System.out.print("tca");
-//        System.out.println(tca);
-        if (tca < 0) return null;
-        var d2 = l.dot(l) - tca * tca;
-        if (d2 > radius * radius) return null;
-        var thc = Math.sqrt(radius * radius - d2);
+        var B = ray.dot(from.sub(center));
+        var C = from.dist2(center) - radius*radius;
+        var D = B*B - C;
+        if (D < 0) return null;
+        var t0 = -B - Math.sqrt(D);
+
+        double t;
+        if (t0 < 1e-4) {
+            var t1 = -B + Math.sqrt(D);
+            if (t1 < 1e-4) {
+                return null;
+            }
+            t = t1;
+        } else {
+            t = t0;
+        }
+
+        var pHit = from.add(ray.mul(t));
+        var normal = pHit.sub(center).normalized();
+
         return new Inter(
-                tca - thc,
-                tca + thc
+                from,
+                ray,
+                normal,
+                pHit,
+                t
         );
     }
 }

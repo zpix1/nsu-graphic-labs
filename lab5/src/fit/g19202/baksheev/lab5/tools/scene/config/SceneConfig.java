@@ -8,15 +8,10 @@ import fit.g19202.baksheev.lab5.lib.datas.shapes.SceneSphere;
 import fit.g19202.baksheev.lab5.lib.datas.shapes.SceneTriangle;
 import fit.g19202.baksheev.lab5.lib.txt.ConfigScanner;
 import fit.g19202.baksheev.lab5.lib.txt.ConfigSerializable;
-import fit.g19202.baksheev.lab5.lib.txt.ConfigUtils;
 import lombok.*;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import java.util.Scanner;
-import java.util.regex.Pattern;
 
 @ToString
 @NoArgsConstructor
@@ -24,13 +19,13 @@ import java.util.regex.Pattern;
 @Setter
 public class SceneConfig implements ConfigSerializable {
     // рассеянный свет в пространстве RGB в диапазоне 0..255
-    private Color A;
+    private Vec4 ambientColor;
     // число точечных источников в сцене
     // далее идёт NL строк, каждая из которых описывает точечный источник света
     private int NL;
     // LX, LY, LZ – положение источника,
     // LR, LG, LB – цвет источника в пространстве RGB в диапазоне 0..255
-    private Color[] lColors;
+    private Vec4[] lColors;
     private Vec4[] lPositions;
     private List<SceneShape> shapes;
 
@@ -38,9 +33,9 @@ public class SceneConfig implements ConfigSerializable {
     public void loadConfigFromString(String input) {
         var configScanner = new ConfigScanner(input);
         var scanner = configScanner.getRawScanner();
-        A = configScanner.readColor();
+        ambientColor = configScanner.readColor();
         NL = scanner.nextInt();
-        lColors = new Color[NL];
+        lColors = new Vec4[NL];
         lPositions = new Vec4[NL];
         for (int i = 0; i < NL; i++) {
             lPositions[i] = configScanner.readPoint();

@@ -54,4 +54,9 @@ public class SceneBox extends SceneShape {
                 new Tri(p101, p000, p100),
         };
     }
+
+    @Override
+    public Inter intersect(Vec4 from, Vec4 ray) {
+        throw new RuntimeException();
+    }
 }

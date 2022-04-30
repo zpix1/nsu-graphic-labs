@@ -23,4 +23,9 @@ public class SceneTriangle extends SceneShape {
                 new Tri(p1, p2, p3)
         };
     }
+
+    @Override
+    public Inter intersect(Vec4 from, Vec4 ray) {
+        throw new RuntimeException();
+    }
 }

@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
 
+import java.awt.*;
+
 @ToString
 @AllArgsConstructor
 public class Vec4 {
@@ -68,6 +70,12 @@ public class Vec4 {
                 this.z * another.z;
     }
 
+    public Vec4 vdot(Vec4 another) {
+        return new Vec4(this.x * another.x,
+                this.y * another.y,
+                this.z * another.z);
+    }
+
     public Vec4 wize() {
         if (w == 0) return this;
         return new Vec4(
@@ -76,5 +84,26 @@ public class Vec4 {
                 this.z / w,
                 1.
         );
+    }
+
+    private static int ctrim(int c) {
+        if (c > 255) {
+            return 255;
+        }
+        return Math.max(c, 0);
+    }
+
+    public Color toColor() {
+        return new Color(
+                ctrim((int) (this.x * 255)),
+                ctrim((int) (this.y * 255)),
+                ctrim((int) (this.z * 255))
+        );
+    }
+
+    public double dist2(Vec4 b) {
+        return (x - b.x) * (x - b.x) +
+                (y - b.y) * (y - b.y) +
+                (z - b.z) * (z - b.z);
     }
 }
