@@ -440,14 +440,14 @@ public class Scene extends JPanel {
             if (notInShadow) {
                 var V = ray;
                 var N = intersection.getNormal();
-                var L = lightPosition.sub(pHit);
-                var R = reflectionDir;
+                var L = lightPosition.sub(pHit).normalized();
+                var R = reflectionDir.normalized();
 
                 var Ij = lightColor;
 
                 var Id = Kd.mul(N.dot(L));
                 var Is = Ks.mul(Math.pow(R.dot(V), power));
-                var I0 = Id.mul(10);
+                var I0 = Id;
 
                 var fAttL = 1. / (1. + lightDistance);
 
