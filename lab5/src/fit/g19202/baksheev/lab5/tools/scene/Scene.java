@@ -447,7 +447,7 @@ public class Scene extends JPanel {
 
                 var Id = Kd.mul(N.dot(L));
                 var Is = Ks.mul(Math.pow(R.dot(V), power));
-                var I0 = Id.add(Is);
+                var I0 = Id.mul(10);
 
                 var fAttL = 1. / (1. + lightDistance);
 
