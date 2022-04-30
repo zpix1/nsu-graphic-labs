@@ -51,7 +51,7 @@ public class SceneTriangle extends SceneShape {
         var C1 = pHit.sub(p2);
         var C2 = pHit.sub(p3);
 
-        if (N.dot(e0.cross(C0)) > 0 && N.dot(e1.cross(C1)) > 0 && N.dot(e2.cross(C2)) > 0) {
+        if (N.dot(e0.cross(C0)) >= 0 && N.dot(e1.cross(C1)) >= 0 && N.dot(e2.cross(C2)) >= 0) {
             return new Inter(
                     from,
                     ray,

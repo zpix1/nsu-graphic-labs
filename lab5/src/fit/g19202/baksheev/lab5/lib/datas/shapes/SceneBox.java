@@ -94,7 +94,7 @@ public class SceneBox extends SceneShape {
                 ray,
                 normal,
                 pHit,
-                tNear
+                1
         );
     }
 }

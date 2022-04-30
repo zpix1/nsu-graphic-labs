@@ -380,7 +380,7 @@ public class Scene extends JPanel {
         for (var intersectingShape : sceneConfig.getShapes()) {
             var in = intersectingShape.intersect(from, ray);
             if (in != null) {
-                if (in.getDistance() < minDistance) {
+                if (in.getDistance() < minDistance && Math.abs(in.getDistance()) > 0.00001) {
                     minDistance = in.getDistance();
                     shape = intersectingShape;
                     intersection = in;
@@ -459,6 +459,9 @@ public class Scene extends JPanel {
             var distToRef = pHit.dist2(from);
             fAttR = 1 / (1 + distToRef);
         }
+
+//        System.out.println("refl" + reflectionColor);
+//        System.out.println("lightsColor" + lightsColor);
 
         return A.vdot(Kd).add(reflectionColor).add(lightsColor).mul(fAttR);
     }
