@@ -422,15 +422,15 @@ public class Scene extends JPanel {
             var lightDistance = lightPosition.dist2(pHit);
 
             for (var shadingShape : sceneConfig.getShapes()) {
-                if (shadingShape == shape) {
-                    continue;
-                }
+//                if (shadingShape == shape) {
+//                    continue;
+//                }
                 var in = shadingShape.intersect(lightPosition, lightDirection);
                 if (in == null) {
                     continue;
                 }
                 var d = lightPosition.dist2(in.getPHit());
-                if (d > lightDistance) {
+                if (d - lightDistance > -0.001) {
                     continue;
                 }
                 notInShadow = false;
@@ -451,15 +451,15 @@ public class Scene extends JPanel {
 
                 var fAttL = 1. / (1. + lightDistance);
 
-                lightsColor = lightsColor.add(I0.mul(fAttL).vdot(Ij));
+                lightsColor = lightsColor.add(I0.mul(1).vdot(Ij));
             }
         }
 
         double fAttR = 1;
-//        if (depth > 0) {
-//            var distToRef = pHit.dist2(from);
-//            fAttR = 1 / (1 + distToRef);
-//        }
+        if (depth > 0) {
+            var distToRef = pHit.dist2(from);
+            fAttR = 1 / (1 + distToRef);
+        }
 
         return  A.vdot(Kd).add(reflectionColor).add(lightsColor).mul(fAttR);
     }
