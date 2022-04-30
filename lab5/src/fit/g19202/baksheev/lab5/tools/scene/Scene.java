@@ -451,7 +451,7 @@ public class Scene extends JPanel {
 
                 var fAttL = 1. / (1. + lightDistance);
 
-                lightsColor = lightsColor.add(I0.mul(1).vdot(Ij));
+                lightsColor = lightsColor.add(I0.mul(fAttL).vdot(Ij));
             }
         }
 
@@ -461,6 +461,6 @@ public class Scene extends JPanel {
             fAttR = 1 / (1 + distToRef);
         }
 
-        return  A.vdot(Kd).add(reflectionColor).add(lightsColor).mul(fAttR);
+        return A.vdot(Kd).add(reflectionColor).add(lightsColor).mul(fAttR);
     }
 }
