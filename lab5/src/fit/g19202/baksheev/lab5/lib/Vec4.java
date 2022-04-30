@@ -106,4 +106,18 @@ public class Vec4 {
                 (y - b.y) * (y - b.y) +
                 (z - b.z) * (z - b.z);
     }
+
+    public double getI(int i) {
+        if (i == 0) return x;
+        if (i == 1) return y;
+        if (i == 2) return z;
+        throw new RuntimeException("invalid index");
+    }
+
+    public static Vec4 getE(int i) {
+        if (i == 0) return new Vec4(1, 0, 0);
+        if (i == 1) return new Vec4(0, 1, 0);
+        if (i == 2) return new Vec4(0, 0, 1);
+        throw new RuntimeException("invalid index");
+    }
 }

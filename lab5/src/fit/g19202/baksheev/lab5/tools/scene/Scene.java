@@ -184,7 +184,6 @@ public class Scene extends JPanel {
             var shape = new SceneSphere();
             shape.setCenter(sceneConfig.getLPositions()[i]);
             shape.setRadius(0.001);
-            System.out.println(sceneConfig.getLColors()[i].toColor());
             projectAndDrawShape(g2, all, shape, sceneConfig.getLColors()[i].toColor(), width, height);
         }
 
