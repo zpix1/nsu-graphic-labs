@@ -54,47 +54,47 @@ public class SceneBox extends SceneShape {
                 new Tri(p101, p000, p100),
         };
     }
-
-    @Override
-    public Inter intersect(Vec4 from, Vec4 ray) {
-        var tNear = -Double.MAX_VALUE;
-        var tFar = Double.MAX_VALUE;
-        Vec4 normal = null;
-
-        for (int i = 0; i < 3; i++) {
-            if (ray.getI(i) == 0) {
-                if (from.getI(i) < minPoint.getI(i) || from.getI(i) > maxPoint.getI(i)) {
-                    return null;
-                }
-            } else {
-                var t1 = (minPoint.getI(i) - from.getI(i)) / ray.getI(i);
-                var t2 = (maxPoint.getI(i) - from.getI(i)) / ray.getI(i);
-                t1 = Math.min(t1, t2);
-                t2 = Math.max(t1, t2);
-                if (t1 > tNear) {
-                    normal = Vec4.getE(i);
-                    tNear = t1;
-                }
-                if (t2 < tFar) {
-                    tFar = t2;
-                }
-                if (tNear > tFar) {
-                    return null;
-                }
-                if (tFar < 0) {
-                    return null;
-                }
-            }
-        }
-
-        var pHit = from.add(ray.mul(tNear));
-
-        return new Inter(
-                from,
-                ray,
-                normal,
-                pHit,
-                1
-        );
-    }
+//
+//    @Override
+//    public Inter intersect(Vec4 from, Vec4 ray) {
+//        var tNear = -Double.MAX_VALUE;
+//        var tFar = Double.MAX_VALUE;
+//        Vec4 normal = null;
+//
+//        for (int i = 0; i < 3; i++) {
+//            if (ray.getI(i) == 0) {
+//                if (from.getI(i) < minPoint.getI(i) || from.getI(i) > maxPoint.getI(i)) {
+//                    return null;
+//                }
+//            } else {
+//                var t1 = (minPoint.getI(i) - from.getI(i)) / ray.getI(i);
+//                var t2 = (maxPoint.getI(i) - from.getI(i)) / ray.getI(i);
+//                t1 = Math.min(t1, t2);
+//                t2 = Math.max(t1, t2);
+//                if (t1 > tNear) {
+//                    normal = Vec4.getE(i);
+//                    tNear = t1;
+//                }
+//                if (t2 < tFar) {
+//                    tFar = t2;
+//                }
+//                if (tNear > tFar) {
+//                    return null;
+//                }
+//                if (tFar < 0) {
+//                    return null;
+//                }
+//            }
+//        }
+//
+//        var pHit = from.add(ray.mul(tNear));
+//
+//        return new Inter(
+//                from,
+//                ray,
+//                normal,
+//                pHit,
+//                1
+//        );
+//    }
 }
