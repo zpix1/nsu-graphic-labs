@@ -1,10 +1,11 @@
-package fit.g19202.baksheev.lab5.tools.scene;
+package fit.g19202.baksheev.lab5.tools.scene.ui;
 
 import fit.g19202.baksheev.lab5.lib.Matrix;
 import fit.g19202.baksheev.lab5.lib.Tri;
 import fit.g19202.baksheev.lab5.lib.Vec4;
 import fit.g19202.baksheev.lab5.lib.datas.SceneShape;
 import fit.g19202.baksheev.lab5.lib.datas.shapes.SceneSphere;
+import fit.g19202.baksheev.lab5.tools.scene.RayTracer;
 import fit.g19202.baksheev.lab5.tools.scene.config.RenderConfig;
 import fit.g19202.baksheev.lab5.tools.scene.config.SceneConfig;
 

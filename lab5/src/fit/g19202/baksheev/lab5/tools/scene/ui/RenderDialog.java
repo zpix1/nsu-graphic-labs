@@ -1,7 +1,7 @@
-package fit.g19202.baksheev.lab5.tools.scene;
+package fit.g19202.baksheev.lab5.tools.scene.ui;
 
-import cg.MainFrame;
 import fit.g19202.baksheev.lab5.lib.UIUtils;
+import fit.g19202.baksheev.lab5.tools.scene.RayTracer;
 import fit.g19202.baksheev.lab5.tools.scene.config.RenderConfig;
 import fit.g19202.baksheev.lab5.tools.scene.config.SceneConfig;
 
@@ -20,11 +20,30 @@ public class RenderDialog extends JFrame {
         add(UIUtils.getIntegerInput("Height", renderConfig.getSHeight(), 10, 4000, 1, renderConfig::setSHeight));
         var runButton = new JButton("Run");
         runButton.addActionListener(event -> {
+            runButton.setEnabled(false);
             var rayTracer = new RayTracer();
             rayTracer.setRenderConfig(renderConfig);
             rayTracer.setSceneConfig(sceneConfig);
-            var image = rayTracer.render(renderConfig.getSWidth(), renderConfig.getSHeight());
-            new ImageDialog(image);
+            final var progressTracker = new Thread(() -> {
+                try {
+                    while (true) {
+                        Thread.sleep(50);
+                        if (!Double.isNaN(rayTracer.getProgress())) {
+                            runButton.setText(String.format("Running (%.2f%% done)", rayTracer.getProgress() * 100));
+                        }
+                    }
+                } catch (InterruptedException e) {
+                    return;
+                }
+            });
+            new Thread(() -> {
+                runButton.setEnabled(false);
+                progressTracker.start();
+                var image = rayTracer.render(renderConfig.getSWidth(), renderConfig.getSHeight());
+                new ImageDialog(image);
+                progressTracker.interrupt();
+                runButton.setText(String.format("Done!", rayTracer.getProgress() * 100));
+            }).start();
         });
         add(runButton);
         setVisible(true);

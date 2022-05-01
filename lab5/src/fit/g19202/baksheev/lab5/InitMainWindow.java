@@ -6,7 +6,7 @@ import fit.g19202.baksheev.lab5.lib.UIUtils;
 import fit.g19202.baksheev.lab5.tools.Context;
 import fit.g19202.baksheev.lab5.tools.Tool;
 import fit.g19202.baksheev.lab5.tools.ToolManager;
-import fit.g19202.baksheev.lab5.tools.scene.Scene;
+import fit.g19202.baksheev.lab5.tools.scene.ui.Scene;
 import fit.g19202.baksheev.lab5.tools.scene.config.RenderConfig;
 import fit.g19202.baksheev.lab5.tools.scene.config.SceneConfig;
 

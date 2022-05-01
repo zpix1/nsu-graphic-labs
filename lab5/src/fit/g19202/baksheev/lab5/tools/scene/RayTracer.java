@@ -7,6 +7,13 @@ import fit.g19202.baksheev.lab5.tools.scene.config.SceneConfig;
 import lombok.Setter;
 
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class RayTracer {
     @Setter
@@ -14,9 +21,20 @@ public class RayTracer {
     @Setter
     private RenderConfig renderConfig;
 
+    private int toDo = 0;
+    private AtomicInteger done = new AtomicInteger(0);
+
+    public double getProgress() {
+        return done.get() * 1. / toDo;
+    }
+
     public BufferedImage render(int width, int height) {
+        var service = Executors.newFixedThreadPool(30);
+        var tasks = new ArrayList<Future>();
+        toDo = width * height;
+
         var pixels = new Vec4[width][height];
-        var maxColor = 0.;
+        var maxColor = new AtomicReference<>(0.);
 
         var cameraMatrix = RenderUtils.getPointAtMatrix(renderConfig);
         var angle = Math.tan(Math.PI * 0.5 * renderConfig.getFovDeg() / 180.);
@@ -26,29 +44,43 @@ public class RayTracer {
         var removeFar = far * near / (far - near);
 
         for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                var xx = (x * 1. / width - 0.5) * angle * ar * removeFar;
-                var yy = (y * 1. / height - 0.5) * angle * removeFar;
-                var ray =
-                        cameraMatrix.times(
-                                        new Vec4(xx, yy, -1, 1)
-                                )
-                                .sub(renderConfig.getCameraPosition()).normalized();
-                var color = traceRay(renderConfig.getCameraPosition(), ray, 0);
-                maxColor = Math.max(maxColor, Math.max(Math.max(color.getX(), color.getY()), color.getY()));
-                pixels[x][y] = color;
+            int finalX = x;
+            tasks.add(service.submit(() -> {
+                for (int y = 0; y < height; y++) {
+                    var xx = (finalX * 1. / width - 0.5) * angle * ar * removeFar;
+                    var yy = (y * 1. / height - 0.5) * angle * removeFar;
+                    var ray =
+                            cameraMatrix.times(
+                                            new Vec4(xx, yy, -1, 1)
+                                    )
+                                    .sub(renderConfig.getCameraPosition()).normalized();
+                    var color = traceRay(renderConfig.getCameraPosition(), ray, 0);
+                    maxColor.getAndUpdate(v -> Math.max(v, Math.max(Math.max(color.getX(), color.getY()), color.getY())));
+                    pixels[finalX][y] = color;
+                    done.incrementAndGet();
+                }
+            }));
+        }
+
+        for (var f: tasks) {
+            try {
+                f.get();
+            } catch (InterruptedException | ExecutionException e) {
+                return null;
             }
         }
+
         var img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                var r = Math.pow(pixels[x][y].getX() / maxColor, renderConfig.getGamma());
-                var g = Math.pow(pixels[x][y].getY() / maxColor, renderConfig.getGamma());
-                var b = Math.pow(pixels[x][y].getZ() / maxColor, renderConfig.getGamma());
+                var r = Math.pow(pixels[x][y].getX() / maxColor.get(), renderConfig.getGamma());
+                var g = Math.pow(pixels[x][y].getY() / maxColor.get(), renderConfig.getGamma());
+                var b = Math.pow(pixels[x][y].getZ() / maxColor.get(), renderConfig.getGamma());
                 var c = new Vec4(r, g, b);
                 img.setRGB(x, y, c.toColor().getRGB());
             }
         }
+
         return img;
     }
 

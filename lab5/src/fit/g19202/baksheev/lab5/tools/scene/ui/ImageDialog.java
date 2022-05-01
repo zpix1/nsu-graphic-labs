@@ -1,4 +1,4 @@
-package fit.g19202.baksheev.lab5.tools.scene;
+package fit.g19202.baksheev.lab5.tools.scene.ui;
 
 import cg.MainFrame;
 
@@ -20,7 +20,7 @@ public class ImageDialog extends MainFrame {
     }
 
     public ImageDialog(BufferedImage image) {
-        super(640, (int) (640 * image.getHeight() * 1. / image.getWidth()) + 40, "Result");
+        super(640, (int) (640 * image.getHeight() * 1. / image.getWidth()) + 40, "Result", true);
         this.image = image;
         addSubMenu("File", 0);
         addMenuItem("File/Save", "Save", 0, new File("save.gif"), event -> {

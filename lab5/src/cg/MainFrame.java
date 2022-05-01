@@ -51,6 +51,11 @@ public class MainFrame extends JFrame {
         setTitle(title);
     }
 
+    public MainFrame(int x, int y, String title, boolean isModal) {
+        this(x, y, title);
+        setDefaultCloseOperation(HIDE_ON_CLOSE);
+    }
+
     public JMenuItem createMenuItem(String title, String tooltip, int mnemonic, File icon, ActionListener actionMethod) throws SecurityException {
         return createMenuItem(title, tooltip, mnemonic, icon, actionMethod, ButtonType.BASIC);
     }

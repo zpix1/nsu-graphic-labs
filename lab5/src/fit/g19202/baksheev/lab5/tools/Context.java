@@ -1,10 +1,8 @@
 package fit.g19202.baksheev.lab5.tools;
 
-import fit.g19202.baksheev.lab5.tools.scene.Scene;
-import fit.g19202.baksheev.lab5.tools.scene.config.SceneConfig;
+import fit.g19202.baksheev.lab5.tools.scene.ui.Scene;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 
 import javax.swing.*;
 
