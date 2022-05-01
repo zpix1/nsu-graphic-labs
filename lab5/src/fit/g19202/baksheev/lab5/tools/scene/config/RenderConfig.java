@@ -40,6 +40,8 @@ public class RenderConfig implements ConfigSerializable {
     // матрица расположение на расстояние ZN от точки EYE по направлению на точку VIEW
     private double SWidth, SHeight;
 
+    private double fovDeg = 90;
+
     @Override
     public void loadConfigFromString(String input) {
         var configScanner = new ConfigScanner(input);
