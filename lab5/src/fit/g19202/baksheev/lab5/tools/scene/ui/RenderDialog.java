@@ -15,9 +15,9 @@ public class RenderDialog extends JFrame {
         setResizable(false);
         setLayout(new GridLayout(5, 1));
         add(UIUtils.getDoubleInput("Gamma value", renderConfig.getGamma(), 0.1, 10, 0.1, renderConfig::setGamma));
-        add(UIUtils.getIntegerInput("Depth value", renderConfig.getDepth(), 0, 3, 1, renderConfig::setDepth));
-        add(UIUtils.getIntegerInput("Width", renderConfig.getSWidth(), 10, 4000, 1, renderConfig::setSWidth));
-        add(UIUtils.getIntegerInput("Height", renderConfig.getSHeight(), 10, 4000, 1, renderConfig::setSHeight));
+        add(UIUtils.getIntegerInput("Depth value", renderConfig.getDepth(), 0, 10, 1, renderConfig::setDepth));
+        add(UIUtils.getIntegerInput("Width", renderConfig.getSWidth(), 10, 40000, 1, renderConfig::setSWidth));
+        add(UIUtils.getIntegerInput("Height", renderConfig.getSHeight(), 10, 40000, 1, renderConfig::setSHeight));
         var runButton = new JButton("Run");
         runButton.addActionListener(event -> {
             runButton.setEnabled(false);
@@ -42,7 +42,8 @@ public class RenderDialog extends JFrame {
                 var image = rayTracer.render(renderConfig.getSWidth(), renderConfig.getSHeight());
                 new ImageDialog(image);
                 progressTracker.interrupt();
-                runButton.setText(String.format("Done!", rayTracer.getProgress() * 100));
+                runButton.setText("Done! Run again");
+                runButton.setEnabled(true);
             }).start();
         });
         add(runButton);
