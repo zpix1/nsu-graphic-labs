@@ -5,10 +5,15 @@ import fit.g19202.baksheev.lab5.lib.Vec4;
 import fit.g19202.baksheev.lab5.tools.scene.config.RenderConfig;
 
 public class RenderUtils {
+    public static Vec4 getLookDir(RenderConfig renderConfig) {
+        var camera = renderConfig.getCameraPosition();
+        return camera.sub(renderConfig.getViewPosition()).normalized();
+    }
+
     public static Matrix getPointAtMatrix(RenderConfig renderConfig) {
         var camera = renderConfig.getCameraPosition();
         var up = renderConfig.getUpVector();
-        var lookDir = new Vec4(0, 0, 1);
+        var lookDir = camera.sub(renderConfig.getViewPosition()).normalized();
         var target = camera.add(lookDir);
         return makePointAtMatrix(camera, target, up);
     }
@@ -22,7 +27,7 @@ public class RenderUtils {
 
         return new Matrix(new double[][]{
                 right.getData(0),
-                up.getData(0),
+                newUp.getData(0),
                 forward.getData(0),
                 cam.getData(1.)
         });
@@ -35,11 +40,11 @@ public class RenderUtils {
                 {0, fovRad, 0, 0},
                 {0, 0, far / (far - near), 0},
                 {0, 0, -far * near / (far - near), 0}
-        });
+        }).transpose();
     }
 
     public static Matrix getProjectionMatrix(int width, int height, RenderConfig renderConfig) {
-        return makeProjectionMatrix(90., height * 1. / width, renderConfig.getZNear(), renderConfig.getZFar()).transpose();
+        return makeProjectionMatrix(90., height * 1. / width, renderConfig.getZNear(), renderConfig.getZFar());
     }
 
     public static Matrix makeTranslationMatrix(Vec4 how) {

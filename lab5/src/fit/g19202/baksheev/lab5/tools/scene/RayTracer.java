@@ -4,7 +4,6 @@ import fit.g19202.baksheev.lab5.lib.Vec4;
 import fit.g19202.baksheev.lab5.lib.datas.SceneShape;
 import fit.g19202.baksheev.lab5.tools.scene.config.RenderConfig;
 import fit.g19202.baksheev.lab5.tools.scene.config.SceneConfig;
-import lombok.AllArgsConstructor;
 import lombok.Setter;
 
 import java.awt.image.BufferedImage;
@@ -32,8 +31,7 @@ public class RayTracer {
                 var yy = (y * 1. / height - 0.5) * angle * removeFar;
                 var ray =
                         cameraMatrix.times(
-                                        new Vec4(xx, yy, 0, 0)
-                                                .add(new Vec4(0, 0, -1))
+                                        new Vec4(xx, yy, -1, 1)
                                 )
                                 .sub(renderConfig.getCameraPosition()).normalized();
                 var color = traceRay(renderConfig.getCameraPosition(), ray, 0);

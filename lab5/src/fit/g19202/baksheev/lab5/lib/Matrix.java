@@ -83,13 +83,17 @@ public class Matrix implements Serializable {
     public void show() {
         for (int i = 0; i < M; i++) {
             for (int j = 0; j < N; j++) {
-                System.out.printf("%5.2f ", data[i][j]);
+                System.out.printf("%5.5f ", data[i][j]);
             }
             System.out.println();
         }
     }
 
     public Matrix inverse() {
+        if (N != 4 || M != 4) {
+            throw new RuntimeException("Only 4x4 matrices are supported");
+        }
+
         var A = new Matrix(M, N);
         A.data[0][0] = data[0][0]; A.data[0][1] = data[1][0]; A.data[0][2] = data[2][0]; A.data[0][3] = 0.0f;
         A.data[1][0] = data[0][1]; A.data[1][1] = data[1][1]; A.data[1][2] = data[2][1]; A.data[1][3] = 0.0f;

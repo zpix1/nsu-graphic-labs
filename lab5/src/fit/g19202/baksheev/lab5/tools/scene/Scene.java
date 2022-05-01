@@ -14,18 +14,18 @@ import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
 
 import static fit.g19202.baksheev.lab5.tools.scene.RenderUtils.*;
 
 public class Scene extends JPanel {
     private SceneConfig sceneConfig;
     private RenderConfig renderConfig;
-    private final double speed = 0.05f;
-    private Vec4 lookDir = new Vec4(0, 0, 0);
+    private final double ARROW_SPEED = 0.05;
+    private final double WS_SPEED = 0.5;
     private boolean isRayTracingModeEnabled = false;
     private final RayTracer rayTracer;
     private double thetaX, thetaY, thetaZ;
+    private Vec4 baseCameraPos;
 
     public Scene() {
         var keyAdapter = new KeyAdapter() {
@@ -39,26 +39,28 @@ public class Scene extends JPanel {
                 }
                 Vec4 v = new Vec4(0, 0, 0);
                 if (e.getKeyChar() == KeyEvent.VK_UP || e.getExtendedKeyCode() == 0x26) {
-                    v = v.add(new Vec4(0, -8 * speed, 0));
+                    v = v.add(new Vec4(0, -8 * ARROW_SPEED, 0));
                 }
                 if (e.getKeyChar() == KeyEvent.VK_DOWN || e.getExtendedKeyCode() == 0x28) {
-                    v = v.add(new Vec4(0, 8 * speed, 0));
+                    v = v.add(new Vec4(0, 8 * ARROW_SPEED, 0));
                 }
                 if (e.getKeyChar() == KeyEvent.VK_RIGHT || e.getExtendedKeyCode() == 0x27) {
-                    v = v.add(new Vec4(8 * speed, 0, 0));
+                    v = v.add(new Vec4(8 * ARROW_SPEED, 0, 0));
                 }
                 if (e.getKeyChar() == KeyEvent.VK_LEFT || e.getExtendedKeyCode() == 0x25) {
-                    v = v.add(new Vec4(-8 * speed, 0, 0));
+                    v = v.add(new Vec4(-8 * ARROW_SPEED, 0, 0));
                 }
-                Vec4 forward = lookDir.mul(.3);
+                Vec4 forward = getLookDir(renderConfig).mul(WS_SPEED);
                 if (e.getKeyChar() == KeyEvent.VK_W || e.getExtendedKeyCode() == 87) {
-                    renderConfig.setCameraPosition(renderConfig.getCameraPosition().sub(forward));
+                    baseCameraPos = baseCameraPos.sub(forward);
                 }
                 if (e.getKeyChar() == KeyEvent.VK_S || e.getExtendedKeyCode() == 83) {
-                    renderConfig.setCameraPosition(renderConfig.getCameraPosition().add(forward));
+                    baseCameraPos = baseCameraPos.add(forward);
                 }
 
-                renderConfig.setCameraPosition(renderConfig.getCameraPosition().add(v));
+                baseCameraPos = baseCameraPos.add(v);
+                syncCameraPosWithBase();
+
                 repaint();
             }
         };
@@ -85,9 +87,10 @@ public class Scene extends JPanel {
             public void mouseDragged(MouseEvent e) {
                 super.mouseDragged(e);
                 if (e.getButton() == MouseEvent.BUTTON1) {
-                    thetaZ = savedThetaZ + (startedX - e.getX()) * 0.03;
-                    thetaY = savedThetaY + (startedY - e.getY()) * -0.03;
+                    thetaY = savedThetaY + (startedX - e.getX()) * 0.03;
+                    thetaZ = savedThetaZ + (startedY - e.getY()) * -0.03;
                 }
+                syncCameraPosWithBase();
                 repaint();
             }
         };
@@ -107,8 +110,14 @@ public class Scene extends JPanel {
 
     public void setRenderConfig(RenderConfig config) {
         this.renderConfig = config;
+        baseCameraPos = config.getCameraPosition();
         this.rayTracer.setRenderConfig(config);
         repaint();
+    }
+
+    private void syncCameraPosWithBase() {
+        var rotationMatrix = makeRotationMatrix(thetaX, thetaY, thetaZ);
+        renderConfig.setCameraPosition(rotationMatrix.times(baseCameraPos));
     }
 
     private void drawLine(Graphics2D g2, Vec4 a, Vec4 b, int width, int height) {
@@ -153,24 +162,11 @@ public class Scene extends JPanel {
         g2.setColor(Color.WHITE);
 
         var projectionMatrix = getProjectionMatrix(width, height, renderConfig);
-//        var rotationMatrix = getR(thetaX, thetaY, thetaZ);
 
         var cameraMatrix = getPointAtMatrix(renderConfig);
         var viewMatrix = cameraMatrix.inverse();
 
         var all = viewMatrix.times(projectionMatrix);
-
-        for (var shape : sceneConfig.getShapes()) {
-            for (var sceneTri : shape.getTriangles()) {
-                var projectTri = sceneTri.applyMatrix(all);
-                projectTri = new Tri(
-                        projectTri.getP1().wize(),
-                        projectTri.getP2().wize(),
-                        projectTri.getP3().wize()
-                );
-                drawTri(g2, projectTri, Color.WHITE, width, height);
-            }
-        }
 
         for (var i = 0; i < sceneConfig.getLColors().length; i++) {
             var shape = new SceneSphere();
@@ -200,9 +196,9 @@ public class Scene extends JPanel {
         g2.setColor(Color.WHITE);
         var j = 1;
         var step = 20;
-//        g2.drawString(String.format("Theta X: %.0f°", thetaX), 5, j++ * step);
-//        g2.drawString(String.format("Theta Y: %.0f°", thetaY), 5, j++ * step);
-//        g2.drawString(String.format("Theta Z: %.0f°", thetaZ), 5, j++ * step);
+        g2.drawString(String.format("Theta X: %.0f°", thetaX * 180 / Math.PI), 5, j++ * step);
+        g2.drawString(String.format("Theta Y: %.0f°", thetaY * 180 / Math.PI), 5, j++ * step);
+        g2.drawString(String.format("Theta Z: %.0f°", thetaZ * 180 / Math.PI), 5, j++ * step);
 //        g2.drawString(String.format("Yaw: %.0f°", yawAngle * 180 / Math.PI), 5, j++ * step);
         g2.drawString(String.format("FOV: %.0f°", renderConfig.getFovDeg()), 5, j++ * step);
         var view = renderConfig.getViewPosition();
