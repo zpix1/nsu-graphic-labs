@@ -223,4 +223,10 @@ public class Scene extends JPanel {
         drawFigure(g2);
         drawParams(g2);
     }
+
+    public void init() {
+        thetaX = thetaY = thetaZ = 0;
+        renderConfig.setCameraPosition(baseCameraPos);
+        repaint();
+    }
 }

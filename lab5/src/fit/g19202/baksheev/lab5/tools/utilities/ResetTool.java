@@ -23,10 +23,6 @@ public class ResetTool extends Tool {
 
     @Override
     public void execute(Context context) {
-//        context.getSceneParameters().setFov(defaultParameters.getFov());
-//        context.getSceneParameters().setThetaX(defaultParameters.getThetaX());
-//        context.getSceneParameters().setThetaY(defaultParameters.getThetaY());
-//        context.getSceneParameters().setThetaZ(defaultParameters.getThetaZ());
-//        context.getScene().setSceneConfig(context.getSceneParameters());
+        context.getScene().init();
     }
 }
