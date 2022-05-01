@@ -229,4 +229,9 @@ public class Scene extends JPanel {
         renderConfig.setCameraPosition(baseCameraPos);
         repaint();
     }
+
+    public void showRenderDialog(JFrame base) {
+        var rd = new RenderDialog(renderConfig, sceneConfig);
+        rd.setVisible(true);
+    }
 }

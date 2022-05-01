@@ -23,6 +23,7 @@ public class ToolManager {
                 new SaveTool(),
                 new ExitTool(),
                 new ResetTool(),
+                new RenderTool(),
                 new AboutTool()
         );
     }

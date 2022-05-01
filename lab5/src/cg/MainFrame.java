@@ -73,9 +73,8 @@ public class MainFrame extends JFrame {
             case BASIC -> new JMenuItem(title);
             case RADIO -> new JRadioButtonMenuItem(title);
         };
-        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_5, InputEvent.CTRL_DOWN_MASK));
 
-//        item.setMnemonic(mnemonic);
+        item.setMnemonic(mnemonic);
         item.setToolTipText(tooltip);
         if (icon != null)
             item.setIcon(new ImageIcon(getClass().getResource("/" + icon), title));

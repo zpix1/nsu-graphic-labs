@@ -18,7 +18,7 @@ public class RenderConfig implements ConfigSerializable {
     private double Gamma;
 
     // глубина трассировки
-    private double Depth;
+    private int Depth;
 
     // rough – грубое, normal – среднее, fine – высокое
     public enum Quality {
@@ -38,7 +38,7 @@ public class RenderConfig implements ConfigSerializable {
     private double ZNear, ZFar;
     // ширина и высота матрицы камеры (через неё пускаются лучи),
     // матрица расположение на расстояние ZN от точки EYE по направлению на точку VIEW
-    private double SWidth, SHeight;
+    private int SWidth, SHeight;
 
     private double fovDeg = 90;
 
@@ -48,7 +48,7 @@ public class RenderConfig implements ConfigSerializable {
         var scanner = configScanner.getRawScanner();
         backgroundColor = configScanner.readColor();
         Gamma = scanner.nextDouble();
-        Depth = scanner.nextDouble();
+        Depth = scanner.nextInt();
         var qualityStr = scanner.next();
         Quality = switch (qualityStr) {
             case "rough" -> Quality.Rough;
@@ -61,8 +61,8 @@ public class RenderConfig implements ConfigSerializable {
         upVector = configScanner.readPoint();
         ZNear = scanner.nextDouble();
         ZFar = scanner.nextDouble();
-        SWidth = scanner.nextDouble();
-        SHeight = scanner.nextDouble();
+        SWidth = scanner.nextInt();
+        SHeight = scanner.nextInt();
     }
 
     @Override
