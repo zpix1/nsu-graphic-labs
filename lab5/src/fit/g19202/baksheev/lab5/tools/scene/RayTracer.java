@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -84,6 +83,10 @@ public class RayTracer {
         return img;
     }
 
+    private static Vec4 getReflectionDir(Vec4 L, Vec4 N) {
+        return N.mul(2 * N.dot(L)).sub(L).normalized();
+    }
+
     private Vec4 traceRay(Vec4 from, Vec4 ray, int depth) {
         var minDistance = Double.MAX_VALUE;
         SceneShape shape = null;
@@ -149,13 +152,13 @@ public class RayTracer {
                 var V = ray;
                 var N = intersection.getNormal();
                 var L = lightPosition.sub(pHit).normalized();
-                var R = reflectionDir.normalized();
+                var R = getReflectionDir(L.mul(-1), N);
 
                 var Ij = lightColor;
 
                 var Id = Kd.mul(N.dot(L));
                 var Is = Ks.mul(Math.pow(R.dot(V), power));
-                var I0 = Id;
+                var I0 = Id.add(Is);
 
                 var fAttL = 1. / (1. + lightDistance);
 
@@ -169,6 +172,9 @@ public class RayTracer {
             fAttR = 1 / (1 + distToRef);
         }
 
-        return A.vdot(Kd).add(reflectionColor).add(lightsColor).mul(fAttR);
+        return A.vdot(Kd)
+                .add(reflectionColor.vdot(Ks))
+                .add(lightsColor)
+                .mul(fAttR);
     }
 }
