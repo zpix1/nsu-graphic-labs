@@ -218,7 +218,7 @@ public class Scene extends JPanel {
             return;
         }
         if (isRayTracingModeEnabled) {
-            var renderedImage = rayTracer.render(getWidth(), getHeight());
+            var renderedImage = rayTracer.render(getWidth(), getHeight(), 30);
             g.drawImage(renderedImage, 0, 0, renderedImage.getWidth(), renderedImage.getHeight(), null);
             return;
         }

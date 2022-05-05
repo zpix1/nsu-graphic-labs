@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -27,8 +28,8 @@ public class RayTracer {
         return done.get() * 1. / toDo;
     }
 
-    public BufferedImage render(int width, int height) {
-        var service = Executors.newFixedThreadPool(30);
+    public BufferedImage render(int width, int height, int poolSize) {
+        var service = Executors.newFixedThreadPool(poolSize);
         var tasks = new ArrayList<Future>();
         toDo = width * height;
 
@@ -61,7 +62,9 @@ public class RayTracer {
             }));
         }
 
-        for (var f: tasks) {
+        service.shutdown();
+
+        for (var f : tasks) {
             try {
                 f.get();
             } catch (InterruptedException | ExecutionException e) {

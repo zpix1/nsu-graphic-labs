@@ -19,8 +19,8 @@ public class ImageDialog extends MainFrame {
         }
     }
 
-    public ImageDialog(BufferedImage image) {
-        super(640, (int) (640 * image.getHeight() * 1. / image.getWidth()) + 40, "Result", true);
+    public ImageDialog(BufferedImage image, String title) {
+        super(640, (int) (640 * image.getHeight() * 1. / image.getWidth()) + 40, title, true);
         this.image = image;
         addSubMenu("File", 0);
         addMenuItem("File/Save", "Save", 0, new File("save.gif"), event -> {
