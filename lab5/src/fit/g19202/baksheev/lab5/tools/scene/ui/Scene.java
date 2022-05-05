@@ -8,6 +8,7 @@ import fit.g19202.baksheev.lab5.lib.datas.shapes.SceneSphere;
 import fit.g19202.baksheev.lab5.tools.scene.RayTracer;
 import fit.g19202.baksheev.lab5.tools.scene.config.RenderConfig;
 import fit.g19202.baksheev.lab5.tools.scene.config.SceneConfig;
+import lombok.Getter;
 
 import javax.swing.*;
 import javax.swing.event.MouseInputAdapter;
@@ -20,6 +21,7 @@ import static fit.g19202.baksheev.lab5.tools.scene.RenderUtils.*;
 
 public class Scene extends JPanel {
     private SceneConfig sceneConfig;
+    @Getter
     private RenderConfig renderConfig;
     private final double ARROW_SPEED = 0.05;
     private final double WS_SPEED = 0.5;

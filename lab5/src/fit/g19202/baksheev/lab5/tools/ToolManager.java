@@ -20,7 +20,8 @@ public class ToolManager {
     private ToolManager() {
         toolList = List.of(
                 new OpenSceneTool(),
-                new SaveTool(),
+                new OpenRenderConfigTool(),
+                new SaveRenderConfigTool(),
                 new ExitTool(),
                 new ResetTool(),
                 new RenderTool(),

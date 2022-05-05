@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Locale;
+
 @NoArgsConstructor
 @Setter
 @Getter
@@ -67,6 +69,16 @@ public class RenderConfig implements ConfigSerializable {
 
     @Override
     public String getStringConfig() {
-        return null;
+        return String.format(Locale.US, "%d %d %d\n", backgroundColor.toColor().getRed(), backgroundColor.toColor().getGreen(), backgroundColor.toColor().getBlue()) +
+                String.format(Locale.US, "%f\n", Gamma) +
+                String.format(Locale.US, "%d\n", Depth) +
+                String.format(Locale.US, "%s\n", Quality.toString().toLowerCase()) +
+                String.format(Locale.US, "%f %f %f\n", cameraPosition.getX(), cameraPosition.getY(), cameraPosition.getZ()) +
+                String.format(Locale.US, "%f %f %f\n", viewPosition.getX(), viewPosition.getY(), viewPosition.getZ()) +
+                String.format(Locale.US, "%f %f %f\n", upVector.getX(), upVector.getY(), upVector.getZ()) +
+                String.format(Locale.US, "%f\n", ZNear) +
+                String.format(Locale.US, "%f\n", ZFar) +
+                String.format(Locale.US, "%d\n", SWidth) +
+                String.format(Locale.US, "%d\n", SHeight);
     }
 }
