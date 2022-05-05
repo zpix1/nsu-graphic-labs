@@ -112,12 +112,11 @@ public class RayTracer {
 
         var reflectionColor = new Vec4(0, 0, 0);
         var pHit = intersection.getPHit();
-        Vec4 reflectionDir = new Vec4(0, 0, 0);
         if (depth < renderConfig.getDepth()) {
             var N = intersection.getNormal();
             var L = ray.mul(-1);
 
-            reflectionDir = N.mul(2 * N.dot(L)).sub(L).normalized();
+            var reflectionDir = N.mul(2 * N.dot(L)).sub(L).normalized();
             reflectionColor = traceRay(
                     pHit,
                     reflectionDir,
